@@ -194,7 +194,7 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     <div class="kicker">Reserve your self-care time</div>
     <h2 class="section-title">Book Your Appointment</h2>
     <div class="goldline"></div>
-    <p class="sub">Choose your date and time, pay the ₱100 GCash deposit, and send your booking request. 💗</p>
+    <p class="sub">Share your preferred appointment time and nail inspiration. Gel will review your request and confirm your custom price and deposit before you pay. 💗</p>
   </div>
   <div class="booking-wrap">
     <form id="bookingForm">
@@ -205,26 +205,21 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
         <div><label for="btime">Available Time</label><select id="btime" class="slot-select" required><option value="">Choose a date first</option></select></div>
         <div><label for="bservice">Service</label>
           <select id="bservice">
-            <option>Minimal Design — ₱599</option>
-            <option>Extra Design — ₱799</option>
-            <option>Custom Set — Please inquire</option>
+            <option>Minimal Design</option>
+            <option>Extra Design</option>
+            <option>Custom Set</option>
           </select>
         </div>
         <div><label for="blength">Nail Length</label>
           <select id="blength"><option>Short</option><option>Medium</option><option>Long</option><option>Any length</option></select>
         </div>
+        <div class="full"><label for="bprevious">Previous Nail Work</label>
+          <select id="bprevious" required><option value="">Please choose one</option><option>No, my nails are bare.</option><option>Yes, previous work by Naileditby_gel.</option><option>Yes, work done by another nail technician.</option><option>I’m not sure.</option></select>
+        </div>
         <div class="full"><label for="bnote">Design / Inspo Notes</label><textarea id="bnote" placeholder="Tell Gel about your preferred design or paste a description of your inspo."></textarea></div>
         <div class="full"><label for="binspo">📸 Add Inspo Photos <span style="color:var(--muted);font-weight:500">(optional, up to 3 photos)</span></label><input id="binspo" type="file" accept="image/jpeg,image/png,image/webp" multiple style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff"><div style="font-size:12px;color:var(--muted);margin-top:6px">If it's easier to show Gel than explain it, send your nail inspo photos here. 💗 Max 5MB each.</div><div id="inspoPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div></div>
       </div>
-      <div class="booking-online" style="margin-top:16px">
-        <strong style="color:var(--wine)">💗 Booking Deposit: ₱100</strong>
-        <p style="margin:8px 0 12px;color:var(--muted);line-height:1.7">To secure your appointment, please send a <strong>₱100 deposit</strong> via GCash:</p>
-        <div style="font-weight:800;color:var(--deep);font-size:18px">GCash: +63 961 888 8216</div>
-        <div style="color:var(--muted);margin-top:3px">Account name: Angel Joy</div>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 12px">After sending the deposit, enter your GCash reference number below. Your booking stays pending until Gel verifies the payment.</p>
-        <label for="bref">GCash Reference Number</label>
-        <input id="bref" placeholder="Enter your GCash reference number" required>
-      </div>
+      <div class="booking-online" style="margin-top:16px"><strong style="color:var(--wine)">💗 Custom pricing & payment</strong><p style="margin:8px 0 0;color:var(--muted);line-height:1.7">No payment is required with this initial request. Gel will review your inspiration, previous nail work and appointment details, then send your total price and required deposit if your request can be accommodated. A one-hour payment window starts only after payment instructions are issued.</p></div>
       <div id="bookingStatusCard" class="booking-online" style="display:none;margin-bottom:18px">
         <strong style="color:var(--wine);font-size:18px">💌 Your Booking Status</strong>
         <div id="bookingStatusContent" style="margin-top:10px;color:var(--muted)">Checking your booking…</div>
@@ -241,8 +236,10 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
         <h3>♡ Booking, Safety & Salon Policies</h3>
         <ul>
           <li><strong>Safety first:</strong> For everyone's safety, Gel may decline or reschedule an appointment if you have open wounds, cuts, swelling, infection, significant finger/nail injuries, or if you are feeling unwell.</li>
-          <li><strong>₱100 down payment:</strong> A ₱100 deposit is required to secure your appointment. The deposit is non-refundable.</li>
-          <li><strong>Confirmation:</strong> Your booking is not confirmed until the ₱100 deposit has been received and verified by Gel.</li>
+          <li><strong>Price disclaimer:</strong> Final pricing is confirmed after Gel reviews your nail condition, design complexity, inspiration photos and whether existing enhancements need removal. Prices may vary based on these factors.</li>
+          <li><strong>Removal policy:</strong> Additional removal charges may apply, especially for work done by another nail technician. Removal of previous Naileditby_gel work may also incur a fee depending on the product and condition. Gel will confirm any removal fee before you agree to proceed.</li>
+          <li><strong>Custom deposit:</strong> If your request is accepted, Gel will provide the total price, required deposit and payment instructions after reviewing your request. The deposit is non-refundable once paid, subject to applicable law and any specific agreement.</li>
+          <li><strong>Payment deadline:</strong> A one-hour payment window begins when Gel sends the payment instructions. If payment details are not submitted before the deadline, the request may expire and the time slot will be released. Submitting payment proof does not confirm the appointment; Gel must verify the payment.</li>
           <li><strong>Late policy:</strong> 20 minutes late = ₱100 late fee. 1 hour late = appointment automatically voided/cancelled, and the deposit is forfeited.</li>
           <li><strong>Last-minute cancellation / no-show:</strong> The ₱100 deposit is non-refundable.</li>
           <li><strong>No companions:</strong> No companion is allowed unless previously discussed with Gel.</li>
@@ -255,7 +252,7 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
         <strong style="color:var(--wine)">♡ Online availability</strong>
         <div id="availabilityMsg" class="availability">Choose a date to see available appointment times.</div>
       </div>
-      <p class="booking-note">♡ Submit your request online after paying the ₱100 deposit. Gel will verify your payment and confirm the appointment. A time is not reserved until Gel confirms it.</p>
+      <p class="booking-note">♡ This is a request, not a confirmed appointment. Please wait for Gel to review your details and send your custom price and deposit instructions. Design changes may change the price, and Gel will confirm any adjustment with you first.</p>
       <button id="onlineBookBtn" class="online-btn" type="submit">♡ Request Appointment Online</button>
       <div id="bookingMessage" class="availability" aria-live="polite"></div>
       <div class="channel-grid">
@@ -436,27 +433,29 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     if(!name||!phone||!date||!time){msg.innerHTML='<span style="color:#b33">Please complete your name, mobile number, date, and available time. 💗</span>';return;}
     btn.disabled=true; btn.textContent='Sending request… ♡';
     const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
-    const ref=document.getElementById('bref').value.trim(); if(!ref){msg.innerHTML='<span style="color:#b33">Please enter your GCash reference number. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;} if(!document.getElementById('policyAgree').checked){msg.innerHTML='<span style="color:#b33">Please read and agree to the booking policies before submitting. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
+    if(!document.getElementById('policyAgree').checked){msg.innerHTML='<span style="color:#b33">Please read and agree to the booking policies before submitting. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
     const accessToken=crypto.randomUUID(); const bookingId=crypto.randomUUID(); const selectedInspo=Array.from(inspoInput.files||[]);
     let inspoFiles=[];
     for(let i=0;i<selectedInspo.length;i++){const f=selectedInspo[i]; const ext=(f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg'); const path=bookingId+'/'+crypto.randomUUID()+'.'+ext; const up=await sb.storage.from('booking-inspo').upload(path,f,{contentType:f.type,upsert:false}); if(up.error){console.error('Inspo upload error:',up.error);msg.innerHTML='<span style="color:#b33">One of the inspo photos could not be uploaded. Please try again. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;} inspoFiles.push({path,name:f.name,type:f.type});}
-    const payload={id:bookingId,access_token:accessToken,name,phone,appointment_date:date,appointment_time:time+':00',service:document.getElementById('bservice').value,nail_length:document.getElementById('blength').value,notes:document.getElementById('bnote').value.trim(),inspo_files:inspoFiles,status:'pending',deposit_amount:100,payment_method:'GCash',payment_reference:ref,deposit_status:'pending',customer_message:'Hi! 💗 Your booking request has been received and is waiting for Gel to review your ₱100 GCash deposit. You can use this private status link to check for updates. 💅✨'};
+    const previousWork=document.getElementById('bprevious').value;
+    const customerNotes='Previous nail work: '+previousWork+(document.getElementById('bnote').value.trim()?'\nDesign notes: '+document.getElementById('bnote').value.trim():'');
+    const payload={id:bookingId,access_token:accessToken,name,phone,appointment_date:date,appointment_time:time+':00',service:document.getElementById('bservice').value,nail_length:document.getElementById('blength').value,notes:customerNotes,inspo_files:inspoFiles,status:'pending',customer_message:'Hi! 💗 Your booking request has been received. Gel will review your design and details, then update your private booking status with the next steps. No payment is due until Gel sends your custom price and payment instructions. 💅✨'};
     const {error}=await sb.from('bookings').insert(payload);
     if(error){console.error('Booking insert error:',error);msg.innerHTML='<span style="color:#b33">Sorry, your booking request could not be sent. Please try again. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
     // The public RLS policy allows INSERT for pending bookings but does not allow
     // anon users to SELECT the newly-created pending row. We already generated
     // the private access token client-side, so do not chain .select() after insert.
     const token=accessToken; const statusUrl=location.origin+location.pathname+'#booking-status='+encodeURIComponent(token);
-    msg.innerHTML='<span style="color:#6f2944;font-weight:700">♡ Booking request sent!</span><br><span style="color:#8a6874">Your ₱100 GCash deposit is pending verification. Gel will review it and update your booking. 💗</span><br><a href="'+statusUrl+'" style="display:inline-block;margin-top:10px;color:#8c3b5b;font-weight:700">💌 View your private booking status</a><br><span style="font-size:12px;color:#8a6874">Save this link so you can check updates later.</span>';
+    msg.innerHTML='<span style="color:#6f2944;font-weight:700">♡ Booking request sent!</span><br><span style="color:#8a6874">Gel will review your design and details, then update your booking status with the custom price and next steps. No payment is due yet. 💗</span><br><a href="'+statusUrl+'" style="display:inline-block;margin-top:10px;color:#8c3b5b;font-weight:700">💌 View your private booking status</a><br><span style="font-size:12px;color:#8a6874">Save this link so you can check updates later.</span>';
     history.replaceState(null,'', '#booking-status='+encodeURIComponent(token));
     showBookingStatus(token);
     form.reset(); inspoPreview.innerHTML=''; dateEl.min=localToday; timeEl.innerHTML='<option value="">Choose a date first</option>'; timeEl.disabled=true; avail.textContent='Choose a date to see available appointment times.';
     btn.disabled=false; btn.textContent='♡ Request Appointment Online';
   });
   document.querySelectorAll('[data-channel]').forEach(function(btn){btn.addEventListener('click',function(){
-    const name=document.getElementById('bname').value.trim(), phone=document.getElementById('bphone').value.trim(), date=dateEl.value, time=timeEl.value, service=document.getElementById('bservice').value, length=document.getElementById('blength').value, note=document.getElementById('bnote').value.trim()||'None', ref=document.getElementById('bref').value.trim();
-    if(!name||!phone||!date||!time||!ref){alert('Please complete your name, mobile number, date, available time, and GCash reference number first. 💗');return;}
-    const message=`Hi Gel! ♡ I’d like to request a nail appointment.\n\nName: ${name}\nMobile: ${phone}\nPreferred date: ${date}\nPreferred time: ${time}\nService: ${service}\nNail length: ${length}\nDesign / inspo: ${note}\nGCash deposit: ₱100\nGCash reference: ${ref}\n\nPlease verify my deposit and let me know if this slot is available. Thank you! 💗`;
+    const name=document.getElementById('bname').value.trim(), phone=document.getElementById('bphone').value.trim(), date=dateEl.value, time=timeEl.value, service=document.getElementById('bservice').value, length=document.getElementById('blength').value, previous=document.getElementById('bprevious').value, note=document.getElementById('bnote').value.trim()||'None';
+    if(!name||!phone||!date||!time||!previous){alert('Please complete your name, mobile number, date, available time, and previous nail work question first. 💗');return;}
+    const message=`Hi Gel! ♡ I’d like to request a nail appointment.\n\nName: ${name}\nMobile: ${phone}\nPreferred date: ${date}\nPreferred time: ${time}\nService: ${service}\nNail length: ${length}\nPrevious nail work: ${previous}\nDesign / inspo: ${note}\n\nPlease review my request and let me know the custom price and deposit if you can accommodate it. Thank you! 💗`;
     const channel=btn.dataset.channel;
     if(channel==='viber'){window.location.href='viber://chat?number=%2B639553697737';setTimeout(function(){if(document.visibilityState==='visible')alert('Viber may not support pre-filled messages from this website. Please send this booking request to 0955 369 7737:\n\n'+message);},1200);}
     else if(channel==='messenger'){window.open('https://facebook.com/angel.joy.enderes.2025','_blank','noopener');setTimeout(function(){alert('Messenger opened. Please paste and send your booking details:\n\n'+message);},400);}
