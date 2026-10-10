@@ -55,7 +55,7 @@ async function loadBookings(){
     const inspo=Array.isArray(r.inspo_files)?r.inspo_files:[];
     const remaining=Number(r.total_design_price||0)-Number(r.deposit_amount||0);
     let html='<article class="review"><h3 style="margin:0 0 6px;color:#6f2944">'+esc(r.appointment_date)+' • '+esc(String(r.appointment_time).slice(0,5))+'</h3>';
-    html+='<strong>'+esc(r.name)+'</strong><div class="meta">'+esc(r.phone)+' • '+esc(r.service)+' • '+esc(r.nail_length||'')+'</div>';
+    html+='<strong>'+esc(r.name)+'</strong><div class="meta">'+esc(r.phone)+' • '+esc(r.service)+' • '+esc(r.nail_length||'')+'</div>'+(r.customer_address?'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> '+esc(r.customer_address)+'</div>':'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> Not provided</div>');
     html+='<p style="margin:10px 0;color:#6e5a62">'+esc(r.notes||'No design notes.')+'</p>';
     if(inspo.length)html+='<div style="margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff7fa;border:1px solid #ead4dd"><strong style="color:#6f2944">📸 Client inspo photos</strong><div class="meta" style="margin-top:4px">'+inspo.length+' photo'+(inspo.length===1?'':'s')+' attached</div><div id="inspo-'+r.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">Loading photos…</div></div>';
     html+='<div style="margin:12px 0;padding:14px;border-radius:14px;background:#fff4f8;border:1px solid #ead4dd"><strong style="color:#6f2944">💗 Custom price & payment</strong>';
@@ -72,7 +72,7 @@ async function loadBookings(){
       html+='<div style="margin:12px 0;padding:14px;border:1px solid #ead4dd;border-radius:14px;background:#fffafd"><strong style="color:#6f2944">Set custom price and deposit</strong><div class="row" style="margin-top:10px">';
       html+='<label style="flex:1;min-width:150px">Total price (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-total-price="'+r.id+'" value="'+(r.total_design_price==null?'':esc(r.total_design_price))+'" placeholder="e.g. 650"></label>';
       html+='<label style="flex:1;min-width:150px">Deposit (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-deposit="'+r.id+'" value="'+(r.deposit_amount==null?'':esc(r.deposit_amount))+'" placeholder="e.g. 200"></label>';
-      html+='<label style="flex:1;min-width:180px">Payment method<select class="input" data-method="'+r.id+'"><option value="GCash" '+(!r.payment_method||r.payment_method==='GCash'?'selected':'')+'>GCash</option><option value="Bank transfer" '+(r.payment_method==='Bank transfer'?'selected':'')+'>Bank transfer</option></select></label></div>';
+      html+='</div>';
       html+='<div class="meta">The one-hour payment window starts when you save the price and send the instructions. This does not confirm the appointment.</div><button class="btn" style="margin-top:10px" data-baction="assign" data-id="'+r.id+'">♡ Set price & send payment instructions</button></div>';
     } else if(bstatus==='pending') html+='<div class="notice">Price and deposit have been assigned. Wait for the customer to submit payment details before verifying.</div>';
     if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
@@ -98,11 +98,10 @@ async function changeBookingStatus(id,action){
   if(action==='assign'){
     const totalInput=document.querySelector('[data-total-price="'+id+'"]');
     const depositInput=document.querySelector('[data-deposit="'+id+'"]');
-    const methodInput=document.querySelector('[data-method="'+id+'"]');
-    const total=Number(totalInput&&totalInput.value),deposit=Number(depositInput&&depositInput.value),method=methodInput&&methodInput.value;
+    const total=Number(totalInput&&totalInput.value),deposit=Number(depositInput&&depositInput.value);
     if(!Number.isFinite(total)||total<=0||!Number.isFinite(deposit)||deposit<=0||deposit>total){fail('Enter a valid total price and a deposit greater than zero that does not exceed the total price.');return;}
-    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+' via '+method+'? This starts the one-hour payment deadline.'))return;
-    const result=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:method});
+    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? The customer will choose GCash or Bank transfer. This starts the one-hour payment deadline.'))return;
+    const result=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:null});
     if(result.error){fail(result.error.message);return;}await loadBookings();return;
   }
   let update={};
