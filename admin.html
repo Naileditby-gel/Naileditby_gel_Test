@@ -58,7 +58,7 @@ async function loadBookings(){
     let html='<article class="review"><h3 style="margin:0 0 6px;color:#6f2944">'+esc(r.appointment_date)+' • '+esc(String(r.appointment_time).slice(0,5))+'</h3>';
     html+='<strong>'+esc(r.name)+'</strong><div class="meta">'+esc(r.phone)+' • '+esc(r.service)+' • '+esc(r.nail_length||'')+'</div>'+(r.customer_address?'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> '+esc(r.customer_address)+'</div>':'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> Not provided</div>');
     html+='<p style="margin:10px 0;color:#6e5a62">'+esc(r.notes||'No design notes.')+'</p>';
-    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\\s*([^\\n\\r]+)/i);
+    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\s*([^\n\r]+)/i);
     if(selectedLookMatch)html+='<div id="selected-look-'+r.id+'" style="margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff7fa;border:1px solid #ead4dd"><strong style="color:#6f2944">💅 Selected portfolio design</strong><div class="meta" style="margin-top:4px">'+esc(selectedLookMatch[1].trim())+'</div><div class="meta" style="margin-top:6px">Loading design photo…</div></div>';
     if(inspo.length)html+='<div style="margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff7fa;border:1px solid #ead4dd"><strong style="color:#6f2944">📸 Client inspo photos</strong><div class="meta" style="margin-top:4px">'+inspo.length+' photo'+(inspo.length===1?'':'s')+' attached</div><div id="inspo-'+r.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">Loading photos…</div></div>';
     html+='<div style="margin:12px 0;padding:14px;border-radius:14px;background:#fff4f8;border:1px solid #ead4dd"><strong style="color:#6f2944">💗 Custom price & payment</strong>';
@@ -90,7 +90,7 @@ async function loadBookings(){
   }).join('');
   list.querySelectorAll('[data-baction]').forEach(function(b){b.onclick=function(){changeBookingStatus(b.dataset.id,b.dataset.baction)}});
   data.forEach(async function(r){
-    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\\s*([^\\n\\r]+)/i);
+    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\s*([^\n\r]+)/i);
     if(selectedLookMatch){
       const lookBox=document.getElementById('selected-look-'+r.id);
       if(lookBox){
