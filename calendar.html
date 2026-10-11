@@ -39,8 +39,25 @@
  const ready=cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY;
  if(!ready){$('loginMsg').textContent='Supabase settings are missing from config.js.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
  if(!window.supabase||typeof window.supabase.createClient!=='function'){$('loginMsg').textContent='The login service did not load. Please refresh the page or try again in a moment.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
- const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
- $('login').addEventListener('click',()=>{ $('loginMsg').classList.add('hidden'); });
+ const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+ // Attach the login handler immediately so later calendar rendering errors cannot leave a dead button.
+ $('login').addEventListener('click',async function(){
+   const button=$('login'),msg=$('loginMsg');
+   msg.textContent='Button responded. Connecting securely…';msg.classList.remove('hidden');
+   button.disabled=true;button.textContent='Signing in…';
+   try{
+     const result=await Promise.race([
+       sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value}),
+       new Promise((_,reject)=>setTimeout(()=>reject(new Error('Login request timed out. Please check your connection and try again.')),15000))
+     ]);
+     if(result.error){msg.textContent='Login failed: '+result.error.message;return;}
+     if(!result.data.session){msg.textContent='Login did not return an active session. Please try again.';return;}
+     msg.textContent='Login successful! Opening calendar…';showApp();
+   }catch(e){msg.textContent='Calendar login error: '+(e&&e.message?e.message:String(e));}
+   finally{button.disabled=false;button.textContent='♡ Log in';}
+ });
+
+
  const pad=n=>String(n).padStart(2,'0');
  let month=new Date();month=new Date(month.getFullYear(),month.getMonth(),1);let selected=localDate(new Date());let bookings=[];let blocks=[];
  function localDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
@@ -51,7 +68,7 @@
  function statusClass(s){return String(s||'pending').toLowerCase().replace(/[^a-z]/g,'')}
  function showApp(){ $('loginCard').classList.add('hidden');$('calendarApp').classList.remove('hidden');$('logout').classList.remove('hidden');loadMonth(); }
  async function checkSession(){try{const {data,error}=await sb.auth.getSession();if(error){$('loginMsg').textContent='Could not check your login session: '+error.message;$('loginMsg').classList.remove('hidden');return;}if(data.session)showApp()}catch(e){$('loginMsg').textContent='Could not check your login session. Please refresh and try again.';$('loginMsg').classList.remove('hidden')}}
- $('login').addEventListener("click",async()=>{const button=$('login');const msg=$('loginMsg');msg.textContent="Button responded. Connecting securely…";msg.classList.remove('hidden');button.disabled=true;button.textContent="Signing in…";try{const result=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(result.error){msg.textContent="Login failed: "+result.error.message;return;}if(!result.data.session){msg.textContent="Login did not return an active session. Please try again.";return;}msg.textContent="Login successful! Opening calendar…";showApp()}catch(e){msg.textContent="Calendar login error: "+(e&&e.message?e.message:String(e))}finally{button.disabled=false;button.textContent="♡ Log in"}});
+
  $('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
  $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
  $('refresh').onclick=loadMonth;$('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);loadMonth()};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);loadMonth()};
