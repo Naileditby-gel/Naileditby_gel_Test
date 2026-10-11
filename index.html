@@ -221,10 +221,6 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
         <div class="full"><label for="binspo">📸 Add Inspo Photos <span style="color:var(--muted);font-weight:500">(optional, up to 3 photos)</span></label><input id="binspo" type="file" accept="image/jpeg,image/png,image/webp" multiple style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff"><div style="font-size:12px;color:var(--muted);margin-top:6px">If it's easier to show Gel than explain it, send your nail inspo photos here. 💗 Max 5MB each.</div><div id="inspoPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div></div>
       </div>
       <div class="booking-online" style="margin-top:16px"><strong style="color:var(--wine)">💗 Custom pricing & payment</strong><p style="margin:8px 0 0;color:var(--muted);line-height:1.7">No payment is required with this initial request. Gel will review your inspiration, previous nail work and appointment details, then send your total price and required deposit if your request can be accommodated. A one-hour payment window starts only after payment instructions are issued.</p></div>
-      <div id="bookingStatusCard" class="booking-online" style="display:none;margin-bottom:18px">
-        <strong style="color:var(--wine);font-size:18px">💌 Your Booking Status</strong>
-        <div id="bookingStatusContent" style="margin-top:10px;color:var(--muted)">Checking your booking…</div>
-      </div>
       <div class="studio-info">
         <strong style="color:var(--wine)">📍 Studio Information</strong><br>
         Don Primitivo, Holy Spirit, Quezon City<br>
@@ -263,6 +259,12 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
       </div>
       <p class="channel-help">Prefer messaging? You can still send the same request through Viber, Messenger, or Instagram.</p>
     </form>
+      <!-- Keep the private booking status outside bookingForm so its payment form is not nested inside another form. -->
+      <div id="bookingStatusCard" class="booking-online" style="display:none;margin-bottom:18px">
+        <strong style="color:var(--wine);font-size:18px">💌 Your Booking Status</strong>
+        <div id="bookingStatusContent" style="margin-top:10px;color:var(--muted)">Checking your booking…</div>
+      </div>
+
   </div>
 </div>
 </section>
