@@ -38,7 +38,9 @@
  const cfg=window.NAILEDIT_CONFIG||{};const $=id=>document.getElementById(id);
  const ready=cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY;
  if(!ready){$('loginMsg').textContent='Supabase settings are missing from config.js.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
+ if(!window.supabase||typeof window.supabase.createClient!=='function'){$('loginMsg').textContent='The login service did not load. Please refresh the page or try again in a moment.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
  const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+ $('login').addEventListener('click',()=>{ $('loginMsg').classList.add('hidden'); });
  let month=new Date();month=new Date(month.getFullYear(),month.getMonth(),1);let selected=localDate(new Date());let bookings=[];let blocks=[];
  const pad=n=>String(n).padStart(2,'0');
  function localDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
