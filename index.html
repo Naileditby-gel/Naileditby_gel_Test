@@ -417,7 +417,7 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   }
   async function showBookingStatus(token){
     const card=document.getElementById('bookingStatusCard'),out=document.getElementById('bookingStatusContent');if(!card||!token)return;
-    card.style.display='block';out.textContent='Checking your booking…';
+    card.style.display='block';out.textContent='Checking your booking…';setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),60);
     const cfg=window.NAILEDIT_CONFIG||{};
     if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){out.textContent='Booking status is temporarily unavailable. Please try again later.';return;}
     const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
@@ -502,7 +502,7 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     const customerNotes='Previous nail work: '+previousWork+(document.getElementById('bnote').value.trim()?'\nDesign notes: '+document.getElementById('bnote').value.trim():'');
     const payload={id:bookingId,access_token:accessToken,name,phone,customer_address:customerAddress,appointment_date:date,appointment_time:time+':00',service:document.getElementById('bservice').value,nail_length:document.getElementById('blength').value,notes:customerNotes,inspo_files:inspoFiles,status:'pending',customer_message:'Hi! 💗 Your booking request has been received. Gel will review your design and details, then update your private booking status with the next steps. No payment is due until Gel sends your custom price and payment instructions. 💅✨'};
     const {error}=await sb.from('bookings').insert(payload);
-    if(error){console.error('Booking insert error:',error);msg.innerHTML='<span style="color:#b33">Sorry, your booking request could not be sent. Please try again. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
+    if(error){console.error('Booking insert error:',error);const slotTaken=/slot is no longer available|duplicate key|booked/i.test(String(error.message||''));msg.innerHTML='<span style="color:#b33">'+(slotTaken?'Oh no, this time was just taken by another booking. Please choose a different available time and submit again. 💗':'Sorry, your booking request could not be sent. Please try again. 💗')+'</span>';if(slotTaken){await loadAvailability();}btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
     // The public RLS policy allows INSERT for pending bookings but does not allow
     // anon users to SELECT the newly-created pending row. We already generated
     // the private access token client-side, so do not chain .select() after insert.
