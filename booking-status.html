@@ -30,8 +30,8 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <h1>My Booking Status 💗</h1>
 <p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p>
 <div id="lookup" class="hidden">
-<label for="token">Private booking link code</label>
-<input id="token" autocomplete="off" spellcheck="false" placeholder="Paste the booking code here">
+<label for="token">Private booking link or code</label>
+<input id="token" autocomplete="off" spellcheck="false" placeholder="Paste your private booking link or code">
 <button id="check" type="button" style="margin-top:12px">Check my booking</button>
 </div>
 <div id="message" role="status" aria-live="polite">Loading your private booking details…</div>
@@ -52,13 +52,14 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
  function setMessage(t){$('message').textContent=t;}
  function render(b){
   const s=String(b.status||'pending').toLowerCase(), remain=b.total_design_price!=null&&b.deposit_amount!=null?Number(b.total_design_price)-Number(b.deposit_amount):null;
-  const labels={pending:'Waiting for review',confirmed:'Appointment confirmed',rejected:'Booking not accepted',cancelled:'Appointment cancelled',completed:'Appointment completed',expired:'Payment window expired'};
+  const submitted=!!b.payment_submitted_at, paid=String(b.deposit_status||'pending').toLowerCase()==='paid';
+  const labels={pending:paid?'Payment received':(submitted?'Payment under verification':(b.payment_deadline?'Awaiting deposit':'Pending review')),confirmed:'Appointment confirmed',rejected:'Booking rejected',cancelled:'Appointment cancelled',completed:'Appointment completed',expired:'Payment window expired'};
   $('details').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;color:var(--deep);font-size:20px">Hi '+esc(b.name||'there')+'! 🎀</h2><span class="status '+esc(s)+'">'+esc(labels[s]||s)+'</span></div>'+
    '<div class="grid">'+
    '<div class="item"><small>Appointment date</small><strong>'+esc(niceDate(b.appointment_date))+'</strong></div>'+
    '<div class="item"><small>Appointment time</small><strong>'+esc(niceTime(b.appointment_time))+'</strong></div>'+
    '<div class="item"><small>Service</small><strong>'+esc(b.service||'Nail appointment')+'</strong></div>'+
-   '<div class="item"><small>Payment status</small><strong>'+esc(b.deposit_status||'pending')+'</strong></div>'+
+   '<div class="item"><small>Payment status</small><strong>'+esc(paid?'Deposit verified':(submitted?'Payment submitted — awaiting verification':(b.payment_deadline?'Awaiting deposit':'Not due yet')))+'</strong></div>'+
    '<div class="item"><small>Total price</small><strong>'+esc(money(b.total_design_price))+'</strong></div>'+
    '<div class="item"><small>Deposit</small><strong>'+esc(money(b.deposit_amount))+'</strong></div>'+
    (remain!=null?'<div class="item"><small>Remaining balance</small><strong>'+esc(money(remain))+'</strong></div>':'')+
@@ -74,12 +75,25 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
   if(!token){$('lookup').classList.remove('hidden');setMessage('Open the private booking link Gel shared with you, or paste its booking code below.');return;}
   try{
    const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
-   if(error){setMessage('We could not check the booking right now. Please try again in a moment.');return;}
+   if(error){console.error('Customer booking status lookup failed:',error);setMessage('We could not verify this private link right now. Please refresh the page or contact Gel if this continues.');return;}
    if(!data){$('details').classList.add('hidden');setMessage('We could not find a booking for this private link. Please check the link or contact Gel.');return;}
    render(data);
   }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
  }
- function readToken(){token=$('token').value.trim();if(!token)return setMessage('Please paste the booking code from your private link.');const u=new URL(location.href);u.searchParams.set('token',token);history.replaceState({},'',u);$('lookup').classList.add('hidden');load();}
+ function readToken(){
+  let raw=$('token').value.trim();
+  if(!raw)return setMessage('Please paste your private booking link or code.');
+  try{
+   if(/^https?:\/\//i.test(raw)){
+    const pasted=new URL(raw);
+    raw=pasted.searchParams.get('token')||'';
+    if(/^https?:\/\//i.test(raw)){const nested=new URL(raw);raw=nested.searchParams.get('token')||'';}
+   }
+  }catch(e){raw='';}
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw))
+   return setMessage('That link or code does not look valid. Please open the original private link Gel shared, or copy the full link again.');
+  token=raw;const u=new URL(location.href);u.searchParams.set('token',token);history.replaceState({},'',u);$('lookup').classList.add('hidden');load();
+}
  $('check').addEventListener('click',readToken);
  if(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase&&window.supabase.createClient)client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  if(!client)setMessage('Booking service could not load. Please refresh the page.');
