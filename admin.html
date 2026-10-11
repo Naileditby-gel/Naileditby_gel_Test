@@ -90,7 +90,7 @@ async function loadBookings(){
   }).join('');
   list.querySelectorAll('[data-baction]').forEach(function(b){b.onclick=function(){changeBookingStatus(b.dataset.id,b.dataset.baction)}});
    list.querySelectorAll('[data-customer-link]').forEach(function(b){b.onclick=async function(){
-     const link=new URL('booking-status.html',location.href);link.searchParams.set('token',b.dataset.customerLink);
+     const link=new URL('index.html',location.href);link.hash='booking-status='+encodeURIComponent(b.dataset.customerLink);
      try{await navigator.clipboard.writeText(link.href);b.textContent='✓ Link copied!';}
      catch(e){prompt('Copy this private customer booking link and send it to the client:',link.href);}
    }});
