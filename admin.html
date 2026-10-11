@@ -80,7 +80,7 @@ async function loadBookings(){
     } else if(bstatus==='pending') html+='<div class="notice">Price and deposit have been assigned. Wait for the customer to submit payment details before verifying.</div>';
     if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
     if(r.customer_message)html+='<div class="notice"><strong>Customer message:</strong><br>'+esc(r.customer_message)+'</div>';
-    html+='<div class="meta">Requested '+new Date(r.created_at).toLocaleString()+(r.updated_at?' • Updated '+new Date(r.updated_at).toLocaleString():'')+'</div><div class="row" style="margin-top:14px">';
+    html+='<div class="meta">Requested '+new Date(r.created_at).toLocaleString()+(r.updated_at?' • Updated '+new Date(r.updated_at).toLocaleString():'')+'</div><div class="row" style="margin-top:14px"><button type="button" class="btn secondary" data-customer-link="'+esc(r.access_token||'')+'" '+(!r.access_token?'disabled':'')+'>♡ Copy customer status link</button>';
     if(bstatus==='pending'){
       html+='<button class="btn" data-baction="paid" data-id="'+r.id+'" '+((!hasPaymentSubmission||paid)?'disabled':'')+'>'+(paid?'✓ Payment Verified':hasPaymentSubmission?'✓ Verify Submitted Payment':'Waiting for payment details')+'</button>';
       html+='<button class="btn" data-baction="confirm" data-id="'+r.id+'" '+(paid&&validPrice?'':'disabled')+'>✓ Confirm Booking</button><button class="btn danger" data-baction="reject" data-id="'+r.id+'">Reject</button>';
@@ -89,6 +89,11 @@ async function loadBookings(){
     html+='</div></article>';return html;
   }).join('');
   list.querySelectorAll('[data-baction]').forEach(function(b){b.onclick=function(){changeBookingStatus(b.dataset.id,b.dataset.baction)}});
+   list.querySelectorAll('[data-customer-link]').forEach(function(b){b.onclick=async function(){
+     const link=new URL('booking-status.html',location.href);link.searchParams.set('token',b.dataset.customerLink);
+     try{await navigator.clipboard.writeText(link.href);b.textContent='✓ Link copied!';}
+     catch(e){prompt('Copy this private customer booking link and send it to the client:',link.href);}
+   }});
   data.forEach(async function(r){
     const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\s*([^\n\r]+)/i);
     if(selectedLookMatch){
