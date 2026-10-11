@@ -48,8 +48,8 @@
  function showError(msg){$('loadMsg').textContent=msg;$('loadMsg').classList.remove('hidden')}
  function statusClass(s){return String(s||'pending').toLowerCase().replace(/[^a-z]/g,'')}
  function showApp(){ $('loginCard').classList.add('hidden');$('calendarApp').classList.remove('hidden');$('logout').classList.remove('hidden');loadMonth(); }
- async function checkSession(){const {data,error}=await sb.auth.getSession();if(error)return;if(data.session)showApp()}
- $('login').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginMsg').textContent=error.message;$('loginMsg').classList.remove('hidden')}else showApp()};
+ async function checkSession(){try{const {data,error}=await sb.auth.getSession();if(error){$('loginMsg').textContent='Could not check your login session: '+error.message;$('loginMsg').classList.remove('hidden');return;}if(data.session)showApp()}catch(e){$('loginMsg').textContent='Could not check your login session. Please refresh and try again.';$('loginMsg').classList.remove('hidden')}}
+ $('login').onclick=async()=>{const button=$('login');const msg=$('loginMsg');msg.classList.add('hidden');button.disabled=true;button.textContent='Signing in…';try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg.textContent='Login failed: '+error.message;msg.classList.remove('hidden');return;}if(!data.session){msg.textContent='Login did not return an active session. Please try again.';msg.classList.remove('hidden');return;}showApp()}catch(e){msg.textContent='Could not complete login. Check your connection and try again.';msg.classList.remove('hidden')}finally{button.disabled=false;button.textContent='♡ Log in'}};
  $('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
  $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
  $('refresh').onclick=loadMonth;$('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);loadMonth()};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);loadMonth()};
@@ -57,14 +57,16 @@
    $('loadMsg').classList.add('hidden');$('calendar').innerHTML='<div class="notice">Loading appointments…</div>';
    const first=new Date(month.getFullYear(),month.getMonth(),1);const last=new Date(month.getFullYear(),month.getMonth()+1,0);
    const from=localDate(first),to=localDate(last);$('monthTitle').textContent=first.toLocaleDateString(undefined,{month:'long',year:'numeric'});
-   const [bRes,blockRes]=await Promise.all([
-     sb.from('bookings').select('id,name,appointment_date,appointment_time,status').gte('appointment_date',from).lte('appointment_date',to).order('appointment_time',{ascending:true}),
-     sb.from('owner_blocks').select('id,block_date,start_time,end_time,reason').gte('block_date',from).lte('block_date',to).order('block_date',{ascending:true})
-   ]);
-   if(bRes.error){bookings=[];blocks=[];renderCalendar();showError('Could not load appointments. Please sign in with the owner account and refresh. '+bRes.error.message);return;}
-   bookings=bRes.data||[];blocks=blockRes.error?[]:(blockRes.data||[]);
-   renderCalendar();renderAgenda();
-   if(blockRes.error)showError('Appointments loaded, but blocked times could not be loaded: '+blockRes.error.message);
+   try{
+     const [bRes,blockRes]=await Promise.all([
+       sb.from('bookings').select('id,name,appointment_date,appointment_time,status').gte('appointment_date',from).lte('appointment_date',to).order('appointment_time',{ascending:true}),
+       sb.from('owner_blocks').select('id,block_date,start_time,end_time,reason').gte('block_date',from).lte('block_date',to).order('block_date',{ascending:true})
+     ]);
+     if(bRes.error){bookings=[];blocks=[];renderCalendar();showError('Could not load appointments: '+bRes.error.message);return;}
+     bookings=bRes.data||[];blocks=blockRes.error?[]:(blockRes.data||[]);
+     renderCalendar();renderAgenda();
+     if(blockRes.error)showError('Appointments loaded, but blocked times could not be loaded: '+blockRes.error.message);
+   }catch(e){showError('Could not load appointments. Please check your connection and refresh the calendar.');}
  }
  function renderCalendar(){
    const cal=$('calendar');const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
