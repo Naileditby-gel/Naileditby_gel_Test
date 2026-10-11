@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff0f6">
+<title>My Booking • Naileditby_gel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+:root{--pink:#d94d91;--deep:#6f2944;--ink:#513c44;--line:#efd6e1;--soft:#fff6fa}
+*{box-sizing:border-box}body{margin:0;padding:22px 14px 40px;background:linear-gradient(145deg,#fff0f6,#fffafd 55%,#fde8f1);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+main{max-width:620px;margin:0 auto}.brand{text-align:center;color:var(--deep);font-weight:800;font-size:17px;letter-spacing:.3px;margin:8px 0 20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;margin:14px 0;box-shadow:0 8px 28px #6f29440d}
+h1{font-size:26px;line-height:1.2;color:var(--deep);margin:0 0 8px}p{line-height:1.55}.muted{color:#806d75;font-size:13px;line-height:1.5}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}input{width:100%;padding:13px 14px;border:1px solid #e8c7d6;border-radius:12px;font:inherit;color:var(--ink)}
+button,.button{display:inline-block;border:0;border-radius:12px;background:var(--pink);color:#fff;padding:13px 16px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(--deep);border:1px solid var(--line)}
+#message{margin-top:14px;padding:13px;border-radius:12px;background:var(--soft);line-height:1.5;overflow-wrap:anywhere}
+.hidden{display:none!important}.status{display:inline-block;padding:7px 12px;border-radius:999px;background:#fff0cb;color:#855c00;font-size:12px;font-weight:800;text-transform:capitalize}
+.status.confirmed{background:#e3f4eb;color:#276749}.status.completed{background:#eee6f7;color:#67468a}.status.rejected,.status.cancelled,.status.expired{background:#f5e8ed;color:#765f68}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.item{background:var(--soft);border:1px solid #f4e4eb;border-radius:13px;padding:12px;min-width:0}.item small{display:block;color:#806d75;font-size:11px;margin-bottom:6px}.item strong{display:block;overflow-wrap:anywhere;color:var(--deep);font-size:14px}
+.notice{font-size:12px;color:#806d75;line-height:1.5;margin-top:14px}
+@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.card{padding:18px}h1{font-size:23px}}
+</style>
+</head>
+<body><main>
+<div class="brand">Naileditby_gel ♡</div>
+<section class="card">
+<h1>My Booking Status 💗</h1>
+<p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p>
+<div id="lookup" class="hidden">
+<label for="token">Private booking link code</label>
+<input id="token" autocomplete="off" spellcheck="false" placeholder="Paste the booking code here">
+<button id="check" type="button" style="margin-top:12px">Check my booking</button>
+</div>
+<div id="message" role="status" aria-live="polite">Loading your private booking details…</div>
+</section>
+<section id="details" class="card hidden" aria-live="polite"></section>
+<p class="muted" style="text-align:center">🔒 Keep your private booking link to yourself. Anyone with this link may be able to view the booking status. This page refreshes automatically while open.</p>
+<p style="text-align:center"><a class="button secondary" href="./">Back to Naileditby_gel</a></p>
+</main>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const cfg=window.NAILEDIT_CONFIG||{};
+ let client=null, token=new URLSearchParams(location.search).get('token')||'', timer=null;
+ function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+ function money(v){return v==null?'Not set':'₱'+Number(v).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+ function niceDate(v){if(!v)return 'Not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});}
+ function niceTime(v){if(!v)return 'Not set';const p=String(v).slice(0,5).split(':');if(p.length!==2)return v;const d=new Date();d.setHours(Number(p[0]),Number(p[1]),0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
+ function setMessage(t){$('message').textContent=t;}
+ function render(b){
+  const s=String(b.status||'pending').toLowerCase(), remain=b.total_design_price!=null&&b.deposit_amount!=null?Number(b.total_design_price)-Number(b.deposit_amount):null;
+  const labels={pending:'Waiting for review',confirmed:'Appointment confirmed',rejected:'Booking not accepted',cancelled:'Appointment cancelled',completed:'Appointment completed',expired:'Payment window expired'};
+  $('details').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;color:var(--deep);font-size:20px">Hi '+esc(b.name||'there')+'! 🎀</h2><span class="status '+esc(s)+'">'+esc(labels[s]||s)+'</span></div>'+
+   '<div class="grid">'+
+   '<div class="item"><small>Appointment date</small><strong>'+esc(niceDate(b.appointment_date))+'</strong></div>'+
+   '<div class="item"><small>Appointment time</small><strong>'+esc(niceTime(b.appointment_time))+'</strong></div>'+
+   '<div class="item"><small>Service</small><strong>'+esc(b.service||'Nail appointment')+'</strong></div>'+
+   '<div class="item"><small>Payment status</small><strong>'+esc(b.deposit_status||'pending')+'</strong></div>'+
+   '<div class="item"><small>Total price</small><strong>'+esc(money(b.total_design_price))+'</strong></div>'+
+   '<div class="item"><small>Deposit</small><strong>'+esc(money(b.deposit_amount))+'</strong></div>'+
+   (remain!=null?'<div class="item"><small>Remaining balance</small><strong>'+esc(money(remain))+'</strong></div>':'')+
+   (b.payment_deadline?'<div class="item"><small>Payment deadline</small><strong>'+esc(new Date(b.payment_deadline).toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'}))+'</strong></div>':'')+
+   '</div>'+
+   (b.customer_message?'<div id="owner-message" style="margin-top:16px;padding:15px;border-radius:14px;background:#fff0f6;border:1px solid var(--line)"><strong style="color:var(--deep)">💌 Message from Gel</strong><p style="margin-bottom:0;white-space:pre-wrap">'+esc(b.customer_message)+'</p></div>':'')+
+   (b.status_reason?'<div style="margin-top:12px;padding:13px;border-radius:12px;background:#fffafd;border:1px solid var(--line)"><strong>Status details</strong><p style="margin-bottom:0">'+esc(b.status_reason)+'</p></div>':'')+
+   '<p class="notice">Last updated: '+esc(b.updated_at?new Date(b.updated_at).toLocaleString('en-PH'):'Not available')+'. Status checks automatically every 30 seconds.</p>';
+  $('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
+ }
+ async function load(){
+  if(!client){setMessage('The booking service did not load. Please refresh this page.');return;}
+  if(!token){$('lookup').classList.remove('hidden');setMessage('Open the private booking link Gel shared with you, or paste its booking code below.');return;}
+  try{
+   const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
+   if(error){setMessage('We could not check the booking right now. Please try again in a moment.');return;}
+   if(!data){$('details').classList.add('hidden');setMessage('We could not find a booking for this private link. Please check the link or contact Gel.');return;}
+   render(data);
+  }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
+ }
+ function readToken(){token=$('token').value.trim();if(!token)return setMessage('Please paste the booking code from your private link.');const u=new URL(location.href);u.searchParams.set('token',token);history.replaceState({},'',u);$('lookup').classList.add('hidden');load();}
+ $('check').addEventListener('click',readToken);
+ if(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase&&window.supabase.createClient)client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+ if(!client)setMessage('Booking service could not load. Please refresh the page.');
+ if(!token)$('lookup').classList.remove('hidden');
+ load();timer=setInterval(load,30000);
+})();
+</script>
+</body></html>
