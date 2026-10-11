@@ -598,6 +598,12 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     const marker='Selected portfolio look: '+selected;
     if(!notes.value.includes(marker)) notes.value=notes.value.trim()?marker+'\n'+notes.value.trim():marker;
     notes.dispatchEvent(new Event('input',{bubbles:true}));
+    // Portfolio links carry #booking, but some mobile browsers can retain the previous scroll position.
+    // Explicitly scroll to the booking section after the selected-look banner and notes are inserted.
+    if (window.location.hash === '#booking') {
+      section.style.scrollMarginTop = '18px';
+      setTimeout(() => section.scrollIntoView({behavior:'smooth', block:'start'}), 120);
+    }
     return true;
   }
   let tries=0; function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
