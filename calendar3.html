@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Naileditby_gel Calendar Login Test</title>
+<style>body{font-family:Arial,sans-serif;max-width:650px;margin:25px auto;padding:16px;background:#fff2f7;color:#603044}section{background:#fff;padding:20px;border-radius:16px;margin-top:15px}input,button{font:inherit;width:100%;padding:13px;margin:8px 0;box-sizing:border-box;border-radius:10px}input{border:1px solid #e5c8d5}button{background:#ce2e83;color:#fff;border:0;font-weight:bold}#msg{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff0f6;padding:14px;border-radius:10px;min-height:30px}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script></head>
+<body><h1>🎀 Calendar Login Test</h1><p>This is a simplified login test using the same test Supabase project as your admin dashboard.</p>
+<section><label>Email</label><input id="email" type="email" autocomplete="username"><label>Password</label><input id="password" type="password" autocomplete="current-password"><button id="go" type="button">TEST OWNER LOGIN</button><div id="msg">Ready. Tap the button once.</div></section>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ $('go').addEventListener('click',async function(){
+   $('msg').textContent='Button tap detected. Checking login setup…';
+   $('go').disabled=true;
+   try{
+     const cfg=window.NAILEDIT_CONFIG;
+     if(!cfg){$('msg').textContent='Button works, but config.js did not load.';return;}
+     if(!window.supabase||typeof window.supabase.createClient!=='function'){$('msg').textContent='Button works, but Supabase login library did not load.';return;}
+     if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('msg').textContent='Button works, but Supabase settings are missing.';return;}
+     $('msg').textContent='Button works. Connecting to the test login service…';
+     const client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+     const {data,error}=await client.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+     if(error){$('msg').textContent='Supabase responded with a login error:\n'+error.message;return;}
+     $('msg').textContent='Login succeeded! Session received. This test page will not show bookings.';
+     await client.auth.signOut();
+   }catch(e){$('msg').textContent='JavaScript error:\n'+(e&&e.message?e.message:String(e));}
+   finally{$('go').disabled=false;}
+ });
+})();
+</script></body></html>
