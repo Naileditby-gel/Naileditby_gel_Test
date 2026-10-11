@@ -100,7 +100,7 @@ async function changeBookingStatus(id,action){
     const depositInput=document.querySelector('[data-deposit="'+id+'"]');
     const total=Number(totalInput&&totalInput.value),deposit=Number(depositInput&&depositInput.value);
     if(!Number.isFinite(total)||total<=0||!Number.isFinite(deposit)||deposit<=0||deposit>total){fail('Enter a valid total price and a deposit greater than zero that does not exceed the total price.');return;}
-    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? The customer will choose GCash or Bank transfer. This starts the one-hour payment deadline.'))return;
+    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? The customer will choose GCash or Bank transfer. This starts the 30-minute payment deadline.'))return;
     const result=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:null});
     if(result.error){fail(result.error.message);return;}await loadBookings();return;
   }
