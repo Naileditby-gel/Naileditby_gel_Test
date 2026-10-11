@@ -561,35 +561,35 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 </script>
 
 <script>
-/* Portfolio "Book this look" handoff */
+/* Portfolio "Book this look" handoff — visible banner + booking notes */
 (function(){
   const params = new URLSearchParams(window.location.search);
-  const design = params.get('design');
-  if (!design) return;
-  const safeName = design.trim().slice(0,100);
+  let design = params.get('design');
+  try { design = design ? decodeURIComponent(design.replace(/\+/g,' ')) : ''; } catch(e) {}
+  const safeName = (design || '').trim().slice(0,100);
   if (!safeName) return;
   function applySelectedLook(){
     const form = document.getElementById('bookingForm');
     const notes = document.getElementById('bnote');
-    if (!form || !notes) return;
+    if (!form || !notes) return false;
     let banner = document.getElementById('selectedPortfolioLook');
     if (!banner) {
       banner = document.createElement('div');
       banner.id = 'selectedPortfolioLook';
-      banner.style.cssText = 'margin:0 0 16px;padding:16px 18px;border:1px solid #f0bfd0;border-radius:16px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6';
+      banner.style.cssText = 'display:block!important;margin:0 0 16px;padding:16px 18px;border:2px solid #e7a6bd;border-radius:16px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6;box-shadow:0 8px 22px rgba(125,40,71,.10)';
       form.parentNode.insertBefore(banner, form);
     }
-    banner.innerHTML = '<strong style="font-size:16px">♡ Your selected portfolio look</strong><div style="margin-top:5px;font-weight:700"></div><p style="margin:5px 0 0;font-size:13px">Gel will review this design and confirm the final price with you before confirming your appointment.</p>';
+    banner.innerHTML = '<strong style="font-size:16px">♡ YOU PICKED THIS PORTFOLIO LOOK!</strong><div style="margin-top:5px;font-weight:700;font-size:16px"></div><p style="margin:5px 0 0;font-size:13px">Your selected design has been added to your booking notes. Gel will review it and confirm the final price with you. 💗</p>';
     banner.querySelector('div').textContent = safeName;
     const marker = 'Selected portfolio look: ' + safeName;
-    if (!notes.value.includes(marker)) {
-      notes.value = notes.value.trim() ? marker + '\n' + notes.value.trim() : marker;
-    }
+    if (!notes.value.includes(marker)) notes.value = notes.value.trim() ? marker + '\n' + notes.value.trim() : marker;
+    notes.dispatchEvent(new Event('input',{bubbles:true}));
+    return true;
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applySelectedLook);
-  else applySelectedLook();
+  function run(){ if (!applySelectedLook()) setTimeout(run,250); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',run,{once:true});
+  else run();
 })();
-</script>
 
 </body>
 </html>
