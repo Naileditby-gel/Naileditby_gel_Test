@@ -41,8 +41,8 @@
  if(!window.supabase||typeof window.supabase.createClient!=='function'){$('loginMsg').textContent='The login service did not load. Please refresh the page or try again in a moment.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
  const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  $('login').addEventListener('click',()=>{ $('loginMsg').classList.add('hidden'); });
- let month=new Date();month=new Date(month.getFullYear(),month.getMonth(),1);let selected=localDate(new Date());let bookings=[];let blocks=[];
  const pad=n=>String(n).padStart(2,'0');
+ let month=new Date();month=new Date(month.getFullYear(),month.getMonth(),1);let selected=localDate(new Date());let bookings=[];let blocks=[];
  function localDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
  function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
  function niceDate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
