@@ -561,48 +561,47 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 </script>
 
 <script>
-/* Portfolio "Book this look" handoff — query + session fallback */
+/* Reliable portfolio-to-booking handoff */
 (function(){
-  let safeName = '';
+  let selected='';
   try {
-    const params = new URLSearchParams(window.location.search);
-    safeName = (params.get('design') || sessionStorage.getItem('nailedit_selected_portfolio_look') || '').trim().slice(0,100);
-  } catch(e) {
-    safeName = (new URLSearchParams(window.location.search).get('design') || '').trim().slice(0,100);
-  }
-  if (!safeName) return;
-  function applySelectedLook(){
-    const form = document.getElementById('bookingForm');
-    const notes = document.getElementById('bnote');
-    if (!form || !notes) return false;
-    let banner = document.getElementById('selectedPortfolioLook');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'selectedPortfolioLook';
+    const params=new URLSearchParams(window.location.search);
+    selected=(params.get('design')||sessionStorage.getItem('nailedit_selected_portfolio_look')||'').trim().slice(0,100);
+  } catch(e) {}
+  if(!selected) return;
+  function apply(){
+    const section=document.getElementById('booking');
+    const form=document.getElementById('bookingForm');
+    const notes=document.getElementById('bnote');
+    if(!section||!form||!notes) return false;
+    let banner=document.getElementById('selectedPortfolioLook');
+    if(!banner){
+      banner=document.createElement('div');
+      banner.id='selectedPortfolioLook';
       banner.setAttribute('role','status');
-      banner.style.cssText = 'display:block!important;visibility:visible!important;opacity:1!important;margin:0 0 16px;padding:16px 18px;border:2px solid #e7a6bd;border-radius:16px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6;box-shadow:0 8px 22px rgba(125,40,71,.10)';
-      form.parentNode.insertBefore(banner, form);
+      banner.style.cssText='display:block!important;visibility:visible!important;opacity:1!important;margin:0 0 18px;padding:18px;border:2px solid #e7a6bd;border-radius:18px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6;box-shadow:0 8px 22px rgba(125,40,71,.10)';
+      const heading=document.createElement('strong');
+      heading.textContent='♡ YOUR SELECTED PORTFOLIO LOOK';
+      heading.style.cssText='display:block;font-size:15px';
+      const title=document.createElement('div');
+      title.textContent=selected;
+      title.style.cssText='font-size:18px;font-weight:700;margin-top:5px';
+      const description=document.createElement('p');
+      description.textContent='You chose this design from Gel’s portfolio! It has also been added to your booking notes. Gel will review the details and confirm the final price with you. 💗';
+      description.style.cssText='margin:5px 0 0;font-size:13px';
+      banner.append(heading,title,description);
     }
-    banner.innerHTML = '';
-    const heading=document.createElement('strong');
-    heading.style.fontSize='16px'; heading.textContent='♡ YOU PICKED THIS PORTFOLIO LOOK!';
-    const title=document.createElement('div');
-    title.style.cssText='margin-top:5px;font-weight:700;font-size:16px';
-    title.textContent=safeName;
-    const note=document.createElement('p');
-    note.style.cssText='margin:5px 0 0;font-size:13px';
-    note.textContent='Your selected design has been added to your booking notes. Gel will review it and confirm the final price with you. 💗';
-    banner.append(heading,title,note);
-    const marker='Selected portfolio look: '+safeName;
-    if (!notes.value.includes(marker)) notes.value=notes.value.trim()?marker+'\\n'+notes.value.trim():marker;
+    const wrap=form.parentElement||section;
+    if(banner.parentElement!==wrap) wrap.insertBefore(banner,form);
+    const marker='Selected portfolio look: '+selected;
+    if(!notes.value.includes(marker)) notes.value=notes.value.trim()?marker+'\n'+notes.value.trim():marker;
     notes.dispatchEvent(new Event('input',{bubbles:true}));
-    try { sessionStorage.removeItem('nailedit_selected_portfolio_look'); } catch(e) {}
     return true;
   }
-  let attempts=0;
-  function run(){ if(applySelectedLook()) return; if(++attempts<100) setTimeout(run,250); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run,{once:true});
-  else run();
-})();</script>
+  let tries=0;
+  function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+})();
+</script>
 </body>
 </html>
