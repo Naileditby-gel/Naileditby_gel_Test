@@ -30,7 +30,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <h1>My Booking Status 💗</h1>
 <p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p>
 <div id="lookup" class="hidden">
-<label for="token">Private booking link or code</label>
+<label for="token">Paste your private booking link or code</label>
 <input id="token" autocomplete="off" spellcheck="false" placeholder="Paste your private booking link or code">
 <button id="check" type="button" style="margin-top:12px">Check my booking</button>
 </div>
@@ -75,8 +75,8 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
   if(!token){$('lookup').classList.remove('hidden');setMessage('Open the private booking link Gel shared with you, or paste its booking code below.');return;}
   try{
    const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
-   if(error){console.error('Customer booking status lookup failed:',error);setMessage('We could not verify this private link right now. Please refresh the page or contact Gel if this continues.');return;}
-   if(!data){$('details').classList.add('hidden');setMessage('We could not find a booking for this private link. Please check the link or contact Gel.');return;}
+   if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not verify this private link. Please paste the full link again, or contact Gel for a fresh link.');return;}
+   if(!data){$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not find a booking for this private link. Please check the link or ask Gel for a fresh one.');return;}
    render(data);
   }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
  }
