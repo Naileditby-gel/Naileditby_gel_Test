@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Naileditby_gel • Appointment Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<style>
+:root{--deep:#6f2944;--wine:#8c3b5b;--pink:#f8a6c2;--soft:#fff4f8;--muted:#8a6874;--line:#ead4dd;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#fff7fb,#fff);font-family:Poppins,sans-serif;color:#513c44}
+.wrap{max-width:1100px;margin:auto;padding:22px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font:700 29px 'Playfair Display',serif;color:var(--deep)}.meta{font-size:13px;color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 12px 35px #6f29440c;margin-top:18px}
+.btn{border:0;border-radius:999px;padding:11px 16px;background:var(--deep);color:#fff;font:600 13px Poppins,sans-serif;cursor:pointer}.btn.secondary{background:#fff;color:var(--deep);border:1px solid var(--line)}
+.input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit;margin:7px 0 12px}
+.hidden{display:none!important}h1,h2,h3{font-family:'Playfair Display',serif;color:var(--deep)}.notice{padding:13px;border-radius:13px;background:var(--soft);color:var(--deep);margin-top:12px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.month-title{font:700 24px 'Playfair Display',serif;color:var(--deep);margin:0}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:16px}.weekday{text-align:center;font-size:12px;color:var(--muted);font-weight:700;padding:8px 0}
+.day{min-height:91px;border:1px solid var(--line);border-radius:13px;background:#fffafd;padding:8px;cursor:pointer;text-align:left;color:#513c44;min-width:0}.day.outside{opacity:.45;background:#fff}.day.selected{outline:2px solid var(--pink);background:#fff0f6}.day.today{border-color:var(--wine)}.day-num{font-weight:700;font-size:13px}.count{display:inline-block;background:#fbe0ea;color:var(--deep);border-radius:999px;padding:2px 7px;font-size:10px;margin-top:5px}.dot-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}.dot.confirmed{background:#39856a}.dot.pending{background:#d99b28}.dot.completed{background:#8a719e}.dot.cancelled,.dot.rejected,.dot.expired{background:#b5a1aa}
+.agenda-item{border:1px solid var(--line);border-radius:15px;padding:13px;margin-top:10px;background:#fffafd;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.status{display:inline-block;padding:5px 10px;border-radius:999px;background:#fbe0ea;color:var(--deep);font-size:11px;font-weight:700;text-transform:capitalize}.status.confirmed{background:#e3f4eb;color:#276749}.status.pending{background:#fff0cb;color:#855c00}.status.completed{background:#eee6f7;color:#67468a}.status.cancelled,.status.rejected,.status.expired{background:#f0e9ec;color:#765f68}
+@media(max-width:600px){.wrap{padding:16px 10px 36px}.card{padding:14px}.brand{font-size:24px}.calendar{gap:4px}.day{min-height:66px;padding:5px;border-radius:9px}.weekday{font-size:10px}.count{font-size:9px;padding:2px 5px}.month-title{font-size:21px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="top"><div><div class="brand">Naileditby_gel ♡</div><div class="meta">Private Owner Dashboard • Appointment Calendar</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a href="admin.html"><button class="btn secondary" type="button">← Admin dashboard</button></a><button id="logout" class="btn secondary hidden" type="button">Log out</button></div></header>
+<section id="loginCard" class="card"><h1 style="margin-top:0">Your appointment calendar 🎀</h1><p>Log in with your owner account to see booking names, dates, times, and statuses.</p><label>Email</label><input id="email" class="input" type="email" autocomplete="username"><label>Password</label><input id="password" class="input" type="password" autocomplete="current-password"><button id="login" class="btn">♡ Log in</button><div id="loginMsg" class="notice hidden"></div></section>
+<section id="calendarApp" class="hidden">
+<div class="card"><div class="toolbar"><div><h1 style="margin:0">My Appointments ✨</h1><div class="meta">Monthly overview • Tap a date to see its appointments</div></div><button id="refresh" class="btn secondary">↻ Refresh</button></div>
+<div class="toolbar" style="margin-top:20px"><button id="prev" class="btn secondary" aria-label="Previous month">← Previous</button><h2 id="monthTitle" class="month-title"></h2><button id="next" class="btn secondary" aria-label="Next month">Next →</button></div>
+<div id="calendar" class="calendar" aria-label="Monthly appointment calendar"></div><div id="loadMsg" class="notice hidden"></div>
+</div>
+<div class="card"><div class="toolbar"><div><h2 id="agendaTitle" style="margin:0">Appointments</h2><div class="meta">Only the details you need at a glance</div></div><span id="dayCount" class="status">0 appointments</span></div><div id="agenda"></div></div>
+</section></main>
+<script>
+(function(){
+ const cfg=window.NAILEDIT_CONFIG||{};const $=id=>document.getElementById(id);
+ const ready=cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY;
+ if(!ready){$('loginMsg').textContent='Supabase settings are missing from config.js.';$('loginMsg').classList.remove('hidden');$('login').disabled=true;return;}
+ const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+ let month=new Date();month=new Date(month.getFullYear(),month.getMonth(),1);let selected=localDate(new Date());let bookings=[];let blocks=[];
+ const pad=n=>String(n).padStart(2,'0');
+ function localDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+ function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+ function niceDate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
+ function niceTime(s){if(!s)return 'Time not set';const [h,m]=s.split(':').map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}
+ function showError(msg){$('loadMsg').textContent=msg;$('loadMsg').classList.remove('hidden')}
+ function statusClass(s){return String(s||'pending').toLowerCase().replace(/[^a-z]/g,'')}
+ function showApp(){ $('loginCard').classList.add('hidden');$('calendarApp').classList.remove('hidden');$('logout').classList.remove('hidden');loadMonth(); }
+ async function checkSession(){const {data,error}=await sb.auth.getSession();if(error)return;if(data.session)showApp()}
+ $('login').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginMsg').textContent=error.message;$('loginMsg').classList.remove('hidden')}else showApp()};
+ $('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
+ $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+ $('refresh').onclick=loadMonth;$('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);loadMonth()};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);loadMonth()};
+ async function loadMonth(){
+   $('loadMsg').classList.add('hidden');$('calendar').innerHTML='<div class="notice">Loading appointments…</div>';
+   const first=new Date(month.getFullYear(),month.getMonth(),1);const last=new Date(month.getFullYear(),month.getMonth()+1,0);
+   const from=localDate(first),to=localDate(last);$('monthTitle').textContent=first.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+   const [bRes,blockRes]=await Promise.all([
+     sb.from('bookings').select('id,name,appointment_date,appointment_time,status').gte('appointment_date',from).lte('appointment_date',to).order('appointment_time',{ascending:true}),
+     sb.from('owner_blocks').select('id,block_date,start_time,end_time,reason').gte('block_date',from).lte('block_date',to).order('block_date',{ascending:true})
+   ]);
+   if(bRes.error){bookings=[];blocks=[];renderCalendar();showError('Could not load appointments. Please sign in with the owner account and refresh. '+bRes.error.message);return;}
+   bookings=bRes.data||[];blocks=blockRes.error?[]:(blockRes.data||[]);
+   renderCalendar();renderAgenda();
+   if(blockRes.error)showError('Appointments loaded, but blocked times could not be loaded: '+blockRes.error.message);
+ }
+ function renderCalendar(){
+   const cal=$('calendar');const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+   let html=weekdays.map(d=>'<div class="weekday">'+d+'</div>').join('');
+   const first=new Date(month.getFullYear(),month.getMonth(),1),start=new Date(first);start.setDate(first.getDate()-first.getDay());
+   const today=localDate(new Date());
+   for(let i=0;i<42;i++){
+     const d=new Date(start);d.setDate(start.getDate()+i);const key=localDate(d);const sameMonth=d.getMonth()===month.getMonth();
+     const items=bookings.filter(b=>b.appointment_date===key);const dayBlocks=blocks.filter(b=>b.block_date===key);
+     const dots=items.slice(0,9).map(b=>'<span class="dot '+statusClass(b.status)+'"></span>').join('');
+     html+='<button type="button" class="day '+(!sameMonth?'outside ':'')+(key===selected?'selected ':'')+(key===today?'today':'')+'" data-date="'+key+'"><div class="day-num">'+d.getDate()+'</div>'+(items.length?'<div class="count">'+items.length+' booking'+(items.length===1?'':'s')+'</div>':'')+(dayBlocks.length?'<div class="meta" style="font-size:10px;margin-top:4px">🚫 Blocked</div>':'')+'<div class="dot-row">'+dots+'</div></button>';
+   }
+   cal.innerHTML=html;cal.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;if(new Date(selected+'T12:00:00').getMonth()!==month.getMonth()){const [y,m]=selected.split('-').map(Number);month=new Date(y,m-1,1);loadMonth();return}renderCalendar();renderAgenda()});
+ }
+ function renderAgenda(){
+   $('agendaTitle').textContent=niceDate(selected);const items=bookings.filter(b=>b.appointment_date===selected).sort((a,b)=>(a.appointment_time||'').localeCompare(b.appointment_time||''));const dayBlocks=blocks.filter(b=>b.block_date===selected);
+   $('dayCount').textContent=items.length+' appointment'+(items.length===1?'':'s');let html='';
+   if(!items.length)html='<div class="notice">No appointments on this date. 💗</div>';
+   else html=items.map(b=>'<article class="agenda-item"><div><strong>'+esc(b.name||'Client')+'</strong><div class="meta">'+esc(niceDate(b.appointment_date))+' • '+esc(niceTime(b.appointment_time))+'</div></div><span class="status '+statusClass(b.status)+'">'+esc(b.status||'pending')+'</span></article>').join('');
+   if(dayBlocks.length)html+='<div class="notice"><strong>🚫 Blocked availability</strong>'+dayBlocks.map(b=>'<div class="meta" style="margin-top:5px">'+esc(b.start_time?niceTime(b.start_time)+'–'+niceTime(b.end_time):'All day')+(b.reason?' • '+esc(b.reason):'')+'</div>').join('')+'</div>';
+   $('agenda').innerHTML=html;
+ }
+ checkSession();
+})();
+</script></body></html>
