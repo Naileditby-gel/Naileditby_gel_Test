@@ -80,7 +80,7 @@ async function loadBookings(){
     } else if(bstatus==='pending') html+='<div class="notice">Price and deposit have been assigned. Wait for the customer to submit payment details before verifying.</div>';
     if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
     if(r.customer_message)html+='<div class="notice"><strong>Customer message:</strong><br>'+esc(r.customer_message)+'</div>';
-    html+='<div class="meta">Requested '+new Date(r.created_at).toLocaleString()+(r.updated_at?' • Updated '+new Date(r.updated_at).toLocaleString():'')+'</div><div class="row" style="margin-top:14px"><button type="button" class="btn" data-share-customer-link="'+esc(r.access_token||'')+'" '+(!r.access_token?'disabled':'')+'>♡ Share status link</button><button type="button" class="btn secondary" data-sms-phone="'+esc(r.phone||'')+'" data-sms-token="'+esc(r.access_token||'')+'" '+(!r.access_token||!r.phone?'disabled':'')+'>✉ Text customer</button><button type="button" class="btn secondary" data-customer-link="'+esc(r.access_token||'')+'" '+(!r.access_token?'disabled':'')+'>Copy status link</button>';
+    html+='<div class="meta">Requested '+new Date(r.created_at).toLocaleString()+(r.updated_at?' • Updated '+new Date(r.updated_at).toLocaleString():'')+'</div><div class="row" style="margin-top:14px"><button type="button" class="btn" data-share-customer-link="'+esc(r.access_token||'')+'" '+(!r.access_token?'disabled':'')+'>♡ Share status link</button><button type="button" class="btn secondary" data-sms-phone="'+esc(r.phone||'')+'" data-sms-name="'+esc(r.name||'there')+'" data-sms-token="'+esc(r.access_token||'')+'" '+(!r.access_token||!r.phone?'disabled':'')+'>✉ Text customer</button><button type="button" class="btn secondary" data-customer-link="'+esc(r.access_token||'')+'" '+(!r.access_token?'disabled':'')+'>Copy status link</button>';
     if(bstatus==='pending'){
       html+='<button class="btn" data-baction="paid" data-id="'+r.id+'" '+((!hasPaymentSubmission||paid)?'disabled':'')+'>'+(paid?'✓ Payment Verified':hasPaymentSubmission?'✓ Verify Submitted Payment':'Waiting for payment details')+'</button>';
       html+='<button class="btn" data-baction="confirm" data-id="'+r.id+'" '+(paid&&validPrice?'':'disabled')+'>✓ Confirm Booking</button><button class="btn danger" data-baction="reject" data-id="'+r.id+'">Reject</button>';
@@ -97,7 +97,8 @@ async function loadBookings(){
    }});
   list.querySelectorAll('[data-sms-token]').forEach(function(b){b.onclick=function(){
      const link=new URL('booking-status.html',location.href);link.searchParams.set('token',b.dataset.smsToken);
-     const message='Hi! 💗 You can check your Naileditby_gel booking status here: '+link.href+' Please keep this private link safe. 💅✨';
+     const customerName=String(b.dataset.smsName||'there').trim()||'there';
+     const message='Hi '+customerName+'! 💗 You can check your Naileditby_gel booking status here: '+link.href+' Please keep this private link safe. 💅✨';
      const phone=String(b.dataset.smsPhone||'').replace(/[^+0-9]/g,'');
      if(!phone){alert('No customer phone number is saved for this booking.');return;}
      const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
