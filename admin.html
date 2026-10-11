@@ -58,6 +58,8 @@ async function loadBookings(){
     let html='<article class="review"><h3 style="margin:0 0 6px;color:#6f2944">'+esc(r.appointment_date)+' • '+esc(String(r.appointment_time).slice(0,5))+'</h3>';
     html+='<strong>'+esc(r.name)+'</strong><div class="meta">'+esc(r.phone)+' • '+esc(r.service)+' • '+esc(r.nail_length||'')+'</div>'+(r.customer_address?'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> '+esc(r.customer_address)+'</div>':'<div class="meta" style="margin-top:5px"><strong>Customer address:</strong> Not provided</div>');
     html+='<p style="margin:10px 0;color:#6e5a62">'+esc(r.notes||'No design notes.')+'</p>';
+    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\\s*([^\\n\\r]+)/i);
+    if(selectedLookMatch)html+='<div id="selected-look-'+r.id+'" style="margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff7fa;border:1px solid #ead4dd"><strong style="color:#6f2944">💅 Selected portfolio design</strong><div class="meta" style="margin-top:4px">'+esc(selectedLookMatch[1].trim())+'</div><div class="meta" style="margin-top:6px">Loading design photo…</div></div>';
     if(inspo.length)html+='<div style="margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff7fa;border:1px solid #ead4dd"><strong style="color:#6f2944">📸 Client inspo photos</strong><div class="meta" style="margin-top:4px">'+inspo.length+' photo'+(inspo.length===1?'':'s')+' attached</div><div id="inspo-'+r.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">Loading photos…</div></div>';
     html+='<div style="margin:12px 0;padding:14px;border-radius:14px;background:#fff4f8;border:1px solid #ead4dd"><strong style="color:#6f2944">💗 Custom price & payment</strong>';
     html+=r.total_design_price!=null?'<div class="meta" style="margin-top:7px">Total design price: <strong>₱'+Number(r.total_design_price).toFixed(2)+'</strong></div>':'<div class="meta" style="margin-top:7px">Total design price: Not set yet</div>';
@@ -88,6 +90,20 @@ async function loadBookings(){
   }).join('');
   list.querySelectorAll('[data-baction]').forEach(function(b){b.onclick=function(){changeBookingStatus(b.dataset.id,b.dataset.baction)}});
   data.forEach(async function(r){
+    const selectedLookMatch=String(r.notes||'').match(/Selected portfolio look:\\s*([^\\n\\r]+)/i);
+    if(selectedLookMatch){
+      const lookBox=document.getElementById('selected-look-'+r.id);
+      if(lookBox){
+        const lookTitle=selectedLookMatch[1].trim();
+        const designResult=await sb.from('portfolio_designs').select('title,image_path').eq('title',lookTitle).limit(1).maybeSingle();
+        if(!designResult.error&&designResult.data&&designResult.data.image_path){
+          const imageResult=sb.storage.from('nail-portfolio').getPublicUrl(designResult.data.image_path);
+          lookBox.innerHTML='<strong style="color:#6f2944">💅 Selected portfolio design</strong><div class="meta" style="margin-top:4px">'+esc(designResult.data.title)+'</div><a href="'+esc(imageResult.data.publicUrl)+'" target="_blank" rel="noopener"><img src="'+esc(imageResult.data.publicUrl)+'" alt="'+esc(designResult.data.title)+'" style="display:block;width:150px;height:170px;object-fit:cover;border-radius:12px;border:1px solid #ead4dd;margin-top:10px"></a>';
+        }else{
+          lookBox.innerHTML='<strong style="color:#6f2944">💅 Selected portfolio design</strong><div class="meta" style="margin-top:4px">'+esc(lookTitle)+'</div><div class="meta" style="margin-top:6px">The design photo could not be found in the portfolio.</div>';
+        }
+      }
+    }
     const inspo=Array.isArray(r.inspo_files)?r.inspo_files:[];
     if(inspo.length){const box=document.getElementById('inspo-'+r.id);if(box){const urls=[];for(const f of inspo){const signed=await sb.storage.from('booking-inspo').createSignedUrl(f.path,3600);if(!signed.error&&signed.data&&signed.data.signedUrl)urls.push({url:signed.data.signedUrl,name:f.name});}box.innerHTML=urls.length?urls.map(function(x){return '<a href="'+esc(x.url)+'" target="_blank" rel="noopener" title="'+esc(x.name)+'"><img src="'+esc(x.url)+'" alt="Client inspiration" style="width:110px;height:110px;object-fit:cover;border-radius:14px;border:1px solid #ead4dd"></a>'}).join(''):'<span class="meta">Could not load photos.</span>';}}
     if(r.payment_proof_path){const proofBox=document.getElementById('proof-'+r.id);if(proofBox){const signed=await sb.storage.from('booking-payment-proof').createSignedUrl(r.payment_proof_path,3600);proofBox.innerHTML=!signed.error&&signed.data&&signed.data.signedUrl?'<a href="'+esc(signed.data.signedUrl)+'" target="_blank" rel="noopener">Open payment proof</a>':'Unable to create secure proof link';}}
