@@ -559,5 +559,37 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   loadReviews();
 })();
 </script>
+
+<script>
+/* Portfolio "Book this look" handoff */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const design = params.get('design');
+  if (!design) return;
+  const safeName = design.trim().slice(0,100);
+  if (!safeName) return;
+  function applySelectedLook(){
+    const form = document.getElementById('bookingForm');
+    const notes = document.getElementById('bnote');
+    if (!form || !notes) return;
+    let banner = document.getElementById('selectedPortfolioLook');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'selectedPortfolioLook';
+      banner.style.cssText = 'margin:0 0 16px;padding:16px 18px;border:1px solid #f0bfd0;border-radius:16px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6';
+      form.parentNode.insertBefore(banner, form);
+    }
+    banner.innerHTML = '<strong style="font-size:16px">♡ Your selected portfolio look</strong><div style="margin-top:5px;font-weight:700"></div><p style="margin:5px 0 0;font-size:13px">Gel will review this design and confirm the final price with you before confirming your appointment.</p>';
+    banner.querySelector('div').textContent = safeName;
+    const marker = 'Selected portfolio look: ' + safeName;
+    if (!notes.value.includes(marker)) {
+      notes.value = notes.value.trim() ? marker + '\n' + notes.value.trim() : marker;
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applySelectedLook);
+  else applySelectedLook();
+})();
+</script>
+
 </body>
 </html>
