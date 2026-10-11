@@ -424,9 +424,55 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     const calBtn=out.querySelector('[data-add-calendar="ics"]');if(calBtn)calBtn.addEventListener('click',function(){downloadCalendar(booking);});
     const method=document.getElementById('customerPaymentMethod'),qrArea=document.getElementById('customerQrArea'),qrImage=document.getElementById('customerQrImage'),qrHelp=document.getElementById('customerQrHelp');
     if(method){method.addEventListener('change',function(){const chosen=method.value;if(!chosen){qrArea.style.display='none';return;}qrArea.style.display='block';const cfgNow=window.NAILEDIT_CONFIG||{};const url=chosen==='GCash'?cfgNow.GCASH_QR_IMAGE_URL:cfgNow.BANK_QR_IMAGE_URL;const gcashDetails=document.getElementById('customerGcashDetails');if(gcashDetails)gcashDetails.style.display=chosen==='GCash'?'block':'none';if(url){qrImage.src=url;qrImage.style.display='block';qrHelp.textContent='Scan this QR code using your selected payment app.';}else{qrImage.removeAttribute('src');qrImage.style.display='none';qrHelp.textContent=chosen==='GCash'?'You may use the GCash account details below if you cannot scan a QR code.':'Bank transfer is QR-code only. Please do not pay until the bank QR image is available.';}});}
-    const paymentForm=document.getElementById('paymentSubmitForm');
-    if(paymentForm){paymentForm.addEventListener('submit',async function(ev){ev.preventDefault();const payBtn=document.getElementById('submitPaymentBtn'),payMsg=document.getElementById('paymentSubmitMsg'),payMethod=document.getElementById('customerPaymentMethod').value,reference=document.getElementById('customerPaymentReference').value.trim(),file=document.getElementById('customerPaymentProof').files[0];if(!payMethod||reference.length<3){payMsg.textContent='Choose a payment method and enter the payment reference.';return;}if(file&&file.size>5*1024*1024){payMsg.textContent='Payment proof must be 5MB or smaller.';return;}payBtn.disabled=true;payBtn.textContent='Submitting…';payMsg.textContent='';let proofPath=null;if(file){const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';proofPath=booking.id+'/'+crypto.randomUUID()+'.'+ext;const upload=await sb.storage.from('booking-payment-proof').upload(proofPath,file,{contentType:file.type,upsert:false});if(upload.error){payMsg.textContent='Could not upload proof: '+upload.error.message;payBtn.disabled=false;payBtn.textContent='♡ Submit payment details';return;}}const submitted=await sb.rpc('submit_booking_payment_details',{p_token:token,p_method:payMethod,p_reference:reference,p_proof_path:proofPath});if(submitted.error){payMsg.textContent=submitted.error.message;payBtn.disabled=false;payBtn.textContent='♡ Submit payment details';return;}sessionStorage.setItem('naileditPaymentSubmitted:'+token,'1');await showBookingStatus(token);const statusCard=document.getElementById('bookingStatusCard');if(statusCard){statusCard.scrollIntoView({behavior:'smooth',block:'start'});}});}
   }
+  // One delegated payment handler survives status-card rerenders and prevents
+  // the browser from submitting the payment form as a normal page navigation.
+  if(!window.__naileditPaymentSubmitHandler){
+    window.__naileditPaymentSubmitHandler=true;
+    document.addEventListener('submit',async function(ev){
+      const paymentForm=ev.target;
+      if(!paymentForm||paymentForm.id!=='paymentSubmitForm')return;
+      ev.preventDefault();ev.stopPropagation();
+      const payBtn=document.getElementById('submitPaymentBtn'),payMsg=document.getElementById('paymentSubmitMsg');
+      const methodEl=document.getElementById('customerPaymentMethod'),referenceEl=document.getElementById('customerPaymentReference'),proofEl=document.getElementById('customerPaymentProof');
+      const tokenMatch=location.hash.match(/^#booking-status=([^&]+)/);
+      const token=tokenMatch?decodeURIComponent(tokenMatch[1]):'';
+      const payMethod=methodEl&&methodEl.value,reference=referenceEl?referenceEl.value.trim():'',file=proofEl&&proofEl.files?proofEl.files[0]:null;
+      const cfg=window.NAILEDIT_CONFIG||{};
+      if(!token){if(payMsg)payMsg.textContent='Your private booking link is missing. Please reopen the saved booking-status link.';return;}
+      if(!payMethod||reference.length<3){if(payMsg)payMsg.textContent='Choose a payment method and enter the payment reference.';return;}
+      if(file&&file.size>5*1024*1024){if(payMsg)payMsg.textContent='Payment proof must be 5MB or smaller.';return;}
+      if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){if(payMsg)payMsg.textContent='Payment submission is temporarily unavailable. Please try again.';return;}
+      const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+      if(payBtn){payBtn.disabled=true;payBtn.textContent='Submitting…';}
+      if(payMsg)payMsg.textContent='Submitting your payment details…';
+      try{
+        const status=await sb.rpc('get_booking_status',{p_token:token});
+        if(status.error||!status.data||!status.data.length)throw new Error('We could not verify this private booking link. Please reopen your saved status link.');
+        const booking=status.data[0];
+        if(booking.payment_submitted_at){if(payMsg)payMsg.textContent='Payment details have already been submitted. Gel will verify the payment; please do not submit another booking.';await showBookingStatus(token);return;}
+        let proofPath=null;
+        if(file){
+          const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+          proofPath=booking.id+'/'+crypto.randomUUID()+'.'+ext;
+          const upload=await sb.storage.from('booking-payment-proof').upload(proofPath,file,{contentType:file.type,upsert:false});
+          if(upload.error)throw new Error('Could not upload proof: '+upload.error.message);
+        }
+        const submitted=await sb.rpc('submit_booking_payment_details',{p_token:token,p_method:payMethod,p_reference:reference,p_proof_path:proofPath});
+        if(submitted.error)throw new Error(submitted.error.message);
+        sessionStorage.setItem('naileditPaymentSubmitted:'+token,'1');
+        if(payMsg)payMsg.textContent='Payment details submitted successfully! Refreshing your booking status…';
+        await showBookingStatus(token);
+        const statusCard=document.getElementById('bookingStatusCard');
+        if(statusCard)statusCard.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(err){
+        console.error('Payment submission failed:',err);
+        if(payMsg)payMsg.textContent=err&&err.message?err.message:'Payment submission failed. Please try again.';
+        if(payBtn){payBtn.disabled=false;payBtn.textContent='♡ Submit payment details';}
+      }
+    },true);
+  }
+
   const hashMatch=location.hash.match(/^#booking-status=([^&]+)/); if(hashMatch){try{showBookingStatus(decodeURIComponent(hashMatch[1]));}catch(e){showBookingStatus(hashMatch[1]);}}
   window.addEventListener('hashchange',function(){const m=location.hash.match(/^#booking-status=([^&]+)/);if(m)showBookingStatus(decodeURIComponent(m[1]));});
   setInterval(function(){if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#paymentSubmitForm'))return;const m=location.hash.match(/^#booking-status=([^&]+)/);if(m)showBookingStatus(decodeURIComponent(m[1]));},30000);
