@@ -73,7 +73,7 @@ async function loadBookings(){
       html+='<label style="flex:1;min-width:150px">Total price (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-total-price="'+r.id+'" value="'+(r.total_design_price==null?'':esc(r.total_design_price))+'" placeholder="e.g. 650"></label>';
       html+='<label style="flex:1;min-width:150px">Deposit (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-deposit="'+r.id+'" value="'+(r.deposit_amount==null?'':esc(r.deposit_amount))+'" placeholder="e.g. 200"></label>';
       html+='</div>';
-      html+='<div class="meta">The one-hour payment window starts when you save the price and send the instructions. This does not confirm the appointment.</div><button class="btn" style="margin-top:10px" data-baction="assign" data-id="'+r.id+'">♡ Set price & send payment instructions</button></div>';
+      html+='<div class="meta">The 30-minute payment window starts when you save the price and send the instructions. This does not confirm the appointment.</div><button class="btn" style="margin-top:10px" data-baction="assign" data-id="'+r.id+'">♡ Set price & send payment instructions</button></div>';
     } else if(bstatus==='pending') html+='<div class="notice">Price and deposit have been assigned. Wait for the customer to submit payment details before verifying.</div>';
     if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
     if(r.customer_message)html+='<div class="notice"><strong>Customer message:</strong><br>'+esc(r.customer_message)+'</div>';
