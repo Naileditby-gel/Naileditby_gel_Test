@@ -561,47 +561,46 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 </script>
 
 <script>
-/* Reliable portfolio-to-booking handoff */
+/* Portfolio-to-booking handoff: show selected design and preserve it in booking notes */
 (function(){
-  let selected='';
+  let selected='', photo='';
   try {
     const params=new URLSearchParams(window.location.search);
     selected=(params.get('design')||sessionStorage.getItem('nailedit_selected_portfolio_look')||'').trim().slice(0,100);
+    photo=(params.get('designImage')||'').trim();
+    if(selected) sessionStorage.setItem('nailedit_selected_portfolio_look',selected);
+    if(photo) sessionStorage.setItem('nailedit_selected_portfolio_image',photo);
+    if(!photo) photo=sessionStorage.getItem('nailedit_selected_portfolio_image')||'';
   } catch(e) {}
   if(!selected) return;
   function apply(){
-    const section=document.getElementById('booking');
-    const form=document.getElementById('bookingForm');
-    const notes=document.getElementById('bnote');
+    const section=document.getElementById('booking'), form=document.getElementById('bookingForm'), notes=document.getElementById('bnote');
     if(!section||!form||!notes) return false;
     let banner=document.getElementById('selectedPortfolioLook');
     if(!banner){
-      banner=document.createElement('div');
-      banner.id='selectedPortfolioLook';
-      banner.setAttribute('role','status');
+      banner=document.createElement('div'); banner.id='selectedPortfolioLook'; banner.setAttribute('role','status');
       banner.style.cssText='display:block!important;visibility:visible!important;opacity:1!important;margin:0 0 18px;padding:18px;border:2px solid #e7a6bd;border-radius:18px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6;box-shadow:0 8px 22px rgba(125,40,71,.10)';
-      const heading=document.createElement('strong');
-      heading.textContent='♡ YOUR SELECTED PORTFOLIO LOOK';
-      heading.style.cssText='display:block;font-size:15px';
-      const title=document.createElement('div');
-      title.textContent=selected;
-      title.style.cssText='font-size:18px;font-weight:700;margin-top:5px';
-      const description=document.createElement('p');
-      description.textContent='You chose this design from Gel’s portfolio! It has also been added to your booking notes. Gel will review the details and confirm the final price with you. 💗';
-      description.style.cssText='margin:5px 0 0;font-size:13px';
-      banner.append(heading,title,description);
+      const heading=document.createElement('strong'); heading.textContent='♡ YOUR SELECTED PORTFOLIO LOOK'; heading.style.cssText='display:block;font-size:15px';
+      const title=document.createElement('div'); title.id='selectedPortfolioLookTitle'; title.style.cssText='font-size:18px;font-weight:700;margin-top:5px'; title.textContent=selected;
+      banner.append(heading,title);
+      if(photo && /^https:\/\//i.test(photo)){
+        const img=document.createElement('img'); img.src=photo; img.alt='Selected nail inspiration: '+selected; img.style.cssText='display:block;width:100%;max-width:190px;max-height:190px;object-fit:cover;border-radius:12px;margin-top:10px;border:1px solid #eed5df'; img.onerror=()=>img.remove(); banner.append(img);
+      }
+      const description=document.createElement('p'); description.textContent='You chose this design from Gel’s portfolio! It has also been added to your booking notes. Gel will review the details and confirm the final price with you. 💗'; description.style.cssText='margin:8px 0 0;font-size:13px'; banner.append(description);
+      const clear=document.createElement('button'); clear.type='button'; clear.textContent='Remove selected look'; clear.style.cssText='margin-top:10px;padding:8px 12px;border:1px solid #e7a6bd;border-radius:999px;background:#fff;color:#7d2847;font:600 12px inherit';
+      clear.addEventListener('click',()=>{const marker='Selected portfolio look: '+selected;notes.value=notes.value.split('\n').filter(line=>line.trim()!==marker).join('\n').trim();notes.dispatchEvent(new Event('input',{bubbles:true}));banner.remove();try{sessionStorage.removeItem('nailedit_selected_portfolio_look');sessionStorage.removeItem('nailedit_selected_portfolio_image')}catch(e){}});
+      banner.append(clear);
+    } else {
+      const title=banner.querySelector('#selectedPortfolioLookTitle'); if(title) title.textContent=selected;
     }
-    const wrap=form.parentElement||section;
-    if(banner.parentElement!==wrap) wrap.insertBefore(banner,form);
+    const wrap=form.parentElement||section; if(banner.parentElement!==wrap) wrap.insertBefore(banner,form);
     const marker='Selected portfolio look: '+selected;
     if(!notes.value.includes(marker)) notes.value=notes.value.trim()?marker+'\n'+notes.value.trim():marker;
     notes.dispatchEvent(new Event('input',{bubbles:true}));
     return true;
   }
-  let tries=0;
-  function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
+  let tries=0; function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-})();
-</script>
+})();</script>
 </body>
 </html>
