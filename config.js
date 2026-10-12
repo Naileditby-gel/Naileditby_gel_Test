@@ -96,7 +96,7 @@ window.NAILEDIT_CONFIG = {
         if (current && current.length) {
           oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Explore our latest nail offers and special treats.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
             current.map(function (p) {
-              return '<article class="gallery-card promo-feature-card">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" class="promo-feature-image">' : '') + '</article>';
+              return '<article class="gallery-card promo-feature-card">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" class="promo-feature-image">' : '') + '<div class="promo-feature-copy"><h3>' + esc(p.title) + '</h3></div></article>';
             }).join('') + '</div></div>';
           oldPromo.style.display = '';
         } else {
