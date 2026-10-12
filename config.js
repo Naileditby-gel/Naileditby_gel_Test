@@ -53,7 +53,7 @@ window.NAILEDIT_CONFIG = {
       var results = await Promise.all([
         sb.from('site_gallery').select('title,caption,image_path,alt_text,display_order,is_published').eq('is_published', true).order('display_order').order('created_at'),
         sb.from('site_rates').select('service_name,description,pricing_type,price,min_price,max_price,display_order,is_published,is_signature,signature_slot,signature_price_text').eq('is_published', true).order('display_order').order('created_at'),
-        sb.from('site_promotions').select('title,description,promo_price,original_price,image_path,starts_at,ends_at,display_order,is_published').eq('is_published', true).order('display_order').order('created_at')
+        sb.from('site_promotions').select('title,description,promo_price,original_price,image_path,starts_at,ends_at,display_order,is_published,service_category').eq('is_published', true).order('display_order').order('created_at')
       ]);
       var g = results[0], rates = results[1], promos = results[2];
       // Keep the existing signature-card design, but let the owner edit its text and price in Content Studio.
@@ -93,6 +93,18 @@ window.NAILEDIT_CONFIG = {
         var current = !promos.error && (promos.data || []).filter(function (p) {
           return (!p.starts_at || new Date(p.starts_at).getTime() <= now) && (!p.ends_at || new Date(p.ends_at).getTime() >= now);
         });
+        // Signature Nail Services are driven by current published promotions, not regular service rates.
+        var signatureGrid = document.querySelector('#services .cards');
+        if (signatureGrid && current && current.length) {
+          var slots = ['minimal', 'extra', 'custom'];
+          var mapped = current.slice(0, 3);
+          signatureGrid.innerHTML = mapped.map(function (p, i) {
+            var price = p.promo_price != null ? peso(p.promo_price) : 'Price confirmed after design review';
+            return '<article class="card"><h3>' + esc(p.service_category || p.title) + '</h3><div class="price">' + esc(price) + '</div><p>' + esc(p.description || '') + '</p></article>';
+          }).join('');
+        } else if (signatureGrid) {
+          signatureGrid.innerHTML = '<article class="card"><h3>Coming Soon</h3><div class="price">Stay tuned</div><p>Our next featured nail offers will appear here.</p></article>';
+        }
         if (current && current.length) {
           oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Explore our latest nail offers and special treats.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
             current.map(function (p) {
