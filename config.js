@@ -307,6 +307,6 @@ window.NAILEDIT_CONFIG = {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent(); });
   } else {
-    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent();
+    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent();
   }
 })();
