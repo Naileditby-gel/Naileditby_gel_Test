@@ -175,6 +175,30 @@ window.NAILEDIT_CONFIG = {
       '<details><summary>What if I need to change or cancel my appointment?</summary><p>Please contact Gel as soon as possible. Appointment changes are subject to availability and the business policies.</p></details>';
     faq.dataset.evergreenReady = 'true';
   }
+  function refreshBookingContactOptions() {
+    var form = document.getElementById('bookingForm');
+    if (!form) return;
+    // Remove the outdated Viber choice; online booking remains the main request method.
+    form.querySelectorAll('[data-channel="viber"]').forEach(function (button) { button.remove(); });
+    var grid = form.querySelector('.channel-grid');
+    if (grid) {
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+      grid.style.gap = '10px';
+      var messenger = grid.querySelector('[data-channel="messenger"]');
+      var instagram = grid.querySelector('[data-channel="instagram"]');
+      if (messenger) { messenger.classList.add('primary'); messenger.style.order = '1'; }
+      if (instagram) { instagram.classList.remove('primary'); instagram.style.order = '2'; }
+    }
+    var help = form.querySelector('.channel-help');
+    if (help) help.textContent = 'Prefer messaging? Choose Messenger or Instagram to send Gel your appointment request. For the simplest option, use “Request Appointment Online” above.';
+    // Replace any older wording elsewhere on the page that promises Viber booking.
+    document.querySelectorAll('p, li').forEach(function (node) {
+      if (/send the same request through Viber|Viber will open with your appointment details/i.test(node.textContent)) {
+        node.textContent = 'Prefer messaging? Choose Messenger or Instagram to send Gel your appointment request, or submit the online booking form above.';
+      }
+    });
+  }
   function refreshSocialLinks() {
     var socials = [
       { name: 'Instagram', url: 'https://www.instagram.com/naileditby_gel/', handle: '@naileditby_gel' },
@@ -201,7 +225,7 @@ window.NAILEDIT_CONFIG = {
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingContactOptions(); refreshSocialLinks(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent();
   }
