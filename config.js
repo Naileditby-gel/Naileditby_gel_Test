@@ -18,7 +18,7 @@ window.NAILEDIT_CONFIG = {
   }
   function imageUrl(sb, path) {
     if (!path) return '';
-    if (/^https?:\\/\\//i.test(path) || /^data:image\\//i.test(path)) return path;
+    if (path.indexOf('http://') === 0 || path.indexOf('https://') === 0 || path.indexOf('data:image/') === 0) return path;
     return sb.storage.from('nail-portfolio').getPublicUrl(path).data.publicUrl;
   }
   function peso(n) { return '₱' + Number(n).toLocaleString('en-PH', {maximumFractionDigits:2}); }
