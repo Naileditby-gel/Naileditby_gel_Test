@@ -119,7 +119,7 @@ window.NAILEDIT_CONFIG = {
   }
   function refreshBusinessPolicies() {
     document.querySelectorAll('.studio-info').forEach(function (box) {
-      box.innerHTML = box.innerHTML.replace(/8:00 AM\\s*[–-]\\s*4:00 PM/g, '8:00 AM – 11:00 PM (Mon–Sun)');
+      box.innerHTML = box.innerHTML.replace(/8:00 AM\s*[–-]\s*4:00 PM/g, '8:00 AM – 11:00 PM (Mon–Sun)');
     });
     document.querySelectorAll('.policy-box li').forEach(function (item) {
       var label = item.querySelector('strong');
