@@ -176,28 +176,22 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   function refreshBookingTimeSlots() {
-    // Extend the booking form's available start times to cover the 8 AM–11 PM business day.
+    // The actual booking form uses #btime. Its original script repopulates options
+    // after the date is chosen, so re-apply the business-hours list after each update.
     var expected = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:00'];
-    var selects = Array.from(document.querySelectorAll('select'));
-    selects.forEach(function (select) {
-      var options = Array.from(select.options || []);
-      var placeholder = options.find(function (o) {
-        return /choose a time|select time/i.test((o.textContent || '').trim());
+    function updateTimeSelect() {
+      var select = document.getElementById('btime');
+      if (!select) return;
+      var placeholder = Array.from(select.options).find(function (o) {
+        return !o.value || /choose a time|select time|choose a date/i.test((o.textContent || '').trim());
       });
-      var isTimeSelect = /time/i.test((select.id || '') + ' ' + (select.name || '') + ' ' +
-        (select.getAttribute('aria-label') || ''));
-      if (!isTimeSelect && placeholder) {
-        isTimeSelect = options.some(function (o) {
-          return /^\\d{1,2}:\\d{2}$/.test((o.textContent || '').trim()) ||
-            /^\\d{1,2}:\\d{2}$/.test((o.value || '').trim());
-        });
-      }
-      if (!isTimeSelect || !placeholder) return;
       var current = select.value;
+      var existing = Array.from(select.options).map(function (o) { return o.value; });
+      if (expected.every(function (t) { return existing.indexOf(t) !== -1; })) return;
       select.innerHTML = '';
       var first = document.createElement('option');
       first.value = '';
-      first.textContent = placeholder.textContent.trim() || 'Choose a time';
+      first.textContent = placeholder ? placeholder.textContent.trim() : 'Choose a time';
       select.appendChild(first);
       expected.forEach(function (time) {
         var opt = document.createElement('option');
@@ -206,7 +200,60 @@ window.NAILEDIT_CONFIG = {
         select.appendChild(opt);
       });
       if (expected.indexOf(current) !== -1) select.value = current;
+      var msg = document.getElementById('availabilityMsg');
+      if (msg) msg.textContent = 'Available start times: ' + expected.join(' • ');
+    }
+    updateTimeSelect();
+    var date = document.getElementById('bdate');
+    if (date) date.addEventListener('change', function () { setTimeout(updateTimeSelect, 150); });
+    var time = document.getElementById('btime');
+    if (time && window.MutationObserver) {
+      var observer = new MutationObserver(function () { updateTimeSelect(); });
+      observer.observe(time, { childList: true });
+    }
+    // Catch the original booking script if it rebuilds the select asynchronously.
+    var attempts = 0;
+    var timer = window.setInterval(function () {
+      updateTimeSelect();
+      attempts += 1;
+      if (attempts >= 30) window.clearInterval(timer);
+    }, 500);
+  }
+  function addSmsBookingOption() {
+    var form = document.getElementById('bookingForm');
+    var grid = form && form.querySelector('.channel-grid');
+    if (!form || !grid || grid.querySelector('[data-channel="sms"]')) return;
+    var button = document.createElement('button');
+    button.className = 'channel-btn';
+    button.type = 'button';
+    button.dataset.channel = 'sms';
+    button.textContent = '📱 SMS';
+    button.addEventListener('click', function () {
+      function value(id) {
+        var el = document.getElementById(id);
+        return el ? (el.value || '').trim() : '';
+      }
+      var body = [
+        'Hi Gel! I would like to request a nail appointment.',
+        'Name: ' + value('bname'),
+        'Mobile: ' + value('bphone'),
+        'Email: ' + value('bemail'),
+        'Address/Barangay: ' + value('baddress'),
+        'Date: ' + value('bdate'),
+        'Time: ' + value('btime'),
+        'Service: ' + value('bservice'),
+        'Nail length: ' + value('blength'),
+        'Previous nail work: ' + value('bprevious'),
+        'Design/Inspo: ' + value('btnote')
+      ].join('\n');
+      window.location.href = 'sms:09553697737?body=' + encodeURIComponent(body);
     });
+    grid.insertBefore(button, grid.firstChild);
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+    grid.style.gap = '10px';
+    var help = form.querySelector('.channel-help');
+    if (help) help.textContent = 'SMS opens your messaging app with your request details ready. Please review and tap Send. You can also message Gel on Messenger or Instagram.';
   }
   function refreshBookingContactOptions() {
     var form = document.getElementById('bookingForm');
@@ -258,7 +305,7 @@ window.NAILEDIT_CONFIG = {
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); refreshSocialLinks(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent();
   }
