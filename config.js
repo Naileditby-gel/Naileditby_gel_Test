@@ -117,6 +117,17 @@ window.NAILEDIT_CONFIG = {
       parent.insertBefore(node, anchor);
     });
   }
+  function refreshBusinessPolicies() {
+    document.querySelectorAll('.studio-info').forEach(function (box) {
+      box.innerHTML = box.innerHTML.replace(/8:00 AM\\s*[–-]\\s*4:00 PM/g, '8:00 AM – 11:00 PM (Mon–Sun)');
+    });
+    document.querySelectorAll('.policy-box li').forEach(function (item) {
+      var label = item.querySelector('strong');
+      if (label && /Late policy/i.test(label.textContent)) {
+        item.innerHTML = '<strong>Late policy:</strong> 20 minutes late = ₱100 late fee. 1 hour late = appointment automatically voided/cancelled and the deposit is forfeited, unless you have informed Gel and Gel has confirmed a revised arrangement.';
+      }
+    });
+  }
   function makeFooterMessageEvergreen() {
     var headings = Array.from(document.querySelectorAll('h1,h2,h3')).filter(function (h) {
       return /let.s get you nailed/i.test(h.textContent);
@@ -151,7 +162,7 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshFaq(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); refreshFaq(); syncPublicContent();
   }
