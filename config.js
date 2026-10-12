@@ -93,6 +93,12 @@ window.NAILEDIT_CONFIG = {
       console.warn('Public content sync skipped:', e);
     }
   }
+  function polishHeroPromoLink() {
+    var links = Array.from(document.querySelectorAll('a[href="#promo"]'));
+    links.forEach(function (a) {
+      if (/October Promo/i.test(a.textContent)) a.textContent = 'Explore Current Promotions';
+    });
+  }
   function refreshFaq() {
     var faq = document.querySelector('#faq .faq');
     if (!faq || faq.dataset.evergreenReady) return;
@@ -108,6 +114,6 @@ window.NAILEDIT_CONFIG = {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { refreshFaq(); syncPublicContent(); });
   } else {
-    refreshFaq(); syncPublicContent();
+    polishHeroPromoLink(); refreshFaq(); syncPublicContent();
   }
 })();
