@@ -176,29 +176,28 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   function refreshBookingTimeSlots() {
-    // Business hours are 8:00 AM–11:00 PM. Use 2-hour appointment start slots,
-    // with the final start time at 9:00 PM so appointments do not begin at closing.
+    // Extend the booking form's available start times to cover the 8 AM–11 PM business day.
     var expected = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:00'];
     var selects = Array.from(document.querySelectorAll('select'));
     selects.forEach(function (select) {
       var options = Array.from(select.options || []);
-      var timeOptions = options.filter(function (o) {
-        return /^\\d{1,2}:\\d{2}$/.test((o.textContent || '').trim()) ||
-          /^\\d{1,2}:\\d{2}$/.test((o.value || '').trim());
-      });
-      if (timeOptions.length < 3) return;
-      var hasPlaceholder = options.some(function (o) {
-        return /choose a time|select time/i.test((o.textContent || '').trim());
-      });
-      if (!hasPlaceholder) return;
-      var current = select.value;
       var placeholder = options.find(function (o) {
         return /choose a time|select time/i.test((o.textContent || '').trim());
       });
+      var isTimeSelect = /time/i.test((select.id || '') + ' ' + (select.name || '') + ' ' +
+        (select.getAttribute('aria-label') || ''));
+      if (!isTimeSelect && placeholder) {
+        isTimeSelect = options.some(function (o) {
+          return /^\\d{1,2}:\\d{2}$/.test((o.textContent || '').trim()) ||
+            /^\\d{1,2}:\\d{2}$/.test((o.value || '').trim());
+        });
+      }
+      if (!isTimeSelect || !placeholder) return;
+      var current = select.value;
       select.innerHTML = '';
       var first = document.createElement('option');
       first.value = '';
-      first.textContent = placeholder ? placeholder.textContent.trim() : 'Choose a time';
+      first.textContent = placeholder.textContent.trim() || 'Choose a time';
       select.appendChild(first);
       expected.forEach(function (time) {
         var opt = document.createElement('option');
