@@ -112,7 +112,7 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { refreshFaq(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { polishHeroPromoLink(); refreshFaq(); syncPublicContent(); });
   } else {
     polishHeroPromoLink(); refreshFaq(); syncPublicContent();
   }
