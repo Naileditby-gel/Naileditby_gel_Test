@@ -61,7 +61,7 @@ window.NAILEDIT_CONFIG = {
           return '<div class="gallery-card"><img loading="lazy" src="' + esc(imageUrl(sb, r.image_path)) + '" alt="' + esc(r.alt_text || r.title) + '"><div class="gallery-caption"><strong>' + esc(r.title) + '</strong>' + (r.caption ? '<p>' + esc(r.caption) + '</p>' : '') + '</div></div>';
         }).join('');
       }
-      if (gallerySection && !document.getElementById('dynamic-rates')) {
+      if (gallerySection && !/portfolio\.html$/i.test(window.location.pathname) && !document.getElementById('dynamic-rates')) {
         var rateBody = '<div class="rate-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px">';
         if (!rates.error && rates.data && rates.data.length) {
           rateBody += rates.data.map(function (r) {
