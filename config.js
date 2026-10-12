@@ -93,6 +93,24 @@ window.NAILEDIT_CONFIG = {
       console.warn('Public content sync skipped:', e);
     }
   }
+  function reorderHomepageSections() {
+    var ids = ['about', 'gallery', 'promo', 'services', 'booking'];
+    var nodes = ids.map(function (id) { return document.getElementById(id); });
+    if (nodes.some(function (node) { return !node; })) {
+      console.warn('Homepage section order unchanged: one or more section IDs were not found.');
+      return;
+    }
+    var parent = nodes[0].parentElement;
+    if (!nodes.every(function (node) { return node.parentElement === parent; })) {
+      console.warn('Homepage section order unchanged: sections do not share the same parent.');
+      return;
+    }
+    var anchor = nodes[0];
+    nodes.slice(1).forEach(function (node) {
+      parent.insertBefore(node, anchor.nextSibling);
+      anchor = node;
+    });
+  }
   function polishHeroPromoLink() {
     var links = Array.from(document.querySelectorAll('a[href="#promo"]'));
     links.forEach(function (a) {
@@ -112,7 +130,7 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { polishHeroPromoLink(); refreshFaq(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); refreshFaq(); syncPublicContent(); });
   } else {
     polishHeroPromoLink(); refreshFaq(); syncPublicContent();
   }
