@@ -164,6 +164,6 @@ window.NAILEDIT_CONFIG = {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); syncPublicContent(); });
   } else {
-    reorderHomepageSections(); polishHeroPromoLink(); refreshFaq(); syncPublicContent();
+    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); syncPublicContent();
   }
 })();
