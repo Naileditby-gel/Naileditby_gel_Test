@@ -242,9 +242,9 @@ window.NAILEDIT_CONFIG = {
         'Date: ' + value('bdate'),
         'Time: ' + value('btime'),
         'Service: ' + value('bservice'),
+        'Design/Inspo notes: ' + (value('btnote') || '(No design notes entered)'),
         'Nail length: ' + value('blength'),
-        'Previous nail work: ' + value('bprevious'),
-        'Design/Inspo: ' + value('btnote')
+        'Previous nail work: ' + value('bprevious')
       ].join('\n');
       window.location.href = 'sms:09553697737&body=' + encodeURIComponent(body);
     });
