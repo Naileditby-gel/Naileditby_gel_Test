@@ -42,7 +42,8 @@ window.NAILEDIT_CONFIG = {
     document.head.appendChild(style);
   }
   async function syncPublicContent() {
-    addPolishStyles();\n    var cfg = window.NAILEDIT_CONFIG;
+    addPolishStyles();
+    var cfg = window.NAILEDIT_CONFIG;
     if (!cfg || !window.supabase || !window.supabase.createClient) return;
     var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
     var gallery = document.querySelector('#gallery .gallery');
