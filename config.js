@@ -52,10 +52,24 @@ window.NAILEDIT_CONFIG = {
     try {
       var results = await Promise.all([
         sb.from('site_gallery').select('title,caption,image_path,alt_text,display_order,is_published').eq('is_published', true).order('display_order').order('created_at'),
-        sb.from('site_rates').select('service_name,description,pricing_type,price,min_price,max_price,display_order,is_published').eq('is_published', true).order('display_order').order('created_at'),
+        sb.from('site_rates').select('service_name,description,pricing_type,price,min_price,max_price,display_order,is_published,is_signature,signature_slot,signature_price_text').eq('is_published', true).order('display_order').order('created_at'),
         sb.from('site_promotions').select('title,description,promo_price,original_price,image_path,starts_at,ends_at,display_order,is_published').eq('is_published', true).order('display_order').order('created_at')
       ]);
       var g = results[0], rates = results[1], promos = results[2];
+      // Keep the existing signature-card design, but let the owner edit its text and price in Content Studio.
+      var signatureGrid = document.querySelector('#services .cards');
+      if (signatureGrid && !rates.error && Array.isArray(rates.data)) {
+        var signatureOrder = { minimal: 1, extra: 2, custom: 3 };
+        var signatureRows = rates.data.filter(function (r) { return r.is_signature; }).sort(function (a, b) {
+          return (signatureOrder[a.signature_slot] || 99) - (signatureOrder[b.signature_slot] || 99);
+        });
+        if (signatureRows.length) {
+          signatureGrid.innerHTML = signatureRows.map(function (r) {
+            var price = r.signature_price_text || (r.pricing_type === 'fixed' ? peso(r.price) : r.pricing_type === 'starting_at' ? 'Starting at ' + peso(r.price) : r.pricing_type === 'range' ? peso(r.min_price) + '–' + peso(r.max_price) : 'Ask Gel');
+            return '<article class="card"><h3>' + esc(r.service_name) + '</h3><div class="price">' + esc(price) + '</div><p>' + esc(r.description || '') + '</p></article>';
+          }).join('');
+        }
+      }
       if (!g.error && Array.isArray(g.data) && g.data.length && gallery) {
         gallery.innerHTML = g.data.map(function (r) {
           return '<div class="gallery-card"><img loading="lazy" src="' + esc(imageUrl(sb, r.image_path)) + '" alt="' + esc(r.alt_text || r.title) + '"><div class="gallery-caption"><strong>' + esc(r.title) + '</strong>' + (r.caption ? '<p>' + esc(r.caption) + '</p>' : '') + '</div></div>';
@@ -64,7 +78,7 @@ window.NAILEDIT_CONFIG = {
       if (gallerySection && !/portfolio\.html$/i.test(window.location.pathname) && !document.getElementById('dynamic-rates')) {
         var rateBody = '<div class="rate-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px">';
         if (!rates.error && rates.data && rates.data.length) {
-          rateBody += rates.data.map(function (r) {
+          rateBody += rates.data.filter(function (r) { return !r.is_signature; }).map(function (r) {
             var price = r.pricing_type === 'fixed' ? peso(r.price) : r.pricing_type === 'starting_at' ? 'Starting at ' + peso(r.price) : r.pricing_type === 'range' ? peso(r.min_price) + '–' + peso(r.max_price) : 'Price confirmed after design review';
             return '<article class="gallery-card" style="padding:20px"><h3 style="margin:0 0 8px">' + esc(r.service_name) + '</h3><p style="margin:0 0 8px"><strong>' + esc(price) + '</strong></p>' + (r.description ? '<p style="margin:0">' + esc(r.description) + '</p>' : '') + '</article>';
           }).join('');
