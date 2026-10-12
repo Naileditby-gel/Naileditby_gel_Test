@@ -7,6 +7,7 @@
 <title>My Booking • Naileditby_gel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--pink:#d94d91;--deep:#6f2944;--ink:#513c44;--line:#efd6e1;--soft:#fff6fa}
 *{box-sizing:border-box}body{margin:0;padding:22px 14px 40px;background:linear-gradient(145deg,#fff0f6,#fffafd 55%,#fde8f1);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
@@ -21,6 +22,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 .status.confirmed{background:#e3f4eb;color:#276749}.status.completed{background:#eee6f7;color:#67468a}.status.rejected,.status.cancelled,.status.expired{background:#f5e8ed;color:#765f68}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.item{background:var(--soft);border:1px solid #f4e4eb;border-radius:13px;padding:12px;min-width:0}.item small{display:block;color:#806d75;font-size:11px;margin-bottom:6px}.item strong{display:block;overflow-wrap:anywhere;color:var(--deep);font-size:14px}
 .notice{font-size:12px;color:#806d75;line-height:1.5;margin-top:14px}
+.payment-qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.payment-qr{border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center;background:#fffafd;min-width:0}.payment-qr h3{font-size:15px;color:var(--deep);margin:0 0 6px}.payment-qr p{font-size:12px;color:#806d75;margin:0 0 10px}.qr-image{display:flex;justify-content:center;align-items:center;min-height:180px}.qr-image img{max-width:100%;height:auto}.payment-heading{margin:18px 0 0;color:var(--deep);font-size:18px}@media(max-width:430px){.payment-qr-grid{grid-template-columns:1fr}.qr-image{min-height:160px}}
 @media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.card{padding:18px}h1{font-size:23px}}
 </style>
 </head>
@@ -65,9 +67,20 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
    (remain!=null?'<div class="item"><small>Remaining balance</small><strong>'+esc(money(remain))+'</strong></div>':'')+
    (b.payment_deadline?'<div class="item"><small>Payment deadline</small><strong>'+esc(new Date(b.payment_deadline).toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'}))+'</strong></div>':'')+
    '</div>'+
-   (b.customer_message?'<div id="owner-message" style="margin-top:16px;padding:15px;border-radius:14px;background:#fff0f6;border:1px solid var(--line)"><strong style="color:var(--deep)">💌 Message from Gel</strong><p style="margin-bottom:0;white-space:pre-wrap">'+esc(b.customer_message)+'</p></div>':'')+
+   (s==='pending'&&!paid&&Number(b.deposit_amount)>0?'<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)"><h2 class="payment-heading">💳 Deposit Payment Options</h2><p class="notice" style="margin-top:6px">Please pay the deposit amount shown above before the deadline. Choose your preferred method and scan the matching QR code. Make sure the recipient details match before confirming your payment.</p><div class="payment-qr-grid"><div class="payment-qr"><h3>GCash</h3><p>Scan the InstaPay QR code</p><div class="qr-image" id="gcash-qr"></div><p>Transfer fees may apply.</p></div><div class="payment-qr"><h3>GoTyme Bank Transfer</h3><p>Scan the GoTyme InstaPay QR code</p><div class="qr-image" id="bank-qr"></div><p>Transfer fees may apply.</p></div></div></div>':'')+\n   (b.customer_message?'<div id="owner-message" style="margin-top:16px;padding:15px;border-radius:14px;background:#fff0f6;border:1px solid var(--line)"><strong style="color:var(--deep)">💌 Message from Gel</strong><p style="margin-bottom:0;white-space:pre-wrap">'+esc(b.customer_message)+'</p></div>':'')+
    (b.status_reason?'<div style="margin-top:12px;padding:13px;border-radius:12px;background:#fffafd;border:1px solid var(--line)"><strong>Status details</strong><p style="margin-bottom:0">'+esc(b.status_reason)+'</p></div>':'')+
    '<p class="notice">Last updated: '+esc(b.updated_at?new Date(b.updated_at).toLocaleString('en-PH'):'Not available')+'. Status checks automatically every 30 seconds.</p>';
+  if(s==='pending'&&!paid&&Number(b.deposit_amount)>0){
+   if(window.QRCode){
+    const g=$('gcash-qr'),bank=$('bank-qr');
+    if(g&&cfg.GCASH_QR_PAYLOAD)new QRCode(g,{text:cfg.GCASH_QR_PAYLOAD,width:210,height:210,correctLevel:QRCode.CorrectLevel.M});
+    if(bank&&cfg.BANK_QR_PAYLOAD)new QRCode(bank,{text:cfg.BANK_QR_PAYLOAD,width:210,height:210,correctLevel:QRCode.CorrectLevel.M});
+   }else{
+    const g=$('gcash-qr'),bank=$('bank-qr');
+    if(g)g.textContent='QR code could not load. Please refresh this page.';
+    if(bank)bank.textContent='QR code could not load. Please refresh this page.';
+   }
+  }
   $('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
  }
  async function load(){
