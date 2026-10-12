@@ -175,9 +175,34 @@ window.NAILEDIT_CONFIG = {
       '<details><summary>What if I need to change or cancel my appointment?</summary><p>Please contact Gel as soon as possible. Appointment changes are subject to availability and the business policies.</p></details>';
     faq.dataset.evergreenReady = 'true';
   }
+  function refreshSocialLinks() {
+    var socials = [
+      { name: 'Instagram', url: 'https://www.instagram.com/naileditby_gel/', handle: '@naileditby_gel' },
+      { name: 'Facebook', url: 'https://facebook.com/angel.joy.enderes.2025', handle: 'Naileditby_gel' },
+      { name: 'TikTok', url: 'https://www.tiktok.com/@ngljy_ndrs', handle: '@ngljy_ndrs' }
+    ];
+    // TikTok is the social profile; customers should use the booking form to request appointments.
+    document.querySelectorAll('a[href*="viber.com"], a[href^="viber:"]').forEach(function (a) {
+      a.href = socials[2].url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', 'Visit Naileditby_gel on TikTok'); a.textContent = 'TikTok';
+    });
+    var footer = document.querySelector('footer');
+    if (!footer) return;
+    var old = footer.querySelector('#nailedit-social-links'); if (old) old.remove();
+    var nav = document.createElement('nav'); nav.id = 'nailedit-social-links';
+    nav.setAttribute('aria-label', 'Social media links');
+    nav.innerHTML = '<p class="nailedit-social-heading">Follow Naileditby_gel</p><div class="nailedit-social-row">' +
+      socials.map(function (s) { return '<a href="' + s.url + '" target="_blank" rel="noopener noreferrer" aria-label="' + s.name + ': ' + s.handle + '"><span class="nailedit-social-name">' + s.name + '</span><span class="nailedit-social-handle">' + s.handle + '</span></a>'; }).join('') + '</div>';
+    footer.appendChild(nav);
+    if (!document.getElementById('nailedit-social-style')) {
+      var style = document.createElement('style'); style.id = 'nailedit-social-style';
+      style.textContent = '#nailedit-social-links{max-width:980px;margin:24px auto 8px;padding:22px 18px 8px;text-align:center;border-top:1px solid rgba(111,41,68,.16)}#nailedit-social-links .nailedit-social-heading{font-family:"Playfair Display",Georgia,serif;color:var(--wine,#6f2944);font-size:1.35rem;margin:0 0 14px}#nailedit-social-links .nailedit-social-row{display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;gap:10px}#nailedit-social-links a{display:flex;flex-direction:column;gap:4px;min-width:130px;padding:12px 18px;border:1px solid rgba(233,109,154,.28);border-radius:14px;background:#fff;color:var(--wine,#6f2944);text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}#nailedit-social-links a:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(111,41,68,.10)}#nailedit-social-links .nailedit-social-name{font-weight:600;font-size:.95rem}#nailedit-social-links .nailedit-social-handle{font-size:.8rem;color:#8b6c79;overflow-wrap:anywhere}@media(max-width:420px){#nailedit-social-links .nailedit-social-row{display:grid;grid-template-columns:1fr}#nailedit-social-links a{min-width:0}}';
+      document.head.appendChild(style);
+    }
+  }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent(); });
   } else {
-    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); syncPublicContent();
+    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshSocialLinks(); syncPublicContent();
   }
 })();
