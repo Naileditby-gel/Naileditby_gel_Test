@@ -22,7 +22,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 .status.confirmed{background:#e3f4eb;color:#276749}.status.completed{background:#eee6f7;color:#67468a}.status.rejected,.status.cancelled,.status.expired{background:#f5e8ed;color:#765f68}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.item{background:var(--soft);border:1px solid #f4e4eb;border-radius:13px;padding:12px;min-width:0}.item small{display:block;color:#806d75;font-size:11px;margin-bottom:6px}.item strong{display:block;overflow-wrap:anywhere;color:var(--deep);font-size:14px}
 .notice{font-size:12px;color:#806d75;line-height:1.5;margin-top:14px}
-.payment-qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.payment-qr{border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center;background:#fffafd;min-width:0}.payment-qr h3{font-size:15px;color:var(--deep);margin:0 0 6px}.payment-qr p{font-size:12px;color:#806d75;margin:0 0 10px}.qr-image{display:flex;justify-content:center;align-items:center;min-height:180px}.qr-image img{max-width:100%;height:auto}.payment-heading{margin:18px 0 0;color:var(--deep);font-size:18px}@media(max-width:430px){.payment-qr-grid{grid-template-columns:1fr}.qr-image{min-height:160px}}
+.payment-qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.payment-qr{border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center;background:#fffafd;min-width:0}.payment-qr h3{font-size:15px;color:var(--deep);margin:0 0 6px}.payment-qr p{font-size:12px;color:#806d75;margin:0 0 10px}.qr-image{display:flex;justify-content:center;align-items:center;min-height:180px}.qr-image img{max-width:100%;height:auto}.payment-heading{margin:18px 0 0;color:var(--deep);font-size:18px}.payment-form{margin-top:14px;padding:15px;border:1px solid var(--line);border-radius:14px;background:#fff}.payment-form input,.payment-form select{width:100%;padding:12px;border:1px solid #e8c7d6;border-radius:11px;font:inherit;background:#fffafd}.payment-form label{margin-top:12px}.payment-form .submit-payment{margin-top:14px;width:100%}.payment-result{padding:13px;border-radius:12px;margin-top:12px;background:#fff0f6;line-height:1.5}@media(max-width:430px){.payment-qr-grid{grid-template-columns:1fr}.qr-image{min-height:160px}}
 @media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.card{padding:18px}h1{font-size:23px}}
 </style>
 </head>
@@ -67,10 +67,44 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
    (remain!=null?'<div class="item"><small>Remaining balance</small><strong>'+esc(money(remain))+'</strong></div>':'')+
    (b.payment_deadline?'<div class="item"><small>Payment deadline</small><strong>'+esc(new Date(b.payment_deadline).toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'}))+'</strong></div>':'')+
    '</div>'+
-   (s==='pending'&&!paid&&Number(b.deposit_amount)>0?'<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)"><h2 class="payment-heading">💳 Deposit Payment Options</h2><p class="notice" style="margin-top:6px">Please pay the deposit amount shown above before the deadline. Choose your preferred method and scan the matching QR code. Make sure the recipient details match before confirming your payment.</p><div class="payment-qr-grid"><div class="payment-qr"><h3>GCash</h3><p>Scan the InstaPay QR code</p><div class="qr-image" id="gcash-qr"></div><p>Transfer fees may apply.</p></div><div class="payment-qr"><h3>GoTyme Bank Transfer</h3><p>Scan the GoTyme InstaPay QR code</p><div class="qr-image" id="bank-qr"></div><p>Transfer fees may apply.</p></div></div></div>':'')+
+   (s==='pending'&&!paid&&Number(b.deposit_amount)>0?'<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)"><h2 class="payment-heading">💳 Deposit Payment Options</h2><p class="notice" style="margin-top:6px">Please pay the deposit amount shown above before the deadline. Choose your preferred method and scan the matching QR code. Make sure the recipient details match before confirming your payment.</p><div class="payment-qr-grid"><div class="payment-qr"><h3>GCash</h3><p>Scan the InstaPay QR code</p><div class="qr-image" id="gcash-qr"></div><p>Transfer fees may apply.</p></div><div class="payment-qr"><h3>GoTyme Bank Transfer</h3><p>Scan the GoTyme InstaPay QR code</p><div class="qr-image" id="bank-qr"></div><p>Transfer fees may apply.</p></div></div><div id="payment-form-wrap" style="margin-top:16px"></div></div>':'')+
    (b.customer_message?'<div id="owner-message" style="margin-top:16px;padding:15px;border-radius:14px;background:#fff0f6;border:1px solid var(--line)"><strong style="color:var(--deep)">💌 Message from Gel</strong><p style="margin-bottom:0;white-space:pre-wrap">'+esc(b.customer_message)+'</p></div>':'')+
    (b.status_reason?'<div style="margin-top:12px;padding:13px;border-radius:12px;background:#fffafd;border:1px solid var(--line)"><strong>Status details</strong><p style="margin-bottom:0">'+esc(b.status_reason)+'</p></div>':'')+
    '<p class="notice">Last updated: '+esc(b.updated_at?new Date(b.updated_at).toLocaleString('en-PH'):'Not available')+'. Status checks automatically every 30 seconds.</p>';
+  const paymentWrap=$('payment-form-wrap');
+  if(paymentWrap){
+   if(submitted){
+    paymentWrap.innerHTML='<div class="payment-result"><strong>💗 Payment submitted — awaiting verification</strong><p style="margin-bottom:0">Thank you! Your payment reference and receipt have been sent to Gel. Your appointment is not confirmed until Gel verifies your payment.</p></div>';
+   }else if(s==='pending'&&!paid&&Number(b.deposit_amount)>0&&b.payment_deadline&&new Date(b.payment_deadline)>new Date()){
+    paymentWrap.innerHTML='<form id="payment-submit-form" class="payment-form"><h3 style="margin:0;color:var(--deep)">📤 Submit your payment</h3><p class="muted">After paying, enter the transaction reference and attach a screenshot of your receipt. Both are required.</p><label for="payment-method">Payment method</label><select id="payment-method" required><option value="GCash">GCash</option><option value="Bank transfer">GoTyme Bank Transfer</option></select><label for="payment-reference">Payment reference number</label><input id="payment-reference" required minlength="3" maxlength="120" autocomplete="off" placeholder="Enter transaction/reference number"><label for="payment-proof">Payment receipt screenshot</label><input id="payment-proof" type="file" accept="image/*" required><p class="muted">Image files only, up to 5 MB. Please hide unrelated personal information.</p><button id="submit-payment" class="submit-payment" type="submit">♡ Submit payment details</button><div id="payment-submit-result" role="status" aria-live="polite"></div></form>';
+    const form=$('payment-submit-form');
+    if(form)form.addEventListener('submit',async function(ev){
+     ev.preventDefault();
+     const button=$('submit-payment'),result=$('payment-submit-result'),file=$('payment-proof').files[0],reference=$('payment-reference').value.trim(),method=$('payment-method').value;
+     if(!file){result.textContent='Please attach your payment receipt screenshot.';return;}
+     if(!file.type.startsWith('image/')){result.textContent='Please choose an image file.';return;}
+     if(file.size>5*1024*1024){result.textContent='The receipt image must be 5 MB or smaller.';return;}
+     if(!token){result.textContent='Your private booking link is missing. Please reopen the original link from Gel.';return;}
+     button.disabled=true;button.textContent='Submitting…';result.textContent='Uploading your receipt securely…';
+     let path=null;
+     try{
+      path=crypto.randomUUID()+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      const upload=await client.storage.from('booking-payment-proof').upload(path,file,{upsert:false,contentType:file.type});
+      if(upload.error)throw upload.error;
+      const savedPath=upload.data.path;
+      const response=await client.rpc('submit_booking_payment_details',{p_token:token,p_method:method,p_reference:reference,p_proof_path:savedPath});
+      if(response.error)throw response.error;
+      if(response.data!==true)throw new Error('Payment details could not be confirmed as submitted.');
+      result.innerHTML='<div class="payment-result"><strong>💗 Payment details submitted!</strong><p style="margin-bottom:0">Your reference and receipt have been sent to Gel for verification. Your appointment is not confirmed until Gel verifies the payment.</p></div>';
+      await load();
+     }catch(err){
+      console.error('Payment submission failed:',err);
+      result.textContent=(err&&err.message)||'We could not submit your payment details. Please check your connection and try again.';
+      button.disabled=false;button.textContent='♡ Submit payment details';
+     }
+    });
+   }else{paymentWrap.innerHTML='';}
+  }
   if(s==='pending'&&!paid&&Number(b.deposit_amount)>0){
    if(window.QRCode){
     const g=$('gcash-qr'),bank=$('bank-qr');
