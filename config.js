@@ -242,13 +242,19 @@ window.NAILEDIT_CONFIG = {
       function field(id) { return document.getElementById(id); }
       function value(id) {
         var el = field(id);
-        if (el && typeof el.value === 'string') return el.value.trim();
-        // Robust fallback for mobile browsers or markup changes affecting the inspo textarea ID.
-        if (id === 'btnote' && form) {
-          el = form.querySelector('textarea[name="designNotes"], textarea[name="inspo"], textarea[placeholder*="design" i], textarea[placeholder*="inspo" i], textarea');
-          if (el && typeof el.value === 'string') return el.value.trim();
+        var direct = el && typeof el.value === 'string' ? el.value.trim() : '';
+        // Some mobile/browser states can leave the expected ID empty while the visible textarea has text.
+        if (id === 'btnote' && form && !direct) {
+          var candidates = form.querySelectorAll('textarea, [contenteditable="true"]');
+          for (var j = 0; j < candidates.length; j++) {
+            var candidate = candidates[j];
+            var candidateValue = typeof candidate.value === 'string'
+              ? candidate.value.trim()
+              : (candidate.textContent || '').trim();
+            if (candidateValue) return candidateValue;
+          }
         }
-        return '';
+        return direct;
       }
       var required = [
         ['bname', 'Please enter your name.'],
