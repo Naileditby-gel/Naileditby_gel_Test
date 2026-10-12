@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SERVICE_ID = "service_7t0p3zw";
 const TEMPLATE_ID = "template_2zazhvj";
-const TEST_SITE_URL = Deno.env.get("NAILEDIT_TEST_SITE_URL") || "";
+const TEST_SITE_URL = "https://naileditby-gel.github.io/Naileditby_gel_Test";
 const EMAILJS_PUBLIC_KEY = Deno.env.get("EMAILJS_PUBLIC_KEY") || "";
 
 const corsHeaders = {
@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (!supabaseUrl || !anonKey || !serviceRoleKey || !EMAILJS_PUBLIC_KEY || !TEST_SITE_URL) {
+  if (!supabaseUrl || !anonKey || !serviceRoleKey || !EMAILJS_PUBLIC_KEY) {
     return reply(500, { success: false, error: "Email notification setup is incomplete. Please finish the TEST project configuration." });
   }
 
