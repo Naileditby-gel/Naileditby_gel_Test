@@ -246,7 +246,7 @@ window.NAILEDIT_CONFIG = {
         'Previous nail work: ' + value('bprevious'),
         'Design/Inspo: ' + value('btnote')
       ].join('\n');
-      window.location.href = 'sms:09553697737?body=' + encodeURIComponent(body);
+      window.location.href = 'sms:09553697737&body=' + encodeURIComponent(body);
     });
     grid.insertBefore(button, grid.firstChild);
     grid.style.display = 'grid';
