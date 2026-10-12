@@ -7,7 +7,6 @@
 ## Supabase Edge Function secrets
 In the TEST Supabase project, add these secrets under Edge Functions / Secrets:
 - `EMAILJS_PUBLIC_KEY`: the public key shown in EmailJS Account.
-- `NAILEDIT_TEST_SITE_URL`: `https://naileditby-gel.github.io/Naileditby_gel_Test`
 
 The function checks the logged-in Supabase user with `public.is_nailedit_owner()` before it reads a booking or sends email. It uses the TEST project's built-in Supabase environment variables and does not expose the service-role key in browser code.
 
