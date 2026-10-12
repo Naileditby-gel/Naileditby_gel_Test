@@ -34,8 +34,15 @@ window.NAILEDIT_CONFIG = {
     el.parentNode.insertBefore(node, el);
     return node;
   }
+  function addPolishStyles() {
+    if (document.getElementById('nailedit-public-polish')) return;
+    var style = document.createElement('style');
+    style.id = 'nailedit-public-polish';
+    style.textContent = '.promo-feature-card{padding:clamp(14px,2.5vw,24px);text-align:center}.promo-feature-image{display:block;width:100%;height:auto;max-height:none;object-fit:contain;border-radius:16px}.promo-feature-copy{max-width:760px;margin:0 auto;padding:22px 16px 12px;text-align:center}.promo-feature-copy h3{font-family:"Playfair Display",serif;font-size:clamp(24px,3vw,34px);font-weight:600;line-height:1.25;color:var(--wine,#6f2944);margin:0 0 12px}.promo-feature-price{font-size:1.12rem;color:var(--rose,#e96d9a);margin:0 0 10px}.promo-feature-price span{font-size:.9em;text-decoration:line-through;opacity:.65;margin-left:8px}.promo-feature-description{font-size:.96rem;line-height:1.8;color:var(--ink,#38252c);max-width:620px;margin:0 auto 18px}.rate-grid .gallery-card{font-family:Poppins,Arial,sans-serif;color:var(--ink,#38252c);padding:22px!important}.rate-grid .gallery-card h3{font-family:Poppins,Arial,sans-serif;font-size:1rem;font-weight:600;line-height:1.55;letter-spacing:.01em;color:var(--wine,#6f2944);margin:0 0 10px!important}.rate-grid .gallery-card p{font-family:Poppins,Arial,sans-serif;font-size:.9rem;line-height:1.7;color:#806a72}.rate-grid .gallery-card p strong{font-weight:600;color:var(--rose,#e96d9a)}';
+    document.head.appendChild(style);
+  }
   async function syncPublicContent() {
-    var cfg = window.NAILEDIT_CONFIG;
+    addPolishStyles();\n    var cfg = window.NAILEDIT_CONFIG;
     if (!cfg || !window.supabase || !window.supabase.createClient) return;
     var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
     var gallery = document.querySelector('#gallery .gallery');
@@ -74,7 +81,7 @@ window.NAILEDIT_CONFIG = {
         if (current && current.length) {
           oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Check out our current offers. Terms and availability may apply.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
             current.map(function (p) {
-              return '<article class="gallery-card" style="padding:18px">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" style="display:block;width:100%;height:auto;max-height:none;object-fit:contain;border-radius:14px">' : '') + '<h3>' + esc(p.title) + '</h3>' + (p.promo_price != null ? '<p><strong>' + peso(p.promo_price) + (p.original_price != null ? ' <span style="text-decoration:line-through;opacity:.65">' + peso(p.original_price) + '</span>' : '') + '</strong></p>' : '') + '<p>' + esc(p.description || '') + '</p><a class="btn" href="#booking">Book Now →</a></article>';
+              return '<article class="gallery-card promo-feature-card">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" class="promo-feature-image">' : '') + '<div class="promo-feature-copy"><h3>' + esc(p.title) + '</h3>' + (p.promo_price != null ? '<p class="promo-feature-price"><strong>' + peso(p.promo_price) + (p.original_price != null ? ' <span>' + peso(p.original_price) + '</span>' : '') + '</strong></p>' : '') + (p.description ? '<p class="promo-feature-description">' + esc(p.description) + '</p>' : '') + '<a class="btn" href="#booking">Book Now →</a></div></article>';
             }).join('') + '</div></div>';
           oldPromo.style.display = '';
         } else {
