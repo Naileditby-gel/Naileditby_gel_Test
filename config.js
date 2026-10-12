@@ -94,21 +94,26 @@ window.NAILEDIT_CONFIG = {
     }
   }
   function reorderHomepageSections() {
+    // These sections are direct children of body in the current homepage.
+    // Place the requested customer journey immediately before Reviews (or FAQ as fallback).
     var ids = ['about', 'gallery', 'promo', 'services', 'booking'];
     var nodes = ids.map(function (id) { return document.getElementById(id); });
     if (nodes.some(function (node) { return !node; })) {
-      console.warn('Homepage section order unchanged: one or more section IDs were not found.');
+      console.warn('Homepage section order skipped: missing section ID.');
       return;
     }
-    var parent = nodes[0].parentElement;
-    if (!nodes.every(function (node) { return node.parentElement === parent; })) {
-      console.warn('Homepage section order unchanged: sections do not share the same parent.');
+    var anchor = document.getElementById('reviews') || document.getElementById('faq');
+    if (!anchor || !anchor.parentNode) {
+      console.warn('Homepage section order skipped: could not find the section anchor.');
       return;
     }
-    var anchor = nodes[0];
-    nodes.slice(1).forEach(function (node) {
-      parent.insertBefore(node, anchor.nextSibling);
-      anchor = node;
+    var parent = anchor.parentNode;
+    nodes.forEach(function (node) {
+      if (node.parentNode !== parent) {
+        console.warn('Homepage section order skipped: unexpected section structure.');
+        return;
+      }
+      parent.insertBefore(node, anchor);
     });
   }
   function polishHeroPromoLink() {
