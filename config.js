@@ -288,6 +288,7 @@ window.NAILEDIT_CONFIG = {
       }
       var body = [
         'Hi Gel! I would like to enquire about a nail design and price.',
+        '',
         'Name: ' + value('bname'),
         'Mobile: ' + value('bphone'),
         'Email: ' + value('bemail'),
