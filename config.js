@@ -222,38 +222,100 @@ window.NAILEDIT_CONFIG = {
   function addSmsBookingOption() {
     var form = document.getElementById('bookingForm');
     var grid = form && form.querySelector('.channel-grid');
-    if (!form || !grid || grid.querySelector('[data-channel="sms"]')) return;
-    var button = document.createElement('button');
-    button.className = 'channel-btn';
-    button.type = 'button';
-    button.dataset.channel = 'sms';
-    button.textContent = '📱 SMS';
+    if (!form || !grid) return;
+    var button = grid.querySelector('[data-channel="sms"]');
+    if (!button) {
+      button = document.createElement('button');
+      button.className = 'channel-btn';
+      button.type = 'button';
+      button.dataset.channel = 'sms';
+      button.textContent = '📱 SMS';
+      grid.insertBefore(button, grid.firstChild);
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+      grid.style.gap = '10px';
+    }
+    // Bind once; require the form details and design notes before opening SMS.
+    if (button.dataset.validationReady) return;
+    button.dataset.validationReady = 'true';
     button.addEventListener('click', function () {
+      function field(id) { return document.getElementById(id); }
       function value(id) {
-        var el = document.getElementById(id);
+        var el = field(id);
         return el ? (el.value || '').trim() : '';
       }
+      var required = [
+        ['bname', 'Please enter your name.'],
+        ['bphone', 'Please enter your mobile number.'],
+        ['bemail', 'Please enter your email address.'],
+        ['baddress', 'Please enter your address or barangay.'],
+        ['bdate', 'Please choose an appointment date.'],
+        ['btime', 'Please choose an appointment time.'],
+        ['bservice', 'Please choose a service.'],
+        ['blength', 'Please choose your nail length.'],
+        ['bprevious', 'Please answer the previous nail work question.'],
+        ['btnote', 'Please add your design/inspiration notes so Gel can understand your idea.']
+      ];
+      for (var i = 0; i < required.length; i++) {
+        var el = field(required[i][0]);
+        if (!el || !value(required[i][0])) {
+          alert(required[i][1]);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.focus();
+          }
+          return;
+        }
+      }
+      var agree = field('policyAgree');
+      if (agree && !agree.checked) {
+        alert('Please read and agree to the Booking, Safety & Salon Policies before sending your request details.');
+        agree.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        agree.focus();
+        return;
+      }
       var body = [
-        'Hi Gel! I would like to request a nail appointment.',
+        'Hi Gel! I would like to enquire about a nail design and price.',
         'Name: ' + value('bname'),
         'Mobile: ' + value('bphone'),
         'Email: ' + value('bemail'),
         'Address/Barangay: ' + value('baddress'),
-        'Date: ' + value('bdate'),
-        'Time: ' + value('btime'),
+        'Preferred date (not booked): ' + value('bdate'),
+        'Preferred time (not booked): ' + value('btime'),
         'Service: ' + value('bservice'),
-        'Design/Inspo notes: ' + (value('btnote') || '(No design notes entered)'),
+        'Design/Inspo notes: ' + value('btnote'),
         'Nail length: ' + value('blength'),
-        'Previous nail work: ' + value('bprevious')
-      ].join('\n');
+        'Previous nail work: ' + value('bprevious'),
+        '',
+        'This is an enquiry only, not an appointment request or confirmation. I understand I must submit the website booking form separately to request an appointment.'
+      ].join('\\n');
       window.location.href = 'sms:09553697737&body=' + encodeURIComponent(body);
     });
-    grid.insertBefore(button, grid.firstChild);
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
-    grid.style.gap = '10px';
     var help = form.querySelector('.channel-help');
-    if (help) help.textContent = 'SMS opens your messaging app with your request details ready. Please review and tap Send. You can also message Gel on Messenger or Instagram.';
+    var noticeText = 'SMS, Messenger, and Instagram are for design and price enquiries only. Sending a message through these options does NOT submit an appointment request or reserve a time. To request an appointment, complete the form and tap “Request Appointment Online.”';
+    if (help) {
+      help.textContent = noticeText;
+      help.style.marginTop = '12px';
+      help.style.fontSize = '0.9em';
+      help.style.lineHeight = '1.5';
+    } else {
+      var notice = document.createElement('p');
+      notice.className = 'channel-help';
+      notice.textContent = noticeText;
+      grid.insertAdjacentElement('afterend', notice);
+    }
+  }
+  function redirectBookingCTAs() {
+    Array.from(document.querySelectorAll('a')).forEach(function (a) {
+      var label = (a.textContent || '').replace(/\\s+/g, ' ').trim();
+      if (/^Book an Appointment$/i.test(label) || /^Book Now$/i.test(label)) {
+        a.setAttribute('href', '#booking');
+        a.removeAttribute('target');
+        a.removeAttribute('onclick');
+        a.setAttribute('aria-label', 'Go to the online appointment request form');
+      }
+    });
+    // Keep the compact navigation item labelled “Book” unchanged.
   }
   function refreshBookingContactOptions() {
     var form = document.getElementById('bookingForm');
@@ -305,7 +367,7 @@ window.NAILEDIT_CONFIG = {
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent();
   }
