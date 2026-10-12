@@ -242,7 +242,13 @@ window.NAILEDIT_CONFIG = {
       function field(id) { return document.getElementById(id); }
       function value(id) {
         var el = field(id);
-        return el ? (el.value || '').trim() : '';
+        if (el && typeof el.value === 'string') return el.value.trim();
+        // Robust fallback for mobile browsers or markup changes affecting the inspo textarea ID.
+        if (id === 'btnote' && form) {
+          el = form.querySelector('textarea[name="designNotes"], textarea[name="inspo"], textarea[placeholder*="design" i], textarea[placeholder*="inspo" i], textarea');
+          if (el && typeof el.value === 'string') return el.value.trim();
+        }
+        return '';
       }
       var required = [
         ['bname', 'Please enter your name.'],
