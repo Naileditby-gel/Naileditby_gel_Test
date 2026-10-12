@@ -5,6 +5,7 @@ const SERVICE_ID = "service_7t0p3zw";
 const TEMPLATE_ID = "template_2zazhvj";
 const TEST_SITE_URL = "https://naileditby-gel.github.io/Naileditby_gel_Test";
 const EMAILJS_PUBLIC_KEY = Deno.env.get("EMAILJS_PUBLIC_KEY") || "";
+const EMAILJS_PRIVATE_KEY = Deno.env.get("EMAILJS_PRIVATE_KEY") || "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://naileditby-gel.github.io",
@@ -36,7 +37,7 @@ Deno.serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (!supabaseUrl || !anonKey || !serviceRoleKey || !EMAILJS_PUBLIC_KEY) {
+  if (!supabaseUrl || !anonKey || !serviceRoleKey || !EMAILJS_PUBLIC_KEY || !EMAILJS_PRIVATE_KEY) {
     return reply(500, { success: false, error: "Email notification setup is incomplete. Please finish the TEST project configuration." });
   }
 
@@ -96,6 +97,7 @@ Deno.serve(async (req: Request) => {
         service_id: SERVICE_ID,
         template_id: TEMPLATE_ID,
         user_id: EMAILJS_PUBLIC_KEY,
+        accessToken: EMAILJS_PRIVATE_KEY,
         template_params: params,
       }),
     });
@@ -103,7 +105,7 @@ Deno.serve(async (req: Request) => {
     if (!emailResponse.ok) {
       const detail = (await emailResponse.text()).slice(0, 500);
       console.error("EmailJS send failed:", emailResponse.status, detail);
-      return reply(502, { success: false, error: "EmailJS could not send this message. Check the EmailJS public key and template settings." });
+      return reply(502, { success: false, error: "EmailJS rejected the request: " + detail });
     }
 
     return reply(200, { success: true, message: "Booking email sent." });
