@@ -308,7 +308,7 @@ window.NAILEDIT_CONFIG = {
   function redirectBookingCTAs() {
     Array.from(document.querySelectorAll('a')).forEach(function (a) {
       var label = (a.textContent || '').replace(/\\s+/g, ' ').trim();
-      if (/^Book an Appointment$/i.test(label) || /^Book Now$/i.test(label)) {
+      if (/Book an Appointment/i.test(label) || /^Book Now$/i.test(label)) {
         a.setAttribute('href', '#booking');
         a.removeAttribute('target');
         a.removeAttribute('onclick');
@@ -369,6 +369,6 @@ window.NAILEDIT_CONFIG = {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
   } else {
-    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); refreshSocialLinks(); syncPublicContent();
+    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent();
   }
 })();
