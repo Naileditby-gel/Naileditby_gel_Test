@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Opening booking status • Naileditby_gel</title>
+<style>body{font-family:Arial,sans-serif;background:#fff6fa;color:#6f2944;display:grid;place-items:center;min-height:90vh;text-align:center;padding:20px}main{max-width:440px;background:#fff;padding:26px;border-radius:20px;box-shadow:0 8px 30px #6f29441a}p{line-height:1.5}</style>
+</head>
+<body><main><h2>Opening your booking status 💗</h2><p>Please wait while we open your private booking update.</p><p id="fallback" hidden>If you are not redirected, <a id="manual" href="booking-status.html">tap here to continue</a>.</p></main>
+<script>
+(function(){
+ const current=new URL(location.href);
+ const token=current.searchParams.get('token');
+ const target=new URL('booking-status.html',location.href);
+ if(token) target.searchParams.set('token',token);
+ document.getElementById('manual').href=target.href;
+ document.getElementById('fallback').hidden=false;
+ if(token) location.replace(target.href);
+ else document.querySelector('main p').textContent='This private link is missing its booking code. Please ask Gel to resend it.';
+})();
+</script></body></html>
