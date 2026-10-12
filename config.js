@@ -266,7 +266,7 @@ window.NAILEDIT_CONFIG = {
         ['bservice', 'Please choose a service.'],
         ['blength', 'Please choose your nail length.'],
         ['bprevious', 'Please answer the previous nail work question.'],
-        ['btnote', 'Please add your design/inspiration notes so Gel can understand your idea.']
+        // Design/Inspo notes are optional for SMS; Gel can ask the customer about details by message.
       ];
       for (var i = 0; i < required.length; i++) {
         var el = field(required[i][0]);
@@ -295,7 +295,7 @@ window.NAILEDIT_CONFIG = {
         'Preferred date (not booked): ' + value('bdate'),
         'Preferred time (not booked): ' + value('btime'),
         'Service: ' + value('bservice'),
-        'Design/Inspo notes: ' + value('btnote'),
+        'Design/Inspo details: Please describe your preferred design when replying to Gel.',
         'Nail length: ' + value('blength'),
         'Previous nail work: ' + value('bprevious'),
         '',
