@@ -300,7 +300,7 @@ window.NAILEDIT_CONFIG = {
         'Previous nail work: ' + value('bprevious'),
         '',
         'This is an enquiry only, not an appointment request or confirmation. I understand I must submit the website booking form separately to request an appointment.'
-      ].join('\\n');
+      ].join('\n');
       window.location.href = 'sms:09553697737&body=' + encodeURIComponent(body);
     });
     var help = form.querySelector('.channel-help');
