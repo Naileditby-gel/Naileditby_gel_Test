@@ -88,7 +88,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
      button.disabled=true;button.textContent='Submitting…';result.textContent='Uploading your receipt securely…';
      let path=null;
      try{
-      path=crypto.randomUUID()+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      path=String(b.id)+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
       const upload=await client.storage.from('booking-payment-proof').upload(path,file,{upsert:false,contentType:file.type});
       if(upload.error)throw upload.error;
       const savedPath=upload.data.path;
