@@ -97,9 +97,8 @@ async function loadBookings(){
      else {try{await navigator.clipboard.writeText(message);b.textContent='✓ Message copied — paste to customer';}catch(e){prompt('Copy this message and send it to the customer:',message);}}
    }});
   list.querySelectorAll('[data-sms-token]').forEach(function(b){b.onclick=function(){
-     const link=new URL('s.html',location.href);link.searchParams.set('token',b.dataset.smsToken);
      const customerName=String(b.dataset.smsName||'there').trim()||'there';
-     const message='Hello '+customerName+'! 💗 Your Naileditby_gel booking update is ready. View your private appointment details here: '+link.href+' Thank you for choosing Naileditby_gel! — Gel 💅✨';
+     const message='Hi '+customerName+'! 💗 We\'ve received your booking request at Naileditby_gel. Please check your email for your appointment details and updates. See you soon! 💅✨';
      const phone=String(b.dataset.smsPhone||'').replace(/[^+0-9]/g,'');
      if(!phone){alert('No customer phone number is saved for this booking.');return;}
      const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
