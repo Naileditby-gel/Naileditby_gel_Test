@@ -80,9 +80,9 @@ window.NAILEDIT_CONFIG = {
           return (!p.starts_at || new Date(p.starts_at).getTime() <= now) && (!p.ends_at || new Date(p.ends_at).getTime() >= now);
         });
         if (current && current.length) {
-          oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Check out our current offers. Terms and availability may apply.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
+          oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Explore our latest nail offers and special treats.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
             current.map(function (p) {
-              return '<article class="gallery-card promo-feature-card">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" class="promo-feature-image">' : '') + '<div class="promo-feature-copy"><h3>' + esc(p.title) + '</h3>' + (p.promo_price != null ? '<p class="promo-feature-price"><strong>' + peso(p.promo_price) + (p.original_price != null ? ' <span>' + peso(p.original_price) + '</span>' : '') + '</strong></p>' : '') + (p.description ? '<p class="promo-feature-description">' + esc(p.description) + '</p>' : '') + '<a class="btn" href="#booking">Book Now →</a></div></article>';
+              return '<article class="gallery-card promo-feature-card">' + (p.image_path ? '<img loading="lazy" src="' + esc(imageUrl(sb,p.image_path)) + '" alt="' + esc(p.title) + '" class="promo-feature-image">' : '') + '</article>';
             }).join('') + '</div></div>';
           oldPromo.style.display = '';
         } else {
@@ -117,6 +117,21 @@ window.NAILEDIT_CONFIG = {
       parent.insertBefore(node, anchor);
     });
   }
+  function makeFooterMessageEvergreen() {
+    var headings = Array.from(document.querySelectorAll('h1,h2,h3')).filter(function (h) {
+      return /let.s get you nailed/i.test(h.textContent);
+    });
+    headings.forEach(function (heading) {
+      var section = heading.closest('section') || heading.parentElement;
+      if (!section) return;
+      var paragraphs = Array.from(section.querySelectorAll('p'));
+      paragraphs.forEach(function (p) {
+        if (/limited slots available|limited time|slots available/i.test(p.textContent)) {
+          p.textContent = 'Your next favorite set is waiting. Contact Gel to reserve your appointment.';
+        }
+      });
+    });
+  }
   function polishHeroPromoLink() {
     var links = Array.from(document.querySelectorAll('a[href="#promo"]'));
     links.forEach(function (a) {
@@ -136,7 +151,7 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); refreshFaq(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshFaq(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); refreshFaq(); syncPublicContent();
   }
