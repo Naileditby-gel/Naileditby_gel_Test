@@ -318,6 +318,24 @@ window.NAILEDIT_CONFIG = {
       grid.insertAdjacentElement('afterend', notice);
     }
   }
+  function handlePortfolioBookingDeepLink() {
+    // Portfolio links open index.html with ?design=...&portfolio=1#booking.
+    // Re-apply the booking anchor after the homepage sections/content finish moving.
+    function scrollToBooking() {
+      var params;
+      try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
+      if (params.get('portfolio') !== '1' || !params.get('design')) return;
+      var booking = document.getElementById('booking');
+      if (!booking) return;
+      if (window.location.hash !== '#booking') history.replaceState(null, '', window.location.pathname + window.location.search + '#booking');
+      booking.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+    scrollToBooking();
+    [150, 400, 800, 1400, 2200].forEach(function (delay) {
+      window.setTimeout(scrollToBooking, delay);
+    });
+    window.addEventListener('load', scrollToBooking, { once: true });
+  }
   function redirectBookingCTAs() {
     // Capture portfolio "Book this Look" clicks before older inline handlers can route to Promotions.
     if (!document.documentElement.dataset.bookLookRedirectBound) {
@@ -399,7 +417,7 @@ window.NAILEDIT_CONFIG = {
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); handlePortfolioBookingDeepLink(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
   } else {
     reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent();
   }
