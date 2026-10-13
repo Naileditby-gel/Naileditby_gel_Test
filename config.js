@@ -319,6 +319,25 @@ window.NAILEDIT_CONFIG = {
     }
   }
   function redirectBookingCTAs() {
+    // Capture portfolio "Book this Look" clicks before older inline handlers can route to Promotions.
+    if (!document.documentElement.dataset.bookLookRedirectBound) {
+      document.documentElement.dataset.bookLookRedirectBound = '1';
+      document.addEventListener('click', function (event) {
+        var trigger = event.target && event.target.closest ? event.target.closest('a, button, [role="button"]') : null;
+        if (!trigger || !/book\s*this\s*look/i.test((trigger.textContent || '').replace(/\s+/g, ' ').trim())) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+        var booking = document.getElementById('booking') || document.getElementById('bookingForm');
+        if (booking) {
+          if (booking.id === 'bookingForm') booking = booking.closest('#booking') || booking;
+          if (window.location.hash !== '#booking') history.replaceState(null, '', '#booking');
+          booking.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.location.hash = 'booking';
+        }
+      }, true);
+    }
     Array.from(document.querySelectorAll('a')).forEach(function (a) {
       var label = (a.textContent || '').replace(/\\s+/g, ' ').trim();
       if (/Book an Appointment/i.test(label) || /^Book Now$/i.test(label) || /Book this Look/i.test(label)) {
