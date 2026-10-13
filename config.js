@@ -321,7 +321,7 @@ window.NAILEDIT_CONFIG = {
   function redirectBookingCTAs() {
     Array.from(document.querySelectorAll('a')).forEach(function (a) {
       var label = (a.textContent || '').replace(/\\s+/g, ' ').trim();
-      if (/Book an Appointment/i.test(label) || /^Book Now$/i.test(label)) {
+      if (/Book an Appointment/i.test(label) || /^Book Now$/i.test(label) || /Book this Look/i.test(label)) {
         a.setAttribute('href', '#booking');
         a.removeAttribute('target');
         a.removeAttribute('onclick');
