@@ -488,6 +488,9 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
   });
   dateEl.addEventListener('change',loadAvailability);
+  // Refresh availability when the page returns to the foreground.
+  window.addEventListener('pageshow',function(){if(dateEl.value)loadAvailability();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&dateEl.value)loadAvailability();});
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
     const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
