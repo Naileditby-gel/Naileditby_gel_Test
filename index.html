@@ -491,6 +491,9 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   // Refresh availability when the page returns to the foreground.
   window.addEventListener('pageshow',function(){if(dateEl.value)loadAvailability();});
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&dateEl.value)loadAvailability();});
+  // Keep open booking forms in sync when another customer reserves a slot.
+  // The database remains the final authority and rejects simultaneous duplicate bookings.
+  setInterval(function(){if(!document.hidden&&dateEl.value)loadAvailability();},15000);
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
     const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
