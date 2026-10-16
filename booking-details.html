@@ -34,10 +34,58 @@ async function start(){
  html+='<div id="inspoGallery" class="gallery">'+(inspo.length?'Loading inspiration photos…':'No client inspiration photos attached.')+'</div></section>';
  html+='<div class="grid"><section class="panel"><h3>♡ Custom Price & Payment</h3><div class="detail"><strong>Total design price:</strong> '+money(r.total_design_price)+'</div><div class="detail"><strong>Required deposit:</strong> '+money(r.deposit_amount)+'</div><div class="detail"><strong>Remaining balance:</strong> '+(r.total_design_price!=null&&r.deposit_amount!=null?money(remaining):'Not set')+'</div><div class="detail"><strong>Payment method:</strong> '+esc(r.payment_method||'Not selected')+'</div><div class="detail"><strong>Payment status:</strong> '+esc(r.deposit_status||'pending')+'</div><div class="detail"><strong>Deadline:</strong> '+(r.payment_deadline?esc(new Date(r.payment_deadline).toLocaleString()):'Not started')+'</div><div class="detail"><strong>Verified at:</strong> '+(r.deposit_verified_at?esc(new Date(r.deposit_verified_at).toLocaleString()):'Not verified')+'</div></section>';
  html+='<section class="panel"><h3>♡ Payment Receipt & Reference</h3><div class="detail"><strong>Reference:</strong> '+esc(r.payment_reference||'Not submitted')+'</div><div class="detail"><strong>Submitted:</strong> '+(r.payment_submitted_at?esc(new Date(r.payment_submitted_at).toLocaleString()):'Not submitted')+'</div><div id="proofLink" class="detail">'+(r.payment_proof_path?'Preparing secure receipt link…':'No receipt submitted.')+'</div></section></div>';
+ html+='<section class="panel" style="margin-top:14px"><h3>♡ Owner Actions</h3><div id="actionMessage" class="notice hidden"></div>';
+ if(r.status==='pending'){
+   html+='<div class="grid"><label>Total design price (₱)<input class="input" id="editTotalPrice" type="number" min="1" step="0.01" value="'+(r.total_design_price==null?'':esc(r.total_design_price))+'" placeholder="e.g. 650"></label><label>Required deposit (₱)<input class="input" id="editDeposit" type="number" min="1" step="0.01" value="'+(r.deposit_amount==null?'':esc(r.deposit_amount))+'" placeholder="e.g. 200"></label></div>';
+   if(!r.payment_deadline)html+='<button class="btn primary" id="assignDepositBtn" style="margin-top:12px">♡ Set Price & Send Payment Instructions</button>';
+   else html+='<div class="notice">Price/deposit already assigned. The payment deadline is active.</div>';
+   if(r.payment_submitted_at||r.payment_reference||r.payment_proof_path)html+='<button class="btn" id="verifyPaymentBtn" style="margin-top:12px">✓ Verify Received Payment</button>';
+   if(r.deposit_status==='paid')html+='<button class="btn primary" id="confirmBookingBtn" style="margin-top:12px">✓ Confirm Booking</button>';
+   html+='<button class="btn danger" id="rejectBookingBtn" style="margin-top:12px">Reject Booking</button>';
+ }else if(r.status==='confirmed'){
+   html+='<button class="btn danger" id="cancelBookingBtn">Cancel Booking</button><button class="btn" id="completeBookingBtn">✓ Mark Completed</button>';
+ }else html+='<div class="meta">This booking is '+esc(r.status||'not active')+'. No status actions are available here.</div>';
+ html+='</section>';
  if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
  if(r.customer_message)html+='<div class="notice"><strong>Customer message:</strong><br>'+esc(r.customer_message)+'</div>';
  html+='<div class="actions"><a class="btn" href="admin.html#bookings-'+encodeURIComponent(status)+'">← Back to Booking List</a></div>';
  $('bookingCard').innerHTML=html;$('bookingCard').classList.remove('hidden');$('message').classList.add('hidden');
+ function actionMsg(t){const el=$('actionMessage');if(el){el.textContent=t;el.classList.remove('hidden');}}
+ async function doAction(action){
+   const btnMap={assign:'assignDepositBtn',paid:'verifyPaymentBtn',confirm:'confirmBookingBtn',reject:'rejectBookingBtn',cancel:'cancelBookingBtn',complete:'completeBookingBtn'};
+   try{
+     if(action==='assign'){
+       const total=Number($('editTotalPrice').value),deposit=Number($('editDeposit').value);
+       if(!Number.isFinite(total)||total<=0||!Number.isFinite(deposit)||deposit<=0||deposit>total){actionMsg('Enter a valid total price and a deposit greater than zero that does not exceed the total price.');return;}
+       if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? This starts the 30-minute payment deadline.'))return;
+       const {error}=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:null});
+       if(error){actionMsg(error.message);return;}location.reload();return;
+     }
+     let update={};
+     if(action==='paid'){
+       if(!r.payment_submitted_at&& !r.payment_reference&&!r.payment_proof_path){actionMsg('The customer must submit payment details or proof before verification.');return;}
+       if(r.deposit_amount==null||r.total_design_price==null){actionMsg('Set the total price and deposit first.');return;}
+       if(!confirm('Have you checked your actual GCash/bank account and confirmed the funds were received?'))return;
+       update={deposit_status:'paid',deposit_verified_at:new Date().toISOString()};
+     }else if(action==='confirm'){
+       if(r.deposit_status!=='paid'){actionMsg('Verify the customer payment before confirming.');return;}
+       if(!(Number(r.total_design_price)>0&&Number(r.deposit_amount)>0&&Number(r.deposit_amount)<=Number(r.total_design_price))){actionMsg('Set a valid total price and deposit first.');return;}
+       update={status:'confirmed',status_reason:null,customer_message:'Hi! 💗 Your appointment is confirmed! Your total design price is ₱'+Number(r.total_design_price).toFixed(2)+', and your verified deposit is ₱'+Number(r.deposit_amount).toFixed(2)+'. Remaining balance: ₱'+(Number(r.total_design_price)-Number(r.deposit_amount)).toFixed(2)+'. I’m looking forward to seeing you! 💅✨ Please arrive on time. 🩷'};
+     }else if(action==='complete'){
+       update={status:'completed',status_reason:null,customer_message:'Hi! 💗 Thank you for coming to Naileditby_gel! Your appointment has been marked completed. 💅✨'};
+     }else if(action==='reject'||action==='cancel'){
+       const next=action==='reject'?'rejected':'cancelled';
+       const reason=prompt('Enter the reason to send to the customer:',action==='reject'?'Unable to accommodate':'Emergency reasons');
+       if(!reason)return;
+       update={status:next,status_reason:reason,customer_message:action==='reject'?'Hi! We’re sorry, but your booking request has been rejected. Reason: '+reason+'. Please check your booking status for updates. 💗':'Hi! We sincerely apologize, but we need to cancel your booking. Reason: '+reason+'. If you have paid a deposit, please contact Gel. Thank you for understanding. 💗'};
+     }else return;
+     if(!confirm('Proceed with this booking update?'))return;
+     const {error}=await sb.from('bookings').update(update).eq('id',id);
+     if(error){actionMsg(error.message);return;}location.reload();
+   }catch(e){actionMsg(e&&e.message?e.message:'Something went wrong. Please refresh and try again.');}
+ }
+ ['assign','paid','confirm','reject','cancel','complete'].forEach(a=>{const el=$( {assign:'assignDepositBtn',paid:'verifyPaymentBtn',confirm:'confirmBookingBtn',reject:'rejectBookingBtn',cancel:'cancelBookingBtn',complete:'completeBookingBtn'}[a]);if(el)el.addEventListener('click',()=>doAction(a));});
+
  if(inspo.length){const gallery=$('inspoGallery');const urls=[];for(const path of inspo){if(typeof path==='string'&&/^https?:\/\//i.test(path)){urls.push(path);continue;}const bucket='booking-inspo';const {data:img}=await sb.storage.from(bucket).createSignedUrl(path,3600);if(img&&img.signedUrl)urls.push(img.signedUrl);}gallery.innerHTML=urls.length?urls.map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Client inspiration photo"></a>').join(''):'Inspiration photos could not be loaded.';}
  if(r.payment_proof_path){const {data:proof,error:proofError}=await sb.storage.from('booking-payment-proof').createSignedUrl(r.payment_proof_path,3600);$('proofLink').innerHTML=!proofError&&proof&&proof.signedUrl?'<a href="'+esc(proof.signedUrl)+'" target="_blank" rel="noopener">Open payment proof / receipt</a>':'Unable to create secure receipt link.';}
 }
