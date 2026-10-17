@@ -361,30 +361,70 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   const today=new Date(); const localToday=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
   dateEl.min=localToday;
   let confirmed=[];
+  let availabilityRequest=0;
+  let availabilityFailed=true;
   function esc(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-  function renderSlots(){
-    // Normalize Supabase TIME values (for example "12:00:00") to the same HH:MM format as the slot list.
+  function isBookedSlot(date,time){
+    const wanted=String(time||'').trim().slice(0,5);
+    return confirmed.some(x=>x.appointment_date===date&&String(x.appointment_time||'').trim().slice(0,5)===wanted);
+  }
+  function renderSlots(preferredTime){
     const booked=new Set(confirmed
       .filter(x=>x.appointment_date===dateEl.value)
       .map(x=>String(x.appointment_time||'').trim().slice(0,5)));
-    timeEl.innerHTML='<option value="">Choose an available time</option>'+slots.map(t=>`<option value="${t}" ${booked.has(t)?'disabled':''}>${t}${booked.has(t)?' — 🔒 BOOKED':''}</option>`).join('');
+    timeEl.innerHTML='<option value="">Choose an available time</option>'+slots.map(function(t){
+      return '<option value="'+t+'" '+(booked.has(t)?'disabled':'')+'>'+t+(booked.has(t)?' — 🔒 BOOKED':'')+'</option>';
+    }).join('');
+    if(preferredTime&&!booked.has(preferredTime))timeEl.value=preferredTime;
     const free=slots.filter(t=>!booked.has(t));
-    avail.innerHTML='<div style="font-weight:700;margin-bottom:7px">Appointment availability</div>'+slots.map(t=>booked.has(t)
-      ? `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:800">${t} — 🔒 BOOKED</span>`
-      : `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">${t} — Available</span>`
-    ).join('') + (free.length ? '<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>' : '<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
+    avail.innerHTML='<div style="font-weight:700;margin-bottom:7px">Appointment availability</div>'+slots.map(function(t){
+      return booked.has(t)
+        ? '<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:800">'+t+' — 🔒 BOOKED</span>'
+        : '<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">'+t+' — Available</span>';
+    }).join('')+(free.length?'<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>':'<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
     timeEl.disabled=!free.length;
   }
   async function loadAvailability(){
-    if(!dateEl.value){timeEl.innerHTML='<option value="">Choose a date first</option>';timeEl.disabled=true;avail.textContent='Choose a date to see available appointment times.';return;}
-    avail.textContent='Checking availability…'; timeEl.disabled=true;
-    if(!window.NAILEDIT_CONFIG){avail.textContent='Online calendar is being connected. Please try again soon.';return;}
-    const cfg=window.NAILEDIT_CONFIG; const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
-    const {data,error}=await sb.rpc('get_public_booking_availability',{p_date:dateEl.value});
-    if(error){avail.textContent='Could not check availability right now. Please try again.';timeEl.disabled=false;return;}
-    confirmed=(data||[]).map(x=>({appointment_date:dateEl.value,appointment_time:x.appointment_time})); renderSlots();
-  }
-  function statusLabel(st){return ({pending:'🟡 Deposit Pending / Pending Review',confirmed:'🟢 Confirmed',rejected:'🔴 Rejected',cancelled:'⚫ Cancelled',completed:'🟣 Completed'}[st]||st);}
+    const date=dateEl.value;
+    const preferredTime=timeEl.value;
+    const requestId=++availabilityRequest;
+    if(!date){
+      confirmed=[];availabilityFailed=true;
+      timeEl.innerHTML='<option value="">Choose a date first</option>';
+      timeEl.disabled=true;
+      avail.textContent='Choose a date to see available appointment times.';
+      return false;
+    }
+    avail.textContent='Checking availability…';
+    timeEl.innerHTML='<option value="">Checking availability…</option>';
+    timeEl.disabled=true;
+    const cfg=window.NAILEDIT_CONFIG;
+    if(!window.supabase||!cfg||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){
+      if(requestId!==availabilityRequest||dateEl.value!==date)return false;
+      availabilityFailed=true;
+      timeEl.innerHTML='<option value="">Availability unavailable — try again</option>';
+      avail.textContent='Online availability is not connected. Please try again shortly.';
+      return false;
+    }
+    try{
+      const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+      const result=await sb.rpc('get_public_booking_availability',{p_date:date});
+      if(requestId!==availabilityRequest||dateEl.value!==date)return false;
+      if(result.error)throw result.error;
+      confirmed=(result.data||[]).map(x=>({appointment_date:date,appointment_time:x.appointment_time}));
+      availabilityFailed=false;
+      renderSlots(preferredTime);
+      return true;
+    }catch(error){
+      if(requestId!==availabilityRequest||dateEl.value!==date)return false;
+      console.warn('Could not load appointment availability:',error);
+      confirmed=[];availabilityFailed=true;
+      timeEl.innerHTML='<option value="">Availability unavailable — try again</option>';
+      timeEl.disabled=true;
+      avail.textContent='Could not check availability right now. Please try again. Times are temporarily disabled to prevent double-booking.';
+      return false;
+    }
+  }  function statusLabel(st){return ({pending:'🟡 Deposit Pending / Pending Review',confirmed:'🟢 Confirmed',rejected:'🔴 Rejected',cancelled:'⚫ Cancelled',completed:'🟣 Completed'}[st]||st);}
   function calendarPad(n){return String(n).padStart(2,'0');}
   function calendarStamp(date,time){return date.replace(/-/g,'')+'T'+time.replace(':','')+'00';}
   function calendarEscape(v){return String(v||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
@@ -493,10 +533,12 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     if(files.some(f=>f.size>5*1024*1024)){alert('Each inspo photo must be 5MB or smaller. 💗');inspoInput.value='';inspoPreview.innerHTML='';return;}
     inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
   });
-  dateEl.addEventListener('change',loadAvailability);
-  // Refresh availability when the page returns to the foreground.
+  dateEl.addEventListener('change',function(){timeEl.value='';loadAvailability();});
+  // Re-check when customers return to the page and periodically while they choose a slot.
   window.addEventListener('pageshow',function(){if(dateEl.value)loadAvailability();});
+  window.addEventListener('focus',function(){if(dateEl.value)loadAvailability();});
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&dateEl.value)loadAvailability();});
+  window.setInterval(function(){if(dateEl.value&&!document.hidden)loadAvailability();},30000);
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
     const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
@@ -505,6 +547,12 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     btn.disabled=true; btn.textContent='Sending request… ♡';
     const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
     if(!document.getElementById('policyAgree').checked){msg.innerHTML='<span style="color:#b33">Please read and agree to the booking policies before submitting. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
+    // Re-check the selected slot immediately before any uploads or booking insert.
+    const availabilityOk=await loadAvailability();
+    if(!availabilityOk||availabilityFailed||dateEl.value!==date||isBookedSlot(date,time)||timeEl.value!==time){
+      msg.innerHTML='<span style="color:#b33">This time is no longer available, or availability could not be verified. Please choose a time marked Available and try again. 💗</span>';
+      btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;
+    }
     const accessToken=crypto.randomUUID(); const bookingId=crypto.randomUUID(); const selectedInspo=Array.from(inspoInput.files||[]);
     let inspoFiles=[];
     for(let i=0;i<selectedInspo.length;i++){const f=selectedInspo[i]; const ext=(f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg'); const path=bookingId+'/'+crypto.randomUUID()+'.'+ext; const up=await sb.storage.from('booking-inspo').upload(path,f,{contentType:f.type,upsert:false}); if(up.error){console.error('Inspo upload error:',up.error);msg.innerHTML='<span style="color:#b33">One of the inspo photos could not be uploaded. Please try again. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;} inspoFiles.push({path,name:f.name,type:f.type});}
