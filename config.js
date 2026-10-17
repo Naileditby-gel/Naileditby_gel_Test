@@ -175,17 +175,7 @@ window.NAILEDIT_CONFIG = {
       '<details><summary>What if I need to change or cancel my appointment?</summary><p>Please contact Gel as soon as possible. Appointment changes are subject to availability and the business policies.</p></details>';
     faq.dataset.evergreenReady = 'true';
   }
-  function refreshBookingTimeSlots() {
-    // Keep the business-hours list, but never overwrite availability with
-    // selectable options. The homepage's original booking script is still
-    // responsible for the submit-time conflict check; this helper mirrors the
-    // same public availability RPC so all eight displayed times show booked
-    // status consistently.
-    var expected = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:00'];
-    var bookedByDate = Object.create(null);
-    var requestId = 0;
-
-    function renderForCurrentDate() {
+  function renderForCurrentDate() {
       var select = document.getElementById('btime');
       if (!select) return;
       var dateInput = document.getElementById('bdate');
@@ -464,8 +454,8 @@ window.NAILEDIT_CONFIG = {
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); handlePortfolioBookingDeepLink(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
+    document.addEventListener('DOMContentLoaded', function () { reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingContactOptions(); addSmsBookingOption(); handlePortfolioBookingDeepLink(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent(); });
   } else {
-    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingTimeSlots(); refreshBookingContactOptions(); addSmsBookingOption(); handlePortfolioBookingDeepLink(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent();
+    reorderHomepageSections(); polishHeroPromoLink(); makeFooterMessageEvergreen(); refreshBusinessPolicies(); refreshFaq(); refreshBookingContactOptions(); addSmsBookingOption(); handlePortfolioBookingDeepLink(); redirectBookingCTAs(); refreshSocialLinks(); syncPublicContent();
   }
 })();
