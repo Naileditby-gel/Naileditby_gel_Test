@@ -375,14 +375,51 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     ).join('') + (free.length ? '<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>' : '<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
     timeEl.disabled=!free.length;
   }
-  async function loadAvailability(){
-    if(!dateEl.value){timeEl.innerHTML='<option value="">Choose a date first</option>';timeEl.disabled=true;avail.textContent='Choose a date to see available appointment times.';return;}
-    avail.textContent='Checking availability…'; timeEl.disabled=true;
-    if(!window.NAILEDIT_CONFIG){avail.textContent='Online calendar is being connected. Please try again soon.';return;}
-    const cfg=window.NAILEDIT_CONFIG; const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
-    const {data,error}=await sb.rpc('get_public_booking_availability',{p_date:dateEl.value});
-    if(error){avail.textContent='Could not check availability right now. Please try again.';timeEl.disabled=false;return;}
-    confirmed=(data||[]).map(x=>({appointment_date:dateEl.value,appointment_time:x.appointment_time})); renderSlots();
+  let availabilityRequestId=0;
+  async function loadAvailability(options){
+    const quiet=!!(options&&options.quiet);
+    const requestedDate=dateEl.value;
+    const requestId=++availabilityRequestId;
+    if(!requestedDate){
+      timeEl.innerHTML='<option value="">Choose a date first</option>';
+      timeEl.disabled=true;
+      avail.textContent='Choose a date to see available appointment times.';
+      return;
+    }
+    const selectedTime=timeEl.value;
+    if(!quiet){avail.textContent='Checking availability…';timeEl.disabled=true;}
+    if(!window.NAILEDIT_CONFIG||!window.supabase){
+      avail.textContent='Online calendar is being connected. Please try again soon.';
+      timeEl.value='';
+      timeEl.disabled=true;
+      return;
+    }
+    try{
+      const cfg=window.NAILEDIT_CONFIG;
+      const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+      const {data,error}=await sb.rpc('get_public_booking_availability',{p_date:requestedDate});
+      if(requestId!==availabilityRequestId||dateEl.value!==requestedDate)return;
+      if(error){
+        avail.textContent='Could not check availability right now. Please try again.';
+        timeEl.value='';
+        timeEl.disabled=true;
+        return;
+      }
+      confirmed=(data||[]).map(x=>({appointment_date:requestedDate,appointment_time:x.appointment_time}));
+      renderSlots();
+      if(selectedTime&&Array.from(timeEl.options).some(o=>o.value===selectedTime&&!o.disabled)){
+        timeEl.value=selectedTime;
+      }else if(selectedTime){
+        timeEl.value='';
+      }
+    }catch(error){
+      if(requestId===availabilityRequestId&&dateEl.value===requestedDate){
+        console.error('Availability check error:',error);
+        avail.textContent='Could not check availability right now. Please try again.';
+        timeEl.value='';
+        timeEl.disabled=true;
+      }
+    }
   }
   function statusLabel(st){return ({pending:'🟡 Deposit Pending / Pending Review',confirmed:'🟢 Confirmed',rejected:'🔴 Rejected',cancelled:'⚫ Cancelled',completed:'🟣 Completed'}[st]||st);}
   function calendarPad(n){return String(n).padStart(2,'0');}
@@ -497,6 +534,10 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   // Refresh availability when the page returns to the foreground.
   window.addEventListener('pageshow',function(){if(dateEl.value)loadAvailability();});
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&dateEl.value)loadAvailability();});
+  // Keep long-open booking pages current without interrupting the customer's form entry.
+  window.setInterval(function(){
+    if(!document.hidden&&dateEl.value)loadAvailability({quiet:true});
+  },30000);
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
     const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
