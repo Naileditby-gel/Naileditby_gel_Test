@@ -531,6 +531,8 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
   });
   dateEl.addEventListener('change',loadAvailability);
+  // Load the selected date's availability on first page load, without periodic auto-refresh.
+  if(dateEl.value)loadAvailability();
   // Availability is checked when the customer changes the date; no automatic refresh while choosing a time.
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
