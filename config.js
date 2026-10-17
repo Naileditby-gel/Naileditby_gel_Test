@@ -176,48 +176,109 @@ window.NAILEDIT_CONFIG = {
     faq.dataset.evergreenReady = 'true';
   }
   function refreshBookingTimeSlots() {
-    // The actual booking form uses #btime. Its original script repopulates options
-    // after the date is chosen, so re-apply the business-hours list after each update.
+    // Keep the business-hours list, but never overwrite availability with
+    // selectable options. The homepage's original booking script is still
+    // responsible for the submit-time conflict check; this helper mirrors the
+    // same public availability RPC so all eight displayed times show booked
+    // status consistently.
     var expected = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:00'];
-    function updateTimeSelect() {
+    var bookedByDate = Object.create(null);
+    var requestId = 0;
+
+    function renderForCurrentDate() {
       var select = document.getElementById('btime');
       if (!select) return;
-      var placeholder = Array.from(select.options).find(function (o) {
-        return !o.value || /choose a time|select time|choose a date/i.test((o.textContent || '').trim());
-      });
-      var current = select.value;
-      var existing = Array.from(select.options).map(function (o) { return o.value; });
-      if (expected.every(function (t) { return existing.indexOf(t) !== -1; })) return;
-      select.innerHTML = '';
-      var first = document.createElement('option');
-      first.value = '';
-      first.textContent = placeholder ? placeholder.textContent.trim() : 'Choose a time';
-      select.appendChild(first);
-      expected.forEach(function (time) {
-        var opt = document.createElement('option');
-        opt.value = time;
-        opt.textContent = time;
-        select.appendChild(opt);
-      });
-      if (expected.indexOf(current) !== -1) select.value = current;
+      var dateInput = document.getElementById('bdate');
       var msg = document.getElementById('availabilityMsg');
-      if (msg) msg.textContent = 'Available start times: ' + expected.join(' • ');
+      var date = dateInput && dateInput.value;
+      if (!date) return;
+
+      var booked = new Set(bookedByDate[date] || []);
+      var current = select.value;
+      var optionsMatch = expected.every(function (time) {
+        var option = Array.from(select.options).find(function (o) { return o.value === time; });
+        return option && Boolean(option.disabled) === booked.has(time) &&
+          (booked.has(time) ? /BOOKED/i.test(option.textContent || '') : !/BOOKED/i.test(option.textContent || ''));
+      });
+      if (!optionsMatch) {
+        var placeholder = Array.from(select.options).find(function (o) { return !o.value; });
+        select.innerHTML = '';
+        var first = document.createElement('option');
+        first.value = '';
+        first.textContent = placeholder ? placeholder.textContent.trim() : 'Choose an available time';
+        select.appendChild(first);
+        expected.forEach(function (time) {
+          var option = document.createElement('option');
+          option.value = time;
+          option.disabled = booked.has(time);
+          option.textContent = time + (booked.has(time) ? ' — 🔒 BOOKED' : '');
+          select.appendChild(option);
+        });
+        if (current && expected.indexOf(current) !== -1 && !booked.has(current)) select.value = current;
+        else if (current && booked.has(current)) select.value = '';
+      }
+
+      var free = expected.filter(function (time) { return !booked.has(time); });
+      if (msg) {
+        msg.innerHTML = '<div style="font-weight:700;margin-bottom:7px">Appointment availability</div>' +
+          expected.map(function (time) {
+            return booked.has(time)
+              ? '<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:800">' + time + ' — 🔒 BOOKED</span>'
+              : '<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">' + time + ' — Available</span>';
+          }).join('') + (free.length
+            ? '<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>'
+            : '<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
+      }
+      select.disabled = !free.length;
     }
-    updateTimeSelect();
+
+    async function loadForDate() {
+      var dateInput = document.getElementById('bdate');
+      var date = dateInput && dateInput.value;
+      var select = document.getElementById('btime');
+      var msg = document.getElementById('availabilityMsg');
+      var id = ++requestId;
+      if (!date) return;
+      var cfg = window.NAILEDIT_CONFIG || {};
+      if (!window.supabase || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
+      try {
+        var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+        var result = await sb.rpc('get_public_booking_availability', { p_date: date });
+        if (id !== requestId || !dateInput || dateInput.value !== date) return;
+        if (result.error) {
+          if (msg) msg.textContent = 'Could not check availability right now. Please try again.';
+          if (select) { select.innerHTML = '<option value="">Availability check failed — please try again</option>'; select.disabled = true; }
+          return;
+        }
+        bookedByDate[date] = (result.data || []).map(function (row) {
+          return String(row.appointment_time || '').trim().slice(0, 5);
+        });
+        renderForCurrentDate();
+      } catch (error) {
+        if (id === requestId && dateInput && dateInput.value === date) {
+          console.error('Public booking availability check failed:', error);
+          if (msg) msg.textContent = 'Could not check availability right now. Please try again.';
+          if (select) select.disabled = true;
+        }
+      }
+    }
+
     var date = document.getElementById('bdate');
-    if (date) date.addEventListener('change', function () { setTimeout(updateTimeSelect, 150); });
-    var time = document.getElementById('btime');
-    if (time && window.MutationObserver) {
-      var observer = new MutationObserver(function () { updateTimeSelect(); });
-      observer.observe(time, { childList: true });
+    var select = document.getElementById('btime');
+    if (date && !date.dataset.naileditAvailabilitySync) {
+      date.dataset.naileditAvailabilitySync = 'true';
+      date.addEventListener('change', loadForDate);
     }
-    // Catch the original booking script if it rebuilds the select asynchronously.
-    var attempts = 0;
-    var timer = window.setInterval(function () {
-      updateTimeSelect();
-      attempts += 1;
-      if (attempts >= 30) window.clearInterval(timer);
-    }, 500);
+    if (select && window.MutationObserver && !select.dataset.naileditAvailabilityObserver) {
+      select.dataset.naileditAvailabilityObserver = 'true';
+      var observer = new MutationObserver(function () {
+        // Only render from a result already fetched for this date; never turn
+        // a slot selectable while a fresh availability request is in flight.
+        renderForCurrentDate();
+      });
+      observer.observe(select, { childList: true });
+    }
+    loadForDate();
   }
   function addSmsBookingOption() {
     var form = document.getElementById('bookingForm');
