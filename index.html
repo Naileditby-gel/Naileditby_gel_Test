@@ -363,13 +363,16 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   let confirmed=[];
   function esc(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
   function renderSlots(){
-    const booked=new Set(confirmed.filter(x=>x.appointment_date===dateEl.value).map(x=>String(x.appointment_time).slice(0,5)));
-    timeEl.innerHTML='<option value="">Choose a time</option>'+slots.map(t=>`<option value="${t}" ${booked.has(t)?'disabled':''}>${t}${booked.has(t)?' — Booked':''}</option>`).join('');
+    // Normalize Supabase TIME values (for example "12:00:00") to the same HH:MM format as the slot list.
+    const booked=new Set(confirmed
+      .filter(x=>x.appointment_date===dateEl.value)
+      .map(x=>String(x.appointment_time||'').trim().slice(0,5)));
+    timeEl.innerHTML='<option value="">Choose an available time</option>'+slots.map(t=>`<option value="${t}" ${booked.has(t)?'disabled':''}>${t}${booked.has(t)?' — 🔒 BOOKED':''}</option>`).join('');
     const free=slots.filter(t=>!booked.has(t));
-    avail.innerHTML=slots.map(t=>booked.has(t)
-      ? `<span style="display:inline-block;margin:3px 5px 3px 0;padding:5px 9px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:700">${t} — Booked</span>`
-      : `<span style="display:inline-block;margin:3px 5px 3px 0;padding:5px 9px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">${t} — Available</span>`
-    ).join('') + (free.length ? '<div style="margin-top:6px">Choose an available time from the list.</div>' : '<div style="margin-top:6px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
+    avail.innerHTML='<div style="font-weight:700;margin-bottom:7px">Appointment availability</div>'+slots.map(t=>booked.has(t)
+      ? `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:800">${t} — 🔒 BOOKED</span>`
+      : `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">${t} — Available</span>`
+    ).join('') + (free.length ? '<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>' : '<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
     timeEl.disabled=!free.length;
   }
   async function loadAvailability(){
