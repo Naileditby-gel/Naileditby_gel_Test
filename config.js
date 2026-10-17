@@ -193,6 +193,11 @@ window.NAILEDIT_CONFIG = {
       var date = dateInput && dateInput.value;
       if (!date) return;
 
+      if (!Object.prototype.hasOwnProperty.call(bookedByDate, date)) {
+        select.disabled = true;
+        if (msg) msg.textContent = 'Checking availability…';
+        return;
+      }
       var booked = new Set(bookedByDate[date] || []);
       var current = select.value;
       var optionsMatch = expected.every(function (time) {
