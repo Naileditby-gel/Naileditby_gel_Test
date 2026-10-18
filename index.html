@@ -531,6 +531,21 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
   });
   dateEl.addEventListener('change',loadAvailability);
+  // Refresh from the existing homepage availability handler so the time list
+  // doesn't remain stale if another client books while this page is open.
+  let lastAvailabilityRefresh=0;
+  function refreshAvailabilityWhenSafe(){
+    if(!dateEl.value || document.visibilityState==='hidden' || document.activeElement===timeEl) return;
+    const now=Date.now();
+    if(now-lastAvailabilityRefresh<1200) return;
+    lastAvailabilityRefresh=now;
+    loadAvailability({quiet:true});
+  }
+  window.addEventListener('focus',refreshAvailabilityWhenSafe);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible') refreshAvailabilityWhenSafe();
+  });
+  window.setInterval(refreshAvailabilityWhenSafe,30000);
   // Refresh stale availability when a customer returns to the page or switches back to this tab.
   // The database trigger remains the final protection against two customers claiming the same slot.
   let lastAvailabilityRefresh=0;
