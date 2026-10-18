@@ -531,9 +531,21 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
     inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
   });
   dateEl.addEventListener('change',loadAvailability);
-  // Load the selected date's availability on first page load, without periodic auto-refresh.
+  // Refresh stale availability when a customer returns to the page or switches back to this tab.
+  // The database trigger remains the final protection against two customers claiming the same slot.
+  let lastAvailabilityRefresh=0;
+  function refreshAvailabilityOnReturn(){
+    if(document.hidden||!dateEl.value)return;
+    const now=Date.now();
+    if(now-lastAvailabilityRefresh<1500)return;
+    lastAvailabilityRefresh=now;
+    loadAvailability();
+  }
+  window.addEventListener('focus',refreshAvailabilityOnReturn);
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden)refreshAvailabilityOnReturn();
+  });
   if(dateEl.value)loadAvailability();
-  // Availability is checked when the customer changes the date; no automatic refresh while choosing a time.
   form.addEventListener('submit',async function(e){
     e.preventDefault(); msg.textContent='';
     const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
