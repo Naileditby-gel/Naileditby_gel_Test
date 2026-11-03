@@ -52,6 +52,32 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
  function niceDate(v){if(!v)return 'Not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});}
  function niceTime(v){if(!v)return 'Not set';const p=String(v).slice(0,5).split(':');if(p.length!==2)return v;const d=new Date();d.setHours(Number(p[0]),Number(p[1]),0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
  function setMessage(t){$('message').textContent=t;}
+ function customerCalendarData(b){
+  const date=String(b.appointment_date||''),time=String(b.appointment_time||'').slice(0,5);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||! /^\d{2}:\d{2}$/.test(time))return null;
+  const start=date.replace(/-/g,'')+'T'+time.replace(':','')+'00';
+  const [y,m,d]=date.split('-').map(Number),[hh,mm]=time.split(':').map(Number);
+  const end=new Date(Date.UTC(y,m-1,d,hh,mm+60));
+  const pad=n=>String(n).padStart(2,'0');
+  const endDate=end.getUTCFullYear()+pad(end.getUTCMonth()+1)+pad(end.getUTCDate());
+  const endTime=pad(end.getUTCHours())+pad(end.getUTCMinutes())+'00';
+  const title='💅 Naileditby_gel — '+String(b.service||'Nail Appointment');
+  const location='Don Primitivo, Holy Spirit, Quezon City — near Ginto Store';
+  const details='Your appointment with Naileditby_gel is confirmed. Service: '+String(b.service||'Nail appointment')+'.';
+  const escCal=v=>String(v||'').replaceAll('\\','\\\\').replaceAll(';','\\;').replaceAll(',','\\,').replaceAll('\n','\\n');
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  const uid=String(b.id||('booking-'+date+'-'+time))+'@naileditbygel-customer';
+  const ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Naileditby_gel//Customer Appointment//EN\r\nCALSCALE:GREGORIAN\r\nBEGIN:VEVENT\r\nUID:'+uid+'\r\nDTSTAMP:'+stamp+'\r\nDTSTART;TZID=Asia/Manila:'+start+'\r\nDTEND;TZID=Asia/Manila:'+endDate+'T'+endTime+'\r\nSUMMARY:'+escCal(title)+'\r\nLOCATION:'+escCal(location)+'\r\nDESCRIPTION:'+escCal(details)+'\r\nEND:VEVENT\r\nEND:VCALENDAR';
+  const google='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+start+'/'+endDate+'T'+endTime+'&details='+encodeURIComponent(details)+'&location='+encodeURIComponent(location)+'&ctz=Asia%2FManila';
+  return {ics,google,date,time};
+ }
+ function downloadCustomerCalendar(b){
+  const cal=customerCalendarData(b);if(!cal)return;
+  const blob=new Blob([cal.ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='Naileditby_gel-Appointment-'+cal.date+'-'+cal.time.replace(':','')+'.ics';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }
  function render(b){
   const s=String(b.status||'pending').toLowerCase(), remain=b.total_design_price!=null&&b.deposit_amount!=null?Number(b.total_design_price)-Number(b.deposit_amount):null;
   const submitted=!!b.payment_submitted_at, paid=String(b.deposit_status||'pending').toLowerCase()==='paid';
@@ -67,10 +93,16 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
    (remain!=null?'<div class="item"><small>Remaining balance</small><strong>'+esc(money(remain))+'</strong></div>':'')+
    (b.payment_deadline?'<div class="item"><small>Payment deadline</small><strong>'+esc(new Date(b.payment_deadline).toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'}))+'</strong></div>':'')+
    '</div>'+
+   (s==='confirmed'&&b.appointment_date&&b.appointment_time?'<div style="margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fffafd"><h3 style="margin:0 0 6px;color:var(--deep);font-size:17px">📅 Save your confirmed appointment</h3><p class="muted" style="margin:0 0 12px">Add your appointment to your phone calendar or Google Calendar so you can receive a reminder.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" id="customer-add-phone-calendar">＋ Add to Phone Calendar</button><a class="button secondary" id="customer-add-google-calendar" href="#" target="_blank" rel="noopener">＋ Google Calendar</a></div></div>':'')+
    (s==='pending'&&!paid&&Number(b.deposit_amount)>0?'<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)"><h2 class="payment-heading">💳 Deposit Payment Options</h2><p class="notice" style="margin-top:6px">Please pay the deposit amount shown above before the deadline. Choose your preferred method and scan the matching QR code. Make sure the recipient details match before confirming your payment.</p><div class="payment-qr-grid"><div class="payment-qr"><h3>GCash</h3><p>Scan the InstaPay QR code</p><div class="qr-image" id="gcash-qr"></div><p>Transfer fees may apply.</p></div><div class="payment-qr"><h3>GoTyme Bank Transfer</h3><p>Scan the GoTyme InstaPay QR code</p><div class="qr-image" id="bank-qr"></div><p>Transfer fees may apply.</p></div></div><div id="payment-form-wrap" style="margin-top:16px"></div></div>':'')+
    (b.customer_message?'<div id="owner-message" style="margin-top:16px;padding:15px;border-radius:14px;background:#fff0f6;border:1px solid var(--line)"><strong style="color:var(--deep)">💌 Message from Gel</strong><p style="margin-bottom:0;white-space:pre-wrap">'+esc(b.customer_message)+'</p></div>':'')+
    (b.status_reason?'<div style="margin-top:12px;padding:13px;border-radius:12px;background:#fffafd;border:1px solid var(--line)"><strong>Status details</strong><p style="margin-bottom:0">'+esc(b.status_reason)+'</p></div>':'')+
    '<p class="notice">Last updated: '+esc(b.updated_at?new Date(b.updated_at).toLocaleString('en-PH'):'Not available')+'. Status checks automatically every 30 seconds.</p>';
+  if(s==='confirmed'){
+   const cal=customerCalendarData(b),phoneButton=$('customer-add-phone-calendar'),googleButton=$('customer-add-google-calendar');
+   if(cal&&phoneButton)phoneButton.addEventListener('click',()=>downloadCustomerCalendar(b));
+   if(cal&&googleButton)googleButton.href=cal.google;
+  }
   const paymentWrap=$('payment-form-wrap');
   if(paymentWrap){
    if(submitted){
