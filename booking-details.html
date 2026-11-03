@@ -66,7 +66,7 @@ async function start(){
      if(action==='assign'){
        const total=Number($('editTotalPrice').value),deposit=Number($('editDeposit').value);
        if(!Number.isFinite(total)||total<=0||!Number.isFinite(deposit)||deposit<=0||deposit>total){actionMsg('Enter a valid total price and a deposit greater than zero that does not exceed the total price.');return;}
-       if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? This starts the 30-minute payment deadline.'))return;
+       if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? This starts the 1-hour payment deadline.'))return;
        const {error}=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:null});
        if(error){actionMsg(error.message);return;}location.reload();return;
      }
