@@ -88,7 +88,7 @@ async function loadBookings(){
       html+='<label style="flex:1;min-width:150px">Total price (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-total-price="'+r.id+'" value="'+(r.total_design_price==null?'':esc(r.total_design_price))+'" placeholder="e.g. 650"></label>';
       html+='<label style="flex:1;min-width:150px">Deposit (₱)<input class="input" type="number" min="1" max="100000" step="0.01" data-deposit="'+r.id+'" value="'+(r.deposit_amount==null?'':esc(r.deposit_amount))+'" placeholder="e.g. 200"></label>';
       html+='</div>';
-      html+='<div class="meta">The 30-minute payment window starts when you save the price and send the instructions. This does not confirm the appointment.</div><button class="btn" style="margin-top:10px" data-baction="assign" data-id="'+r.id+'">♡ Set price & send payment instructions</button></div>';
+      html+='<div class="meta">The 1-hour payment window starts when you save the price and send the instructions. This does not confirm the appointment.</div><button class="btn" style="margin-top:10px" data-baction="assign" data-id="'+r.id+'">♡ Set price & send payment instructions</button></div>';
     } else if(bstatus==='pending') html+='<div class="notice">Price and deposit have been assigned. Wait for the customer to submit payment details before verifying.</div>';
     if(r.status_reason)html+='<div class="notice"><strong>Status reason:</strong> '+esc(r.status_reason)+'</div>';
     if(r.customer_message)html+='<div class="notice"><strong>Customer message:</strong><br>'+esc(r.customer_message)+'</div>';
@@ -178,7 +178,7 @@ async function changeBookingStatus(id,action){
     const depositInput=document.querySelector('[data-deposit="'+id+'"]');
     const total=Number(totalInput&&totalInput.value),deposit=Number(depositInput&&depositInput.value);
     if(!Number.isFinite(total)||total<=0||!Number.isFinite(deposit)||deposit<=0||deposit>total){fail('Enter a valid total price and a deposit greater than zero that does not exceed the total price.');return;}
-    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? The customer will choose GCash or Bank transfer. This starts the 30-minute payment deadline.'))return;
+    if(!confirm('Set total price to ₱'+total.toFixed(2)+' and deposit to ₱'+deposit.toFixed(2)+'? The customer will choose GCash or Bank transfer. This starts the 1-hour payment deadline.'))return;
     const result=await sb.rpc('assign_booking_deposit',{p_booking_id:id,p_total_price:total,p_amount:deposit,p_payment_method:null});
     if(result.error){fail(result.error.message);return;}await loadBookings();return;
   }
