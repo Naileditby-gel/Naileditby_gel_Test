@@ -6,9 +6,10 @@
   const installButton = document.getElementById('installButton');
 
   window.addEventListener('beforeinstallprompt', event => {
+    if (!installButton) return;
     event.preventDefault();
     installPrompt = event;
-    if (installButton) installButton.hidden = false;
+    installButton.hidden = false;
   });
 
   if (installButton) {
