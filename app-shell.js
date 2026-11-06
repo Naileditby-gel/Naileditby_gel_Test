@@ -26,6 +26,10 @@
     installPrompt = null;
   });
 
+  document.querySelectorAll('[data-current-status]').forEach(link => {
+    link.href = location.pathname + location.search + location.hash;
+  });
+
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/service-worker.js').catch(error => {
