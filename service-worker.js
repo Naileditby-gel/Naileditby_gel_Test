@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => key.startsWith('naileditby-gel-app-shell-') && key !== CACHE_NAME).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
@@ -32,6 +32,6 @@ self.addEventListener('fetch', event => {
   if (!APP_SHELL.includes(url.pathname)) return;
 
   event.respondWith(
-    caches.match(request).then(cached => cached || fetch(request))
+    caches.open(CACHE_NAME).then(cache => cache.match(request)).then(cached => cached || fetch(request))
   );
 });
