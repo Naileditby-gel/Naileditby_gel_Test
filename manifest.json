@@ -1,9 +1,9 @@
 {
-  "id": "/app.html",
+  "id": "/app",
   "name": "Naileditby_gel",
   "short_name": "Naileditby",
   "description": "Browse nail designs, request appointments and check your booking status.",
-  "start_url": "/app.html",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
