@@ -59,7 +59,7 @@
           const bookingDocument = frame.contentDocument;
           const bookingTarget = bookingDocument && bookingDocument.getElementById('booking');
           if (bookingTarget) {
-            bookingTarget.scrollIntoView({ block: 'start', behavior: 'instant' });
+            bookingTarget.scrollIntoView({ block: 'start', behavior: 'auto' });
           } else if (bookingWindow && bookingWindow.location.hash !== '#booking') {
             bookingWindow.location.hash = 'booking';
           }
