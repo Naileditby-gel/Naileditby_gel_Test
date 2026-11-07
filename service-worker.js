@@ -1,7 +1,5 @@
-const CACHE_NAME = 'naileditby-gel-app-shell-v8';
+const CACHE_NAME = 'naileditby-gel-app-shell-v9';
 const APP_SHELL = [
-  '/app',
-  '/promotions',
   '/app-shell.css',
   '/app-nav.css',
   '/app-shell.js',
@@ -28,6 +26,9 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
+
+  // Cache only static app-shell assets. Always let page navigations use Cloudflare Pages.
+  if (request.mode === 'navigate') return;
 
   // Never cache booking pages, customer data, payment receipts, API calls or uploads.
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
