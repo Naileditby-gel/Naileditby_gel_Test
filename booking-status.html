@@ -39,6 +39,11 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 </div>
 </section>
 <section id="details" class="card hidden" aria-live="polite"></section>
+<section id="historySection" class="card hidden">
+<h2 style="margin:0 0 6px;color:var(--deep);font-size:21px">♡ Completed Appointments</h2>
+<p class="muted" style="margin-top:0">Your previous nail appointments, saved in one place.</p>
+<div id="historyList"></div>
+</section>
 <p class="muted" style="text-align:center">🔒 Keep your private booking link to yourself. Anyone with this link may be able to view the booking status. This page refreshes automatically while open.</p>
 <p style="text-align:center"><a class="button secondary" href="/app">Back to app home</a></p>
 </main>
@@ -46,15 +51,32 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 (function(){
  const $=id=>document.getElementById(id);
  const cfg=window.NAILEDIT_CONFIG||{};
- let client=null, token=new URLSearchParams(location.search).get('token')||'', timer=null;
- try{if(!token)token=localStorage.getItem('nailedit_customer_booking_token')||'';}catch(e){}
+ let client=null, token=new URLSearchParams(location.search).get('token')||'', tokens=[], timer=null;
+ try{
+  const saved=JSON.parse(localStorage.getItem('nailedit_customer_booking_tokens')||'[]');
+  if(Array.isArray(saved))tokens=saved.filter(v=>typeof v==='string');
+  const legacy=localStorage.getItem('nailedit_customer_booking_token');
+  if(token&&!tokens.includes(token))tokens.push(token);
+  if(legacy&&!tokens.includes(legacy))tokens.push(legacy);
+ }catch(e){}
+ if(token&&!tokens.includes(token))tokens.push(token);
  function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
  function money(v){return v==null?'Not set':'₱'+Number(v).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
  function niceDate(v){if(!v)return 'Not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});}
  function niceTime(v){if(!v)return 'Not set';const p=String(v).slice(0,5).split(':');if(p.length!==2)return v;const d=new Date();d.setHours(Number(p[0]),Number(p[1]),0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
  function setMessage(t){$('message').textContent=t;$('message').classList.remove('hidden');}
  function showEmptyState(){$('details').classList.add('hidden');$('message').classList.add('hidden');$('emptyState').classList.remove('hidden');}
- function rememberToken(){try{if(token)localStorage.setItem('nailedit_customer_booking_token',token);}catch(e){}}
+ function rememberToken(){try{if(token){localStorage.setItem('nailedit_customer_booking_token',token);if(!tokens.includes(token))tokens.push(token);localStorage.setItem('nailedit_customer_booking_tokens',JSON.stringify(tokens.slice(-30)));}}catch(e){}} 
+ function renderHistory(items){
+  const section=$('historySection'),list=$('historyList');
+  if(!items.length){section.classList.add('hidden');list.innerHTML='';return;}
+  list.innerHTML=items.sort((a,b)=>String(b.appointment_date||'').localeCompare(String(a.appointment_date||''))).map((b,i)=>{
+   const id='history-'+i, label=String(b.status||'completed').toLowerCase();
+   return '<article style="margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fffafd"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><div><strong style="color:var(--deep)">'+esc(niceDate(b.appointment_date))+'</strong><div class="muted">'+esc(b.service||'Nail appointment')+' · '+esc(niceTime(b.appointment_time))+'</div></div><span class="status completed">Completed</span></div><button type="button" class="secondary" style="margin-top:12px" data-history-toggle="'+id+'">View Summary</button><div id="'+id+'" class="hidden" style="margin-top:12px"><div class="grid"><div class="item"><small>Appointment date</small><strong>'+esc(niceDate(b.appointment_date))+'</strong></div><div class="item"><small>Appointment time</small><strong>'+esc(niceTime(b.appointment_time))+'</strong></div><div class="item"><small>Service</small><strong>'+esc(b.service||'Nail appointment')+'</strong></div><div class="item"><small>Payment status</small><strong>'+esc(String(b.deposit_status||'pending').toLowerCase()==='paid'?'Deposit verified':(b.payment_submitted_at?'Payment submitted':'Not recorded'))+'</strong></div><div class="item"><small>Total price</small><strong>'+esc(money(b.total_design_price))+'</strong></div><div class="item"><small>Deposit</small><strong>'+esc(money(b.deposit_amount))+'</strong></div><div class="item"><small>Remaining balance</small><strong>'+esc(b.total_design_price!=null&&b.deposit_amount!=null?money(Number(b.total_design_price)-Number(b.deposit_amount)):'Not set')+'</strong></div><div class="item"><small>Booking status</small><strong>Appointment completed</strong></div></div></div></article>';
+  }).join('');
+  list.querySelectorAll('[data-history-toggle]').forEach(btn=>btn.addEventListener('click',()=>{const panel=$(btn.getAttribute('data-history-toggle'));panel.classList.toggle('hidden');btn.textContent=panel.classList.contains('hidden')?'View Summary':'Hide Summary';}));
+  section.classList.remove('hidden');
+ }
  function customerCalendarData(b){
   const date=String(b.appointment_date||''),time=String(b.appointment_time||'').slice(0,5);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||! /^\d{2}:\d{2}$/.test(time))return null;
@@ -155,17 +177,25 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
  }
  async function load(){
   if(!client){setMessage('The booking service did not load. Please refresh this page.');return;}
-  if(!token){showEmptyState();return;}
+  if(!tokens.length){showEmptyState();renderHistory([]);return;}
   try{
-   const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
-   if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');showEmptyState();setMessage('We could not verify the saved appointment on this device. Please submit a new request or reopen your original private booking link.');return;}
-   if(!data){showEmptyState();return;}
-   render(data);
-  }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
+   const results=await Promise.all(tokens.map(async savedToken=>{
+    const response=await client.rpc('get_customer_booking_status',{p_access_token:savedToken});
+    if(response.error){console.warn('A saved booking could not be loaded:',response.error);return null;}
+    return response.data?{...response.data,_savedToken:savedToken}:null;
+   }));
+   const bookings=results.filter(Boolean);
+   const completed=bookings.filter(b=>String(b.status||'').toLowerCase()==='completed');
+   const current=bookings.filter(b=>!['completed','cancelled','canceled','rejected','expired'].includes(String(b.status||'').toLowerCase()))
+      .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+   renderHistory(completed);
+   if(current.length){token=current[0]._savedToken;render(current[0]);}
+   else{token='';showEmptyState();setMessage('You have no ongoing appointment right now. Your completed appointments are saved below. 💗');}
+  }catch(e){console.error('Booking dashboard refresh failed:',e);setMessage('Connection issue. Please check your internet and try again.');}
  }
  if(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase&&window.supabase.createClient)client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  if(!client)setMessage('Booking service could not load. Please refresh the page.');
- if(!token)showEmptyState();
+ if(!tokens.length)showEmptyState();
  load();timer=setInterval(load,30000);
 })();
 </script>
