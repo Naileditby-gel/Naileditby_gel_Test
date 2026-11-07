@@ -53,24 +53,40 @@
     // embedded page to its booking anchor (some mobile browsers miss the
     // initial hash while a long page is still rendering).
     frame.addEventListener('load', () => {
-      const focusBooking = () => {
+      const showBookingSectionOnly = () => {
         try {
-          const bookingWindow = frame.contentWindow;
           const bookingDocument = frame.contentDocument;
           const bookingTarget = bookingDocument && bookingDocument.getElementById('booking');
-          if (bookingTarget) {
-            bookingTarget.scrollIntoView({ block: 'start', behavior: 'auto' });
-          } else if (bookingWindow && bookingWindow.location.hash !== '#booking') {
-            bookingWindow.location.hash = 'booking';
+          if (!bookingDocument || !bookingTarget) return;
+
+          // Keep the complete booking section (heading, explanation and form),
+          // but visually isolate it from the original site's header, promo,
+          // gallery and other homepage sections. Nothing is removed from the
+          // document, so existing booking scripts and Supabase behaviour remain.
+          const bookingSection = bookingTarget.closest('section') || bookingTarget;
+          let current = bookingSection;
+          while (current && current !== bookingDocument.body) {
+            const parent = current.parentElement;
+            if (!parent) break;
+            Array.from(parent.children).forEach((sibling) => {
+              if (sibling !== current) sibling.style.setProperty('display', 'none', 'important');
+            });
+            current = parent;
           }
+
+          bookingSection.style.setProperty('display', 'block', 'important');
+          bookingSection.style.setProperty('visibility', 'visible', 'important');
+          bookingSection.scrollIntoView({ block: 'start', behavior: 'auto' });
+          bookingDocument.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+          bookingDocument.body.style.setProperty('margin', '0', 'important');
         } catch (error) {
-          // Keep the original anchor navigation as the safe fallback.
-          frame.contentWindow.location.hash = 'booking';
+          // If section isolation is unavailable, retain the original booking anchor.
+          try { frame.contentWindow.location.hash = 'booking'; } catch (_) {}
         }
       };
-      focusBooking();
-      window.setTimeout(focusBooking, 350);
-      window.setTimeout(focusBooking, 1000);
+      showBookingSectionOnly();
+      window.setTimeout(showBookingSectionOnly, 350);
+      window.setTimeout(showBookingSectionOnly, 1000);
     });
     frame.src = '/index.html' + window.location.search + '#booking';
   </script>
