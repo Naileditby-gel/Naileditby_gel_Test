@@ -47,6 +47,31 @@
     // Keep the original booking form, validation, Supabase calls and selected-look query intact.
     // It runs same-origin inside this app shell; no booking or payment logic is copied or rewritten.
     const frame = document.getElementById('bookingFrame');
+
+    // Load the same booking page used by the live site's Book Now link.
+    // After the page and its scripts finish loading, explicitly move the
+    // embedded page to its booking anchor (some mobile browsers miss the
+    // initial hash while a long page is still rendering).
+    frame.addEventListener('load', () => {
+      const focusBooking = () => {
+        try {
+          const bookingWindow = frame.contentWindow;
+          const bookingDocument = frame.contentDocument;
+          const bookingTarget = bookingDocument && bookingDocument.getElementById('booking');
+          if (bookingTarget) {
+            bookingTarget.scrollIntoView({ block: 'start', behavior: 'instant' });
+          } else if (bookingWindow && bookingWindow.location.hash !== '#booking') {
+            bookingWindow.location.hash = 'booking';
+          }
+        } catch (error) {
+          // Keep the original anchor navigation as the safe fallback.
+          frame.contentWindow.location.hash = 'booking';
+        }
+      };
+      focusBooking();
+      window.setTimeout(focusBooking, 350);
+      window.setTimeout(focusBooking, 1000);
+    });
     frame.src = '/index.html' + window.location.search + '#booking';
   </script>
 </body>
