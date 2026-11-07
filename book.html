@@ -201,7 +201,7 @@ body{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
           <li><strong>Removal policy:</strong> Additional removal charges may apply, especially for work done by another nail technician. Removal of previous Naileditby_gel work may also incur a fee depending on the product and condition. Gel will confirm any removal fee before you agree to proceed.</li>
           <li><strong>Custom deposit:</strong> If your request is accepted, Gel will provide the total price, required deposit and payment instructions after reviewing your request. The deposit is non-refundable once paid, subject to applicable law and any specific agreement.</li>
           <li><strong>Payment deadline:</strong> A 1-hour payment window begins when Gel sends the payment instructions. If payment details are not submitted before the deadline, the request may expire and the time slot will be released. Submitting payment proof does not confirm the appointment; Gel must verify the payment.</li>
-          <li><strong>Late policy:</strong> 20 minutes late = ₱100 late fee. 1 hour late = appointment automatically voided/cancelled, and the deposit is forfeited.</li>
+          <li><strong>Late policy:</strong> 20 minutes late = ₱100 late fee. 1 hour late = appointment automatically voided/cancelled and the deposit is forfeited, unless you have informed Gel and Gel has confirmed a revised arrangement.</li>
           <li><strong>Last-minute cancellation / no-show:</strong> The required deposit is non-refundable.</li>
           <li><strong>No companions:</strong> No companion is allowed unless previously discussed with Gel.</li>
           <li><strong>3-day warranty:</strong> Eligible service issues are covered for 3 days. Please contact Gel as soon as possible if there is a problem.</li>
@@ -217,11 +217,11 @@ body{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
       <button id="onlineBookBtn" class="online-btn" type="submit">♡ Request Appointment Online</button>
       <div id="bookingMessage" class="availability" aria-live="polite"></div>
       <div class="channel-grid">
-        <button class="channel-btn primary" type="button" data-channel="viber">💬 Viber</button>
-        <button class="channel-btn" type="button" data-channel="messenger">💌 Messenger</button>
+        <button class="channel-btn" type="button" data-channel="sms">📱 SMS</button>
+        <button class="channel-btn primary" type="button" data-channel="messenger">💌 Messenger</button>
         <button class="channel-btn" type="button" data-channel="instagram">📸 Instagram</button>
       </div>
-      <p class="channel-help">Prefer messaging? You can still send the same request through Viber, Messenger, or Instagram.</p>
+      <p class="channel-help">SMS, Messenger, and Instagram are for design and price enquiries only. Sending a message through these options does NOT submit an appointment request or reserve a time. To request an appointment, complete the form and tap “Request Appointment Online.”</p>
     </form>
       <!-- Keep the private booking status outside bookingForm so its payment form is not nested inside another form. -->
       <div id="bookingStatusCard" class="booking-online" style="display:none;margin-bottom:18px">
@@ -471,13 +471,14 @@ window.NAILEDIT_CONFIG = {
     btn.disabled=false; btn.textContent='♡ Request Appointment Online';
   });
   document.querySelectorAll('[data-channel]').forEach(function(btn){btn.addEventListener('click',function(){
-    const name=document.getElementById('bname').value.trim(), phone=document.getElementById('bphone').value.trim(), customerAddress=document.getElementById('baddress').value.trim(), date=dateEl.value, time=timeEl.value, service=document.getElementById('bservice').value, length=document.getElementById('blength').value, previous=document.getElementById('bprevious').value, note=document.getElementById('bnote').value.trim()||'None';
-    if(!name||!phone||!customerAddress||!date||!time||!previous){alert('Please complete your name, mobile number, address, date, available time, and previous nail work question first. 💗');return;}
-    const message=`Hi Gel! ♡ I’d like to request a nail appointment.\n\nName: ${name}\nMobile: ${phone}\nAddress: ${customerAddress}\nPreferred date: ${date}\nPreferred time: ${time}\nService: ${service}\nNail length: ${length}\nPrevious nail work: ${previous}\nDesign / inspo: ${note}\n\nPlease review my request and let me know the custom price and deposit if you can accommodate it. Thank you! 💗`;
     const channel=btn.dataset.channel;
-    if(channel==='viber'){window.location.href='viber://chat?number=%2B639553697737';setTimeout(function(){if(document.visibilityState==='visible')alert('Viber may not support pre-filled messages from this website. Please send this booking request to 0955 369 7737:\n\n'+message);},1200);}
-    else if(channel==='messenger'){window.open('https://facebook.com/angel.joy.enderes.2025','_blank','noopener');setTimeout(function(){alert('Messenger opened. Please paste and send your booking details:\n\n'+message);},400);}
-    else {window.open('https://www.instagram.com/naileditby_gel/','_blank','noopener');setTimeout(function(){alert('Instagram opened. Please send this booking request by DM:\n\n'+message);},400);}
+    if(channel==='sms'){
+      window.location.href='sms:+639553697737';
+    } else if(channel==='messenger'){
+      window.open('https://facebook.com/angel.joy.enderes.2025','_blank','noopener');
+    } else if(channel==='instagram'){
+      window.open('https://www.instagram.com/naileditby_gel/','_blank','noopener');
+    }
   });});
   loadAvailability();
 })();
