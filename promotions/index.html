@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7e8ec">
+  <meta name="description" content="See the latest promotions from Naileditby_gel.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Naileditby_gel">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app-shell.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/config.js"></script>
+  <title>Promotions | Naileditby_gel</title>
+  <style>
+    .promotion-list{display:grid;grid-template-columns:1fr;gap:16px}
+    .promotion-card{display:flex;flex-direction:column;align-items:flex-start;max-width:440px;width:100%;padding:16px;border:1px solid var(--line);border-radius:20px;background:#fff}
+    .promotion-card img{display:block;width:100%;max-height:520px;object-fit:contain;border-radius:14px;background:#fff6fa}
+    .promotion-card h2{margin:14px 0 0;font-size:21px}
+    .promotion-card p{margin:8px 0 0;color:var(--muted);font:13px/1.6 Arial,sans-serif}
+    .promotion-card .primary-button{margin-top:14px}
+    .empty-promotions{padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff;color:var(--muted);font:14px/1.6 Arial,sans-serif}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="/app" aria-label="Naileditby_gel home">
+        <span class="brand-mark">N</span>
+        <span><strong>Naileditby_gel</strong><small>YOUR NAIL STUDIO</small></span>
+      </a>
+      <button class="install-button" id="installButton" type="button" hidden>Install app</button>
+    </header>
+    <main>
+      <section class="section" style="margin-top:28px">
+        <div class="section-heading"><div>
+          <p class="eyebrow">A LITTLE SOMETHING SPECIAL</p>
+          <h1 style="font-size:clamp(30px,7vw,42px);font-weight:400">Current Promotions <em>♡</em></h1>
+          <p class="welcome-copy">Explore Gel's latest offers and special treats.</p>
+        </div></div>
+        <div id="promotionList" class="promotion-list" aria-live="polite"><p class="empty-promotions">Loading current promotions…</p></div>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <a href="/app"><span>⌂</span>Home</a>
+      <a href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+      <a href="/book"><span>＋</span>Book</a>
+      <a href="/booking-status.html"><span>◷</span>Status</a>
+      <a class="active" href="/promotions" aria-current="page"><span>✧</span>Promo</a>
+    </nav>
+    <footer>© <span id="year"></span> Naileditby_gel · Made with care ♡</footer>
+  </div>
+  <script>
+  (function(){
+    const cfg=window.NAILEDIT_CONFIG||{};
+    const list=document.getElementById('promotionList');
+    const esc=v=>String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const activeNow=p=>{const now=Date.now();return (!p.starts_at||new Date(p.starts_at).getTime()<=now)&&(!p.ends_at||new Date(p.ends_at).getTime()>=now);};
+    async function loadPromotions(){
+      try{
+        if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||!window.supabase)throw new Error('Promotions are temporarily unavailable.');
+        const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+        const {data,error}=await sb.from('site_promotions').select('title,image_path,starts_at,ends_at,display_order,is_published').eq('is_published',true).order('display_order').order('created_at');
+        if(error)throw error;
+        const promos=(data||[]).filter(activeNow);
+        if(!promos.length){list.innerHTML='<p class="empty-promotions">There are no active promotions right now. Please check back soon. ♡</p>';return;}
+        list.innerHTML=promos.map(p=>{
+          const image=p.image_path?sb.storage.from('nail-portfolio').getPublicUrl(p.image_path).data.publicUrl:'';
+          return '<article class="promotion-card">'+(image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'" loading="lazy">':'')+'<h2>'+esc(p.title)+'</h2><p>Special offer from Naileditby_gel</p><a class="primary-button" href="/book">Book an appointment ♡</a></article>';
+        }).join('');
+      }catch(error){console.warn('Promotions could not be loaded:',error);list.innerHTML='<p class="empty-promotions">Promotions are temporarily unavailable. Please try again later.</p>';}
+    }
+    loadPromotions();
+  })();
+  </script>
+  <script src="/app-shell.js" defer></script>
+</body>
+</html>
