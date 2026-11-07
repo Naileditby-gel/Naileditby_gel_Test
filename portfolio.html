@@ -42,4 +42,10 @@ document.getElementById('uploadBtn').addEventListener('click',async()=>{const ti
 async function deleteDesign(id){if(!confirm('Remove this design from the portfolio?'))return;const {data,error}=await sb.from('portfolio_designs').select('id,image_path').eq('id',id).single();if(error){msg('Could not find that design.');return}const del=await sb.from('portfolio_designs').delete().eq('id',id);if(del.error){msg('Could not remove design: '+del.error.message);return}await sb.storage.from('nail-portfolio').remove([data.image_path]);msg('Design removed from the test portfolio.');await Promise.all([loadDesigns(),loadOwnerList()])}
 sb.auth.getSession().then(({data})=>setOwnerUI(data.session));sb.auth.onAuthStateChange((_event,session)=>setOwnerUI(session));loadDesigns();
 })();
-</script><nav class="site-app-nav" aria-label="App navigation"><a href="/app"><span>⌂</span>Home</a><a class="active" href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a><a href="/book"><span>＋</span>Book</a><a href="/booking-status.html"><span>◷</span>Status</a></nav><script src="/app-shell.js" defer></script></body></html>
+</script><nav class="site-app-nav" aria-label="App navigation">
+<a href="/app"><span>⌂</span>Home</a>
+<a class="active" href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+<a href="/book"><span>＋</span>Book</a>
+<a href="/booking-status.html"><span>◷</span>Status</a>
+<a href="/promotions/"><span>✧</span>Promo</a>
+</nav><script src="/app-shell.js" defer></script></body></html>
