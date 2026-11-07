@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Naileditby_gel | Nail Tech</title>
 <meta name="description" content="Naileditby_gel — pretty nails, self-care and confidence. Book your nail appointment with Gel.">
+<meta name="theme-color" content="#f7e8ec">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/site-install.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
 :root {
@@ -127,6 +131,12 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 </style>
 </head>
 <body><div class="luxury-strip">♡ NAILEDITBY_GEL • PRETTY NAILS • SELF CARE • CONFIDENCE ♡</div>
+<div class="app-install-banner" id="appInstallBanner" role="region" aria-label="Install the Naileditby_gel app">
+  <p><strong>♡ A little beauty, one tap away.</strong> Install our app for easier browsing, booking and booking updates.</p>
+  <button id="appInstallButton" type="button">♡ Install the app</button>
+  <button class="install-dismiss" id="appInstallDismiss" type="button" aria-label="Dismiss install message">×</button>
+  <p class="app-install-help" id="appInstallHelp" role="status" aria-live="polite"></p>
+</div>
 <nav class="nav">
   <div class="navin">
     <div class="logo">naileditby<span>_gel</span> ♡</div>
@@ -671,5 +681,6 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   let tries=0; function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();</script>
+<script src="/site-install.js" defer></script>
 </body>
 </html>
