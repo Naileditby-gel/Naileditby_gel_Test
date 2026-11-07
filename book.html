@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fff0f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Naileditby_gel">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app-nav.css">
+  <title>Book an Appointment • Naileditby_gel</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:#fff8f8;color:#553d46;font-family:Arial,sans-serif}
+    body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+    .booking-app-header{height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(16px,4vw,34px);background:rgba(255,250,249,.97);border-bottom:1px solid #f0dfe3}
+    .brand{display:flex;align-items:center;gap:10px;color:#553d46;text-decoration:none}
+    .brand-mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid #d8c29a;border-radius:50%;font:italic 24px Georgia;color:#b8798b}
+    .brand strong{display:block;font:600 16px Georgia}
+    .brand small{display:block;margin-top:3px;font-size:9px;letter-spacing:2px;color:#b99b6b}
+    .header-note{font-size:12px;color:#a77b89}
+    .booking-frame-wrap{height:calc(100dvh - 142px - env(safe-area-inset-bottom));min-height:520px;background:#fff8f8}
+    .booking-frame{display:block;width:100%;height:100%;border:0;background:#fff}
+    .site-app-nav a.book-active{color:#b86f83}
+    @media(max-width:520px){.header-note{font-size:10px}.booking-app-header{height:60px}.booking-frame-wrap{height:calc(100dvh - 136px - env(safe-area-inset-bottom));min-height:480px}}
+  </style>
+</head>
+<body>
+  <header class="booking-app-header">
+    <a class="brand" href="/app" aria-label="Naileditby_gel app home">
+      <span class="brand-mark">N</span>
+      <span><strong>Naileditby_gel</strong><small>YOUR NAIL STUDIO</small></span>
+    </a>
+    <span class="header-note">Your self-care time ♡</span>
+  </header>
+  <main class="booking-frame-wrap">
+    <iframe class="booking-frame" id="bookingFrame" title="Naileditby_gel appointment booking" loading="eager"></iframe>
+  </main>
+  <nav class="site-app-nav" aria-label="App navigation">
+    <a href="/app"><span>⌂</span>Home</a>
+    <a href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+    <a class="active book-active" href="/book"><span>＋</span>Book</a>
+    <a href="/booking-status.html"><span>◷</span>Status</a>
+  </nav>
+  <script>
+    // Keep the original booking form, validation, Supabase calls and selected-look query intact.
+    // It runs same-origin inside this app shell; no booking or payment logic is copied or rewritten.
+    const frame = document.getElementById('bookingFrame');
+    frame.src = '/index.html' + window.location.search + '#booking';
+  </script>
+</body>
+</html>
