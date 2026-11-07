@@ -33,7 +33,7 @@ h2{margin:0;font-size:23px;font-weight:400}
 .action-card>span:not(.action-icon){margin-top:6px;color:var(--muted);font:11px/1.5 Arial,sans-serif}
 .action-card b{margin-top:auto;padding-top:14px;color:var(--rose-deep);font:11px Arial,sans-serif}
 .note-card{display:flex;gap:16px;align-items:center;padding:20px;border:1px solid #eadcc7;border-radius:18px;background:#fffdf9}
-.business-location{margin:12px 0 0;text-align:center;color:var(--rose);font:600 11px/1.5 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase}
+
 .note-flower{color:var(--gold);font-size:34px}
 .note-card h2{font-size:20px}
 .note-card p:last-child{margin:7px 0 0;color:var(--muted);font:12px/1.6 Arial,sans-serif}
