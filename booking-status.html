@@ -165,7 +165,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
   try{
    const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
    if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');$('emptyState').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not verify this private link. Please paste the full link again, or contact Gel for a fresh link.');return;}
-   if(!data){showEmptyState();setMessage('No ongoing appointment was found for this link.');return;}
+   if(!data){showEmptyState();return;}
    render(data);
   }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
  }
