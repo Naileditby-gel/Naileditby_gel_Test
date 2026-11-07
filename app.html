@@ -14,6 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/config.js"></script>
   <title>Naileditby_gel | Your Nail Studio</title>
+  <style>.promo-shortcut-wrap{display:flex;justify-content:center;margin:18px auto 0}.promo-shortcut-button{display:inline-flex;justify-content:center;align-items:center;min-width:180px;padding:12px 28px;border:1px solid #ead4dd;border-radius:999px;background:#fff;color:#6f2944;text-decoration:none;font:600 14px Poppins,sans-serif;box-shadow:0 6px 18px rgba(111,41,68,.06)}.promo-shortcut-button:focus-visible{outline:3px solid #f8a6c2;outline-offset:3px}</style>
 </head>
 <body>
   <div class="app">
@@ -50,6 +51,9 @@
           <a class="action-card" href="/booking-status.html"><span class="action-icon">◷</span><strong>Booking status</strong><span>Check your request and payment</span><b>View status ↗</b></a>
           <a class="action-card" href="/aftercare.html"><span class="action-icon">❀</span><strong>Nail aftercare</strong><span>Keep your set looking beautiful</span><b>Read the guide ↗</b></a>
         </div>
+        <div class="promo-shortcut-wrap" id="promoShortcutWrap" hidden>
+          <a class="promo-shortcut-button" href="#appPromotions">♡ Promo</a>
+        </div>
       </section>
 
       <section class="note-card">
@@ -74,7 +78,7 @@
     const esc=v=>String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const activeNow=p=>{const now=Date.now();return (!p.starts_at||new Date(p.starts_at).getTime()<=now)&&(!p.ends_at||new Date(p.ends_at).getTime()>=now);};
     async function loadPromotions(){
-      const section=document.getElementById('appPromotions'),list=document.getElementById('appPromotionList');
+      const section=document.getElementById('appPromotions'),list=document.getElementById('appPromotionList'),shortcut=document.getElementById('promoShortcutWrap');
       try{
         const {data,error}=await sb.from('site_promotions').select('title,image_path,starts_at,ends_at,display_order,is_published').eq('is_published',true).order('display_order').order('created_at');
         if(error)throw error;
@@ -84,7 +88,7 @@
           const image=p.image_path?sb.storage.from('nail-portfolio').getPublicUrl(p.image_path).data.publicUrl:'';
           return '<article class="action-card" style="padding:14px;min-width:0">'+(image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'" loading="lazy" style="width:100%;height:auto;max-height:280px;object-fit:contain;border-radius:14px;background:#fff6fa">':'')+'<strong style="display:block;margin-top:10px">'+esc(p.title)+'</strong><span>Special offer from Naileditby_gel</span><a class="primary-button" style="display:inline-flex;margin-top:12px" href="/book">Book an appointment ♡</a></article>';
         }).join('');
-        section.hidden=false;
+        section.hidden=false;shortcut.hidden=false;
       }catch(error){console.warn('Promotions could not be loaded:',error);}
     }
     loadPromotions();
