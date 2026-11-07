@@ -1,0 +1,26 @@
+.app-install-banner{
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+  padding:11px 18px;background:linear-gradient(100deg,#fff0f5,#fffaf8);
+  border-bottom:1px solid #efd7e0;color:#6f2944;text-align:center;
+  font-size:13px;line-height:1.5
+}
+.app-install-banner strong{font-weight:800;color:#6f2944}
+.app-install-banner p{margin:0}
+.app-install-banner button{
+  border:0;border-radius:999px;padding:9px 17px;background:#6f2944;color:#fff;
+  font:700 12px "DM Sans",sans-serif;letter-spacing:.2px;cursor:pointer;
+  box-shadow:0 5px 14px rgba(111,41,68,.14)
+}
+.app-install-banner button:focus-visible{outline:3px solid #c79a63;outline-offset:3px}
+.app-install-banner .install-dismiss{
+  background:transparent;color:#806a72;box-shadow:none;padding:6px 9px;font-size:18px
+}
+.app-install-help{
+  display:none;width:100%;max-width:650px;margin:2px auto 0;color:#765d65;font-size:12px
+}
+.app-install-help.is-visible{display:block}
+@media(max-width:600px){
+  .app-install-banner{gap:8px;padding:10px 14px}
+  .app-install-banner p{flex:1 1 100%}
+  .app-install-banner button{padding:9px 15px}
+}
