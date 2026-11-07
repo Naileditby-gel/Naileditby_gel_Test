@@ -1,6 +1,6 @@
 const CACHE_NAME = 'naileditby-gel-app-shell-v1';
 const APP_SHELL = [
-  '/app.html',
+  '/app',
   '/app-shell.css',
   '/app-nav.css',
   '/app-shell.js',
