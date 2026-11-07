@@ -470,14 +470,43 @@ window.NAILEDIT_CONFIG = {
     form.reset(); inspoPreview.innerHTML=''; dateEl.min=localToday; timeEl.innerHTML='<option value="">Choose a date first</option>'; timeEl.disabled=true; avail.textContent='Choose a date to see available appointment times.';
     btn.disabled=false; btn.textContent='♡ Request Appointment Online';
   });
-  document.querySelectorAll('[data-channel]').forEach(function(btn){btn.addEventListener('click',function(){
+  document.querySelectorAll('[data-channel]').forEach(function(btn){btn.addEventListener('click',async function(){
+    const value=id=>{const el=document.getElementById(id);return el&&el.value.trim()?el.value.trim():'Not provided';};
+    const params=new URLSearchParams(window.location.search);
+    const portfolioDesign=params.get('design');
+    const designNote=value('bnote');
+    const designDetails=designNote!=='Not provided'?designNote:(portfolioDesign?'Selected portfolio design: '+portfolioDesign:'Please describe your preferred design when replying to Gel.');
+    const message=`Hi Gel! ♡ I’m enquiring about a nail design and price.
+
+Name: ${value('bname')}
+Mobile: ${value('bphone')}
+Email: ${value('bemail')}
+Address/Barangay: ${value('baddress')}
+Preferred date (not booked): ${value('bdate')}
+Preferred time (not booked): ${value('btime')}
+Service: ${value('bservice')}
+Design/Inspo details: ${designDetails}
+Nail length: ${value('blength')}
+Previous nail work: ${value('bprevious')}
+
+This is an enquiry only, not an appointment request or confirmation. I understand I must submit the website booking form separately to request an appointment.`;
     const channel=btn.dataset.channel;
     if(channel==='sms'){
-      window.location.href='sms:+639553697737';
-    } else if(channel==='messenger'){
-      window.open('https://facebook.com/angel.joy.enderes.2025','_blank','noopener');
-    } else if(channel==='instagram'){
-      window.open('https://www.instagram.com/naileditby_gel/','_blank','noopener');
+      const ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+      const separator=ios?'&':'?';
+      window.location.href='sms:+639553697737'+separator+'body='+encodeURIComponent(message);
+      return;
+    }
+    const target=channel==='messenger'
+      ?'https://facebook.com/angel.joy.enderes.2025'
+      :'https://www.instagram.com/naileditby_gel/';
+    try {
+      await navigator.clipboard.writeText(message);
+      window.open(target,'_blank','noopener');
+      alert('Your enquiry details have been copied. Open the chat and paste the message before sending. This is an enquiry only, not an appointment request.');
+    } catch(error) {
+      window.open(target,'_blank','noopener');
+      window.prompt('Copy your enquiry message, then paste it into the chat:',message);
     }
   });});
   loadAvailability();
