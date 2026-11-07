@@ -11,6 +11,8 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/app-shell.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/config.js"></script>
   <title>Naileditby_gel | Your Nail Studio</title>
 </head>
 <body>
@@ -33,6 +35,11 @@
           <span class="art-orbit orbit-one"></span><span class="art-orbit orbit-two"></span>
           <span class="art-star">✧</span><span class="art-script">made with love</span>
         </div>
+      </section>
+
+      <section class="section" id="appPromotions" hidden>
+        <div class="section-heading"><div><p class="eyebrow">A LITTLE SOMETHING SPECIAL</p><h2>Current Promotions ♡</h2><p class="welcome-copy">Explore Gel's latest offers and special treats.</p></div></div>
+        <div id="appPromotionList" class="action-grid"></div>
       </section>
 
       <section class="section">
@@ -59,6 +66,30 @@
     </nav>
     <footer>© <span id="year"></span> Naileditby_gel · Made with care ♡</footer>
   </div>
+  <script>
+  (function(){
+    const cfg=window.NAILEDIT_CONFIG||{};
+    if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||!window.supabase)return;
+    const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+    const esc=v=>String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const activeNow=p=>{const now=Date.now();return (!p.starts_at||new Date(p.starts_at).getTime()<=now)&&(!p.ends_at||new Date(p.ends_at).getTime()>=now);};
+    async function loadPromotions(){
+      const section=document.getElementById('appPromotions'),list=document.getElementById('appPromotionList');
+      try{
+        const {data,error}=await sb.from('site_promotions').select('title,image_path,starts_at,ends_at,display_order,is_published').eq('is_published',true).order('display_order').order('created_at');
+        if(error)throw error;
+        const promos=(data||[]).filter(activeNow);
+        if(!promos.length)return;
+        list.innerHTML=promos.map(p=>{
+          const image=p.image_path?sb.storage.from('nail-portfolio').getPublicUrl(p.image_path).data.publicUrl:'';
+          return '<article class="action-card" style="padding:14px;min-width:0">'+(image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'" loading="lazy" style="width:100%;height:auto;max-height:280px;object-fit:contain;border-radius:14px;background:#fff6fa">':'')+'<strong style="display:block;margin-top:10px">'+esc(p.title)+'</strong><span>Special offer from Naileditby_gel</span><a class="primary-button" style="display:inline-flex;margin-top:12px" href="/book">Book an appointment ♡</a></article>';
+        }).join('');
+        section.hidden=false;
+      }catch(error){console.warn('Promotions could not be loaded:',error);}
+    }
+    loadPromotions();
+  })();
+  </script>
   <script src="/app-shell.js" defer></script>
 </body>
 </html>
