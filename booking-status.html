@@ -37,6 +37,12 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <button id="check" type="button" style="margin-top:12px">Check my booking</button>
 </div>
 <div id="message" role="status" aria-live="polite">Loading your private booking details…</div>
+<div id="emptyState" class="hidden" style="margin-top:14px;padding:16px;border-radius:14px;background:#fff6fa;border:1px solid #f4e4eb;line-height:1.6">
+<strong style="color:var(--deep)">Hi beautiful! 🎀</strong>
+<p style="margin:7px 0 12px">You don't have any ongoing appointments yet. Submit your request through our booking form and your appointment updates will appear here. 💗</p>
+<a class="button" href="/book">♡ Book an appointment</a>
+<button id="showLookup" type="button" class="secondary" style="margin:10px 0 0;width:100%">Already have a booking link? Enter it here</button>
+</div>
 </section>
 <section id="details" class="card hidden" aria-live="polite"></section>
 <p class="muted" style="text-align:center">🔒 Keep your private booking link to yourself. Anyone with this link may be able to view the booking status. This page refreshes automatically while open.</p>
@@ -47,11 +53,14 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
  const $=id=>document.getElementById(id);
  const cfg=window.NAILEDIT_CONFIG||{};
  let client=null, token=new URLSearchParams(location.search).get('token')||'', timer=null;
+ try{if(!token)token=localStorage.getItem('nailedit_customer_booking_token')||'';}catch(e){}
  function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
  function money(v){return v==null?'Not set':'₱'+Number(v).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
  function niceDate(v){if(!v)return 'Not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});}
  function niceTime(v){if(!v)return 'Not set';const p=String(v).slice(0,5).split(':');if(p.length!==2)return v;const d=new Date();d.setHours(Number(p[0]),Number(p[1]),0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
- function setMessage(t){$('message').textContent=t;}
+ function setMessage(t){$('message').textContent=t;$('message').classList.remove('hidden');}
+ function showEmptyState(){$('details').classList.add('hidden');$('lookup').classList.add('hidden');$('message').classList.add('hidden');$('emptyState').classList.remove('hidden');}
+ function rememberToken(){try{if(token)localStorage.setItem('nailedit_customer_booking_token',token);}catch(e){}}
  function customerCalendarData(b){
   const date=String(b.appointment_date||''),time=String(b.appointment_time||'').slice(0,5);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||! /^\d{2}:\d{2}$/.test(time))return null;
@@ -148,15 +157,15 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
     if(bank)bank.textContent='QR code could not load. Please refresh this page.';
    }
   }
-  $('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
+  $('emptyState').classList.add('hidden');$('lookup').classList.add('hidden');rememberToken();$('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
  }
  async function load(){
   if(!client){setMessage('The booking service did not load. Please refresh this page.');return;}
-  if(!token){$('lookup').classList.remove('hidden');setMessage('Open the private booking link Gel shared with you, or paste its booking code below.');return;}
+  if(!token){showEmptyState();return;}
   try{
    const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
-   if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not verify this private link. Please paste the full link again, or contact Gel for a fresh link.');return;}
-   if(!data){$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not find a booking for this private link. Please check the link or ask Gel for a fresh one.');return;}
+   if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');$('emptyState').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not verify this private link. Please paste the full link again, or contact Gel for a fresh link.');return;}
+   if(!data){showEmptyState();setMessage('No ongoing appointment was found for this link.');return;}
    render(data);
   }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
  }
@@ -175,9 +184,10 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
   token=raw;const u=new URL(location.href);u.searchParams.set('token',token);history.replaceState({},'',u);$('lookup').classList.add('hidden');load();
 }
  $('check').addEventListener('click',readToken);
+ $('showLookup').addEventListener('click',function(){$('emptyState').classList.add('hidden');$('lookup').classList.remove('hidden');$('token').focus();setMessage('Paste the private booking link Gel shared with you.');});
  if(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase&&window.supabase.createClient)client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  if(!client)setMessage('Booking service could not load. Please refresh the page.');
- if(!token)$('lookup').classList.remove('hidden');
+ if(!token)showEmptyState();
  load();timer=setInterval(load,30000);
 })();
 </script>
