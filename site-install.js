@@ -30,12 +30,13 @@
     installButton.textContent = '♡ Install the app';
   });
 
-  installButton.addEventListener('click', async () => {
+  // Shared install action for both the announcement and the FAQ button.
+  window.naileditInstallApp = async function () {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       try { await deferredPrompt.userChoice; } catch (_) {}
       deferredPrompt = null;
-      return;
+      return true;
     }
 
     if (isIOS) {
@@ -43,7 +44,10 @@
     } else {
       showHelp('If your browser supports installation, open its menu (⋮) and choose “Install app” or “Add to Home screen”.');
     }
-  });
+    return false;
+  };
+
+  installButton.addEventListener('click', window.naileditInstallApp);
 
   dismissButton?.addEventListener('click', () => {
     banner.hidden = true;
