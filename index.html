@@ -133,8 +133,8 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 <body><div class="luxury-strip">♡ NAILEDITBY_GEL • PRETTY NAILS • SELF CARE • CONFIDENCE ♡</div>
 <div class="app-install-banner" id="appInstallBanner" role="region" aria-label="Install the Naileditby_gel app">
   <p><strong>♡ A little beauty, one tap away.</strong> Install our app for easier browsing, booking and booking updates.</p>
-  <button id="appInstallButton" type="button">♡ Install the app</button>
-  <button class="install-dismiss" id="appInstallDismiss" type="button" aria-label="Dismiss install message">×</button>
+  <button id="appInstallButton" type="button" onclick="window.naileditInstallApp(event)">♡ Install the app</button>
+  <button class="install-dismiss" id="appInstallDismiss" type="button" aria-label="Dismiss install message" onclick="window.naileditDismissInstall(event)">×</button>
   <p class="app-install-help" id="appInstallHelp" role="status" aria-live="polite"></p>
 </div>
 <nav class="nav">
@@ -681,6 +681,58 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   let tries=0; function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();</script>
-<script src="/site-install.js" defer></script>
+<style>
+/* Stable install-banner layout: keep dismiss control beside the install button. */
+.app-install-banner{display:grid!important;grid-template-columns:minmax(0,1fr) auto 36px;align-items:center;gap:10px 14px}
+.app-install-banner>p:first-child{grid-column:1;min-width:0}
+.app-install-banner>#appInstallButton{grid-column:2;grid-row:1}
+.app-install-banner>#appInstallDismiss{grid-column:3;grid-row:1;display:inline-flex;align-items:center;justify-content:center;min-width:36px;min-height:36px}
+.app-install-banner>#appInstallHelp{grid-column:1/-1}
+@media(max-width:600px){
+ .app-install-banner{grid-template-columns:minmax(0,1fr) 36px;gap:8px 10px}
+ .app-install-banner>p:first-child{grid-column:1/-1}
+ .app-install-banner>#appInstallButton{grid-column:1;grid-row:2;justify-self:center}
+ .app-install-banner>#appInstallDismiss{grid-column:2;grid-row:2}
+}
+</style>
+<script>
+(() => {
+  const banner=document.getElementById('appInstallBanner');
+  const install=document.getElementById('appInstallButton');
+  const dismiss=document.getElementById('appInstallDismiss');
+  const help=document.getElementById('appInstallHelp');
+  if(!banner||!install||!dismiss||!help)return;
+  let promptEvent=null;
+  const showHelp=(message)=>{help.textContent=message;help.classList.add('is-visible');};
+  window.addEventListener('beforeinstallprompt',(event)=>{event.preventDefault();promptEvent=event;});
+  window.naileditInstallApp=async(event)=>{
+    event?.preventDefault();
+    if(promptEvent){
+      const prompt=promptEvent;promptEvent=null;
+      try{await prompt.prompt();await prompt.userChoice;}catch(error){showHelp('Please use your browser menu (⋮) and choose “Install app” or “Add to Home screen”.');}
+      return;
+    }
+    const ua=navigator.userAgent||'';
+    if(/iphone|ipad|ipod/i.test(ua)){
+      showHelp('To install on iPhone or iPad, open this page in Safari, tap Share, then choose “Add to Home Screen”.');
+    }else{
+      showHelp('To install, open your browser menu (⋮) and choose “Install app” or “Add to Home screen”. If that option is unavailable, this browser may not support app installation.');
+    }
+  };
+  window.naileditDismissInstall=(event)=>{
+    event?.preventDefault();
+    banner.hidden=true;
+    try{localStorage.setItem('nailedit-app-install-dismissed','1');}catch(_){}
+  };
+  try{
+    if(localStorage.getItem('nailedit-app-install-dismissed')==='1' ||
+       matchMedia('(display-mode: standalone)').matches || navigator.standalone===true) banner.hidden=true;
+  }catch(_){}
+  window.addEventListener('appinstalled',()=>{banner.hidden=true;});
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));
+  }
+})();
+</script>
 </body>
 </html>
