@@ -1,10 +1,11 @@
-const CACHE_NAME = 'naileditby-gel-app-shell-v9';
+const CACHE_NAME = 'naileditby-gel-app-shell-v10';
 const APP_SHELL = [
   '/app-shell.css',
   '/app-nav.css',
   '/app-shell.js',
   '/manifest.json',
-  '/app-icon.svg'
+  '/app-icon.svg',
+  '/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {
