@@ -172,7 +172,19 @@ window.NAILEDIT_CONFIG = {
       '<details><summary>Is a deposit required to book?</summary><p>Yes. A deposit is required to secure your appointment. Your booking is confirmed once Gel has reviewed your request and confirmed the appointment details and deposit.</p></details>' +
       '<details><summary>How much do nail services cost?</summary><p>Pricing may vary depending on nail length, design, and details. Please share your inspiration when booking so Gel can provide the appropriate price.</p></details>' +
       '<details><summary>Do you offer promotions?</summary><p>We occasionally offer special promotions. Check the Current Promotions section for available offers and their terms.</p></details>' +
-      '<details><summary>What if I need to change or cancel my appointment?</summary><p>Please contact Gel as soon as possible. Appointment changes are subject to availability and the business policies.</p></details>';
+      '<details><summary>What if I need to change or cancel my appointment?</summary><p>Please contact Gel as soon as possible. Appointment changes are subject to availability and the business policies.</p></details>' +
+      '<details><summary>How can I install the Naileditby_gel app?</summary><p>Install the app anytime for quicker access to browsing and booking. On Android, tap the button below; if no prompt appears, open Chrome menu (⋮) and choose “Install app” or “Add to Home screen”. On iPhone or iPad, open this website in Safari, tap Share, then choose “Add to Home Screen”.</p><p><button type="button" id="faqInstallAppButton" style="border:0;border-radius:999px;padding:11px 18px;background:#6f2944;color:#fff;font-weight:700;cursor:pointer">♡ Install the app</button></p><p id="faqInstallHelp" role="status" aria-live="polite" hidden>If the install prompt is unavailable, use your browser menu (Android Chrome) or Safari Share menu (iPhone/iPad) and choose “Add to Home Screen”.</p></details>';
+    var faqInstallButton = document.getElementById('faqInstallAppButton');
+    if (faqInstallButton) {
+      faqInstallButton.addEventListener('click', function (event) {
+        if (typeof window.naileditInstallApp === 'function') {
+          window.naileditInstallApp(event);
+        } else {
+          var help = document.getElementById('faqInstallHelp');
+          if (help) help.hidden = false;
+        }
+      });
+    }
     faq.dataset.evergreenReady = 'true';
   }
   function addSmsBookingOption() {
