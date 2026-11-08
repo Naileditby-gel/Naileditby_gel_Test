@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fff0f6">
+<meta name="theme-color" content="#fff0f6"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Naileditby_gel"><link rel="manifest" href="/manifest.json"><link rel="icon" href="/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/app-nav.css">
 <title>My Booking • Naileditby_gel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -31,27 +31,52 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <section class="card">
 <h1>My Booking Status 💗</h1>
 <p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p>
-<div id="lookup" class="hidden">
-<label for="token">Paste your private booking link or code</label>
-<input id="token" autocomplete="off" spellcheck="false" placeholder="Paste your private booking link or code">
-<button id="check" type="button" style="margin-top:12px">Check my booking</button>
-</div>
 <div id="message" role="status" aria-live="polite">Loading your private booking details…</div>
+<div id="emptyState" class="hidden" style="margin-top:14px;padding:18px;border-radius:14px;background:#fff6fa;border:1px solid #f4e4eb;line-height:1.65;text-align:center">
+<strong style="color:var(--deep);font-size:18px">💗 No Appointment Status</strong>
+<p style="margin:9px 0 14px">Hi beautiful! You don't have an appointment request yet. Please submit your appointment request first. Once submitted, you can check your appointment status here. 🎀</p>
+<a class="button" href="/book">♡ Submit an Appointment Request</a>
+</div>
 </section>
 <section id="details" class="card hidden" aria-live="polite"></section>
+<section id="historySection" class="card hidden">
+<h2 style="margin:0 0 6px;color:var(--deep);font-size:21px">♡ Completed Appointments</h2>
+<p class="muted" style="margin-top:0">Your previous nail appointments, saved in one place.</p>
+<div id="historyList"></div>
+</section>
 <p class="muted" style="text-align:center">🔒 Keep your private booking link to yourself. Anyone with this link may be able to view the booking status. This page refreshes automatically while open.</p>
-<p style="text-align:center"><a class="button secondary" href="./">Back to Naileditby_gel</a></p>
+<p style="text-align:center"><a class="button secondary" href="/app">Back to app home</a></p>
 </main>
 <script>
 (function(){
  const $=id=>document.getElementById(id);
  const cfg=window.NAILEDIT_CONFIG||{};
- let client=null, token=new URLSearchParams(location.search).get('token')||'', timer=null;
+ let client=null, token=new URLSearchParams(location.search).get('token')||'', tokens=[], timer=null;
+ try{
+  const saved=JSON.parse(localStorage.getItem('nailedit_customer_booking_tokens')||'[]');
+  if(Array.isArray(saved))tokens=saved.filter(v=>typeof v==='string');
+  const legacy=localStorage.getItem('nailedit_customer_booking_token');
+  if(token&&!tokens.includes(token))tokens.push(token);
+  if(legacy&&!tokens.includes(legacy))tokens.push(legacy);
+ }catch(e){}
+ if(token&&!tokens.includes(token))tokens.push(token);
  function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
  function money(v){return v==null?'Not set':'₱'+Number(v).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
  function niceDate(v){if(!v)return 'Not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});}
  function niceTime(v){if(!v)return 'Not set';const p=String(v).slice(0,5).split(':');if(p.length!==2)return v;const d=new Date();d.setHours(Number(p[0]),Number(p[1]),0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
- function setMessage(t){$('message').textContent=t;}
+ function setMessage(t){$('message').textContent=t;$('message').classList.remove('hidden');}
+ function showEmptyState(){$('details').classList.add('hidden');$('message').classList.add('hidden');$('emptyState').classList.remove('hidden');}
+ function rememberToken(){try{if(token){localStorage.setItem('nailedit_customer_booking_token',token);if(!tokens.includes(token))tokens.push(token);localStorage.setItem('nailedit_customer_booking_tokens',JSON.stringify(tokens.slice(-30)));}}catch(e){}} 
+ function renderHistory(items){
+  const section=$('historySection'),list=$('historyList');
+  if(!items.length){section.classList.add('hidden');list.innerHTML='';return;}
+  list.innerHTML=items.sort((a,b)=>String(b.appointment_date||'').localeCompare(String(a.appointment_date||''))).map((b,i)=>{
+   const id='history-'+i, label=String(b.status||'completed').toLowerCase();
+   return '<article style="margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fffafd"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><div><strong style="color:var(--deep)">'+esc(niceDate(b.appointment_date))+'</strong><div class="muted">'+esc(b.service||'Nail appointment')+' · '+esc(niceTime(b.appointment_time))+'</div></div><span class="status completed">Completed</span></div><button type="button" class="secondary" style="margin-top:12px" data-history-toggle="'+id+'">View Summary</button><div id="'+id+'" class="hidden" style="margin-top:12px"><div class="grid"><div class="item"><small>Appointment date</small><strong>'+esc(niceDate(b.appointment_date))+'</strong></div><div class="item"><small>Appointment time</small><strong>'+esc(niceTime(b.appointment_time))+'</strong></div><div class="item"><small>Service</small><strong>'+esc(b.service||'Nail appointment')+'</strong></div><div class="item"><small>Payment status</small><strong>'+esc(String(b.deposit_status||'pending').toLowerCase()==='paid'?'Deposit verified':(b.payment_submitted_at?'Payment submitted':'Not recorded'))+'</strong></div><div class="item"><small>Total price</small><strong>'+esc(money(b.total_design_price))+'</strong></div><div class="item"><small>Deposit</small><strong>'+esc(money(b.deposit_amount))+'</strong></div><div class="item"><small>Remaining balance</small><strong>'+esc(b.total_design_price!=null&&b.deposit_amount!=null?money(Number(b.total_design_price)-Number(b.deposit_amount)):'Not set')+'</strong></div><div class="item"><small>Booking status</small><strong>Appointment completed</strong></div></div></div></article>';
+  }).join('');
+  list.querySelectorAll('[data-history-toggle]').forEach(btn=>btn.addEventListener('click',()=>{const panel=$(btn.getAttribute('data-history-toggle'));panel.classList.toggle('hidden');btn.textContent=panel.classList.contains('hidden')?'View Summary':'Hide Summary';}));
+  section.classList.remove('hidden');
+ }
  function customerCalendarData(b){
   const date=String(b.appointment_date||''),time=String(b.appointment_time||'').slice(0,5);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||! /^\d{2}:\d{2}$/.test(time))return null;
@@ -148,37 +173,36 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
     if(bank)bank.textContent='QR code could not load. Please refresh this page.';
    }
   }
-  $('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
+  $('emptyState').classList.add('hidden');rememberToken();$('details').classList.remove('hidden');setMessage('Your booking details are up to date. 💗');
  }
  async function load(){
   if(!client){setMessage('The booking service did not load. Please refresh this page.');return;}
-  if(!token){$('lookup').classList.remove('hidden');setMessage('Open the private booking link Gel shared with you, or paste its booking code below.');return;}
+  if(!tokens.length){showEmptyState();renderHistory([]);return;}
   try{
-   const {data,error}=await client.rpc('get_customer_booking_status',{p_access_token:token});
-   if(error){console.error('Customer booking status lookup failed:',error);$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not verify this private link. Please paste the full link again, or contact Gel for a fresh link.');return;}
-   if(!data){$('details').classList.add('hidden');$('lookup').classList.remove('hidden');setMessage('We could not find a booking for this private link. Please check the link or ask Gel for a fresh one.');return;}
-   render(data);
-  }catch(e){setMessage('Connection issue. Please check your internet and try again.');}
+   const results=await Promise.all(tokens.map(async savedToken=>{
+    const response=await client.rpc('get_customer_booking_status',{p_access_token:savedToken});
+    if(response.error){console.warn('A saved booking could not be loaded:',response.error);return null;}
+    return response.data?{...response.data,_savedToken:savedToken}:null;
+   }));
+   const bookings=results.filter(Boolean);
+   const completed=bookings.filter(b=>String(b.status||'').toLowerCase()==='completed');
+   const current=bookings.filter(b=>!['completed','cancelled','canceled','rejected','expired'].includes(String(b.status||'').toLowerCase()))
+      .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+   renderHistory(completed);
+   if(current.length){token=current[0]._savedToken;render(current[0]);}
+   else{token='';showEmptyState();setMessage('You have no ongoing appointment right now. Your completed appointments are saved below. 💗');}
+  }catch(e){console.error('Booking dashboard refresh failed:',e);setMessage('Connection issue. Please check your internet and try again.');}
  }
- function readToken(){
-  let raw=$('token').value.trim();
-  if(!raw)return setMessage('Please paste your private booking link or code.');
-  try{
-   if(/^https?:\/\//i.test(raw)){
-    const pasted=new URL(raw);
-    raw=pasted.searchParams.get('token')||'';
-    if(/^https?:\/\//i.test(raw)){const nested=new URL(raw);raw=nested.searchParams.get('token')||'';}
-   }
-  }catch(e){raw='';}
-  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw))
-   return setMessage('That link or code does not look valid. Please open the original private link Gel shared, or copy the full link again.');
-  token=raw;const u=new URL(location.href);u.searchParams.set('token',token);history.replaceState({},'',u);$('lookup').classList.add('hidden');load();
-}
- $('check').addEventListener('click',readToken);
  if(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase&&window.supabase.createClient)client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  if(!client)setMessage('Booking service could not load. Please refresh the page.');
- if(!token)$('lookup').classList.remove('hidden');
+ if(!tokens.length)showEmptyState();
  load();timer=setInterval(load,30000);
 })();
 </script>
-</body></html>
+<nav class="site-app-nav" aria-label="App navigation">
+<a href="/app"><span>⌂</span>Home</a>
+<a href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+<a href="/book"><span>＋</span>Book</a>
+<a class="active" href="/booking-status.html"><span>◷</span>Status</a>
+<a href="/promotions"><span>✧</span>Promo</a>
+</nav><script src="/app-shell.js" defer></script></body></html>

@@ -1,0 +1,20 @@
+{
+  "id": "/app",
+  "name": "Naileditby_gel",
+  "short_name": "Naileditby",
+  "description": "Browse nail designs, request appointments and check your booking status.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffaf9",
+  "theme_color": "#f7e8ec",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

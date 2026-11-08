@@ -28,7 +28,7 @@
 </div></section></main>
 <script>
 (function(){
-const cfg=window.NAILEDIT_CONFIG||{};const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);const $=id=>document.getElementById(id);let currentTab='gallery';
+const cfg=window.NAILEDIT_CONFIG||{};const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);const $=id=>document.getElementById(id);const requestedTab=new URLSearchParams(location.search).get('tab');let currentTab=['gallery','rates','promos','promoServices'].includes(requestedTab)?requestedTab:'gallery';
 function message(t){$('status').textContent=t;$('status').classList.remove('hidden')}
 function loginMessage(t){$('loginMsg').textContent=t;$('loginMsg').classList.remove('hidden')}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

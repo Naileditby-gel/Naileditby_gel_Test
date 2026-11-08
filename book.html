@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff8f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Naileditby_gel">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app-nav.css">
+<title>Book an Appointment • Naileditby_gel</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+:root {
+  --pink:#f47aa5; --deep:#7d2847; --soft:#fff3f7; --blush:#fce0ea; --cream:#fffaf8;
+  --text:#3f2630; --muted:#765d65; --white:#fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--text);font-family:"DM Sans",sans-serif}
+a{color:inherit;text-decoration:none}
+.nav{position:sticky;top:0;z-index:10;background:rgba(255,250,248,.92);backdrop-filter:blur(12px);border-bottom:1px solid #f2d4df}
+.navin{max-width:1100px;margin:auto;padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:"Playfair Display",serif;font-size:25px;color:var(--deep);font-weight:700}
+.logo span{color:var(--pink)}
+.links{display:flex;gap:22px;font-size:14px;font-weight:600}
+.btn{display:inline-block;padding:13px 20px;border-radius:999px;background:var(--pink);color:white;font-weight:700;box-shadow:0 8px 22px rgba(244,122,165,.25)}
+.btn.alt{background:white;color:var(--deep);border:1px solid #edbfd0}
+.hero{max-width:1100px;margin:auto;padding:54px 22px 36px;display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
+.kicker{color:var(--pink);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px}
+h1{font-family:"Playfair Display",serif;font-size:clamp(48px,7vw,82px);line-height:.98;margin:14px 0;color:var(--deep)}
+h1 em{color:var(--pink);font-style:normal}
+.lead{font-size:18px;line-height:1.7;color:var(--muted);max-width:540px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.heroimg{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:28px;box-shadow:0 22px 60px rgba(125,40,71,.18);border:8px solid white}
+.section{padding:78px 22px}
+.section.soft{background:var(--soft)}
+.wrap{max-width:1100px;margin:auto}
+.center{text-align:center}
+h2{font-family:"Playfair Display",serif;font-size:42px;color:var(--deep);margin:8px 0 12px}
+.sub{color:var(--muted);max-width:620px;margin:0 auto 32px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:white;border:1px solid #f1d6e0;border-radius:22px;padding:26px;box-shadow:0 10px 30px rgba(125,40,71,.06)}
+.card h3{margin:0 0 9px;color:var(--deep);font-family:"Playfair Display",serif;font-size:25px}
+.price{font-size:25px;font-weight:800;color:var(--pink);margin:12px 0}
+.card p{color:var(--muted);line-height:1.6;margin:0}
+.promo{display:grid;grid-template-columns:.8fr 1.2fr;gap:32px;align-items:center}
+.promoimg{width:100%;border-radius:25px;box-shadow:0 15px 45px rgba(125,40,71,.13)}
+.badge{display:inline-block;background:var(--blush);color:var(--deep);font-weight:800;padding:8px 13px;border-radius:999px;font-size:13px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.gallery div{overflow:hidden;border-radius:20px;background:#fce0ea;min-height:230px}
+.gallery img{width:100%;height:100%;object-fit:cover}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.aboutbox{background:white;border-radius:25px;padding:32px;border:1px solid #f1d6e0}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.feature{padding:16px;border-radius:16px;background:var(--soft);font-weight:700;color:var(--deep)}
+.contact{background:var(--deep);color:white;border-radius:30px;padding:46px;text-align:center}
+.contact h2{color:white}
+.contact p{color:#f9dfe8;line-height:1.7}
+footer{padding:28px 22px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:800px){
+ .links{display:none} .hero,.promo,.about{grid-template-columns:1fr}
+ .hero{padding-top:35px} .cards,.gallery{grid-template-columns:1fr}
+ .gallery div{min-height:300px} h2{font-size:35px}
+ .contact{padding:34px 22px}
+}
+
+.channel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.channel-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--wine);font-weight:800;cursor:pointer;text-decoration:none;font-family:inherit;transition:.2s}
+.channel-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(111,41,68,.10);border-color:var(--rose)}
+.channel-btn.primary{background:linear-gradient(135deg,#d98aa6,#b95f82);color:#fff;border-color:transparent}
+.channel-help{text-align:center;font-size:12px;color:#806a72;margin:12px 0 0}
+@media(max-width:700px){.channel-grid{grid-template-columns:1fr}}
+
+.gallery-card{position:relative;overflow:hidden;border-radius:22px;background:#fff;border:1px solid rgba(167,112,132,.16);box-shadow:0 12px 35px rgba(79,42,57,.10)}
+.gallery-card img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;transition:transform .5s ease}
+.gallery-card:hover img{transform:scale(1.035)}
+.gallery-caption{padding:12px 14px 14px;text-align:center;font-size:.82rem;letter-spacing:.04em;color:#6d4b59;background:rgba(255,255,255,.96)}
+
+
+
+:root{
+  --rose:#e96d9a; --rose2:#f7b3c8; --wine:#6f2944; --ink:#38252c;
+  --cream:#fff9fb; --gold:#c79a63; --line:#efd7e0;
+}
+body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)}
+.nav{border-bottom:1px solid var(--line)}
+.logo{letter-spacing:.2px}
+.luxury-strip{background:var(--wine);color:#fff;text-align:center;padding:9px 15px;font-size:12px;letter-spacing:1.8px;text-transform:uppercase}
+.section-title{font-family:"Playfair Display",serif;color:var(--wine);font-size:44px;margin:8px 0 12px}
+.goldline{width:58px;height:2px;background:var(--gold);margin:15px auto 22px}
+.booking-wrap{max-width:900px;margin:auto;background:#fff;border:1px solid var(--line);border-radius:28px;padding:34px;box-shadow:0 20px 60px rgba(111,41,68,.10)}
+.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.booking-wrap label{display:block;font-weight:700;font-size:13px;color:var(--wine);margin-bottom:7px}
+.booking-wrap input,.booking-wrap select,.booking-wrap textarea{
+  width:100%;padding:14px 15px;border:1px solid #e8cbd5;border-radius:14px;background:#fffafb;
+  font:inherit;color:var(--ink);outline:none
+}
+.booking-wrap textarea{min-height:110px;resize:vertical}
+.booking-wrap input:focus,.booking-wrap select:focus,.booking-wrap textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px #fce3eb}
+.full{grid-column:1/-1}
+.booking-note{font-size:12px;color:#806a72;line-height:1.6;margin:12px 0 18px}
+.booking-online{margin:18px 0;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#fff7fa,#fff);border:1px solid var(--line)}
+.policy-box{margin:20px 0;padding:20px;border-radius:20px;background:#fff7fa;border:1px solid var(--line)}.policy-box h3{margin:0 0 10px;color:var(--wine);font-family:"Playfair Display",serif;font-size:24px}.policy-box ul{margin:10px 0 0;padding-left:20px;color:#6e5a62;line-height:1.75}.policy-box li{margin:5px 0}.studio-info{margin:18px 0;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);color:#6e5a62;line-height:1.8}.policy-check{display:flex;gap:10px;align-items:flex-start;margin:16px 0;color:#6e5a62;font-size:13px;line-height:1.6}.policy-check input{width:18px;height:18px;flex:0 0 auto;margin-top:2px}
+.availability{font-size:13px;color:#806a72;margin-top:8px}.slot-select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit}.online-btn{display:inline-block;border:0;border-radius:999px;padding:13px 22px;background:var(--deep);color:#fff;font-weight:800;cursor:pointer}.online-btn:disabled{opacity:.6;cursor:not-allowed}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.review{background:#fff;border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 12px 35px rgba(111,41,68,.06)}
+.stars{color:var(--gold);letter-spacing:3px;font-size:15px}
+.review p{line-height:1.7;color:#6e5a62;font-style:italic}
+.review strong{color:var(--wine)}
+.faq{max-width:820px;margin:auto}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:17px;padding:18px 20px;margin:11px 0}
+.faq summary{cursor:pointer;font-weight:800;color:var(--wine)}
+.faq p{color:#6e5a62;line-height:1.7;margin:14px 0 0}
+.social-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+.social{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;color:var(--wine);border:1px solid #edcbd6;font-weight:800}
+.gallery{grid-template-columns:repeat(4,1fr)}
+.gallery div{height:300px;min-height:0}
+.gallery div:first-child{grid-row:span 2;height:615px}
+.gallery img{transition:transform .45s ease}
+.gallery div:hover img{transform:scale(1.04)}
+.pill{display:inline-block;padding:8px 12px;background:#fff;border:1px solid #efd2dc;border-radius:999px;color:var(--wine);font-size:12px;font-weight:800;letter-spacing:.7px}
+@media(max-width:800px){
+ .booking-grid,.review-grid{grid-template-columns:1fr}
+ .full{grid-column:auto}
+ .gallery{grid-template-columns:1fr 1fr}
+ .gallery div:first-child{grid-row:auto;height:300px}
+ .section-title{font-size:36px}
+}
+
+html,body{margin:0;min-height:100%;background:#fff8f8}
+body{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
+.booking-app-header{height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(16px,4vw,34px);background:rgba(255,250,249,.97);border-bottom:1px solid #f0dfe3}
+.booking-app-brand{display:flex;align-items:center;gap:10px;color:#553d46;text-decoration:none}
+.booking-app-brand .brand-mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid #d8c29a;border-radius:50%;font:italic 24px Georgia;color:#b8798b}
+.booking-app-brand strong{display:block;font:600 16px Georgia}
+.booking-app-brand small{display:block;margin-top:3px;font-size:9px;letter-spacing:2px;color:#b99b6b}
+.booking-app-header .header-note{font-size:12px;color:#a77b89}
+#booking{display:block!important;visibility:visible!important;min-height:calc(100vh - 142px);padding-top:30px}
+#booking .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+.site-app-nav a.book-active{color:#b86f83}
+@media(max-width:520px){.booking-app-header{height:60px}.booking-app-header .header-note{font-size:10px}#booking{padding-top:22px}}
+</style>
+</head>
+<body>
+<header class="booking-app-header">
+<a class="booking-app-brand" href="/app" aria-label="Naileditby_gel app home">
+<span class="brand-mark">N</span><span><strong>Naileditby_gel</strong><small>YOUR NAIL STUDIO</small></span>
+</a><span class="header-note">Your self-care time ♡</span>
+</header>
+<main>
+<section class="section soft" id="booking">
+<div class="wrap">
+  <div class="center">
+    <div class="kicker">Reserve your self-care time</div>
+    <h2 class="section-title">Book Your Appointment</h2>
+    <div class="goldline"></div>
+    <p class="sub">Share your preferred appointment time and nail inspiration. Gel will review your request and confirm your custom price and deposit before you pay. 💗</p>
+  </div>
+  <div class="booking-wrap">
+    <form id="bookingForm">
+      <div class="booking-grid">
+        <div><label for="bname">Your Name</label><input id="bname" required placeholder="e.g. Maria"></div>
+        <div><label for="bphone">Mobile Number</label><input id="bphone" required inputmode="tel" placeholder="09xx xxx xxxx"></div>
+        <div><label for="bemail">Email Address</label><input id="bemail" type="email" required autocomplete="email" placeholder="you@example.com"></div>
+        <div class="full"><label for="baddress">Customer Address / Barangay</label><input id="baddress" required maxlength="300" autocomplete="street-address" placeholder="House / street, barangay, city (shared privately with Gel)"></div>
+        <div><label for="bdate">Choose a Date</label><input id="bdate" type="date" required></div>
+        <div><label for="btime">Available Time</label><select id="btime" class="slot-select" required><option value="">Choose a date first</option></select></div>
+        <div><label for="bservice">Service</label>
+          <select id="bservice" required>
+            <option value="">Please choose a service</option>
+            <option>Minimal Design</option>
+            <option>Extra Design</option>
+            <option>Custom Set</option>
+          </select>
+        </div>
+        <div><label for="blength">Nail Length</label>
+          <select id="blength" required><option value="">Please choose a nail length</option><option>Short</option><option>Medium</option><option>Long</option><option>Any length</option></select>
+        </div>
+        <div class="full"><label for="bprevious">Previous Nail Work</label>
+          <select id="bprevious" required><option value="">Please choose one</option><option>No, my nails are bare.</option><option>Yes, previous work by Naileditby_gel.</option><option>Yes, work done by another nail technician.</option><option>I’m not sure.</option></select>
+        </div>
+        <div class="full"><label for="bnote">Design / Inspo Notes</label><textarea id="bnote" required placeholder="Describe your preferred nail design or explain what you would like."></textarea></div>
+        <div class="full"><label for="binspo">📸 Add Inspo Photos <span style="color:var(--wine);font-weight:700">(required, up to 3 photos)</span></label><input id="binspo" type="file" accept="image/jpeg,image/png,image/webp" multiple style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff"><div style="font-size:12px;color:var(--muted);margin-top:6px">For an online appointment request, please attach at least 2 photos: (1) your preferred nail design inspiration and (2) your natural/bare nails before the appointment. Up to 3 photos, max 5MB each. Photos are optional only when using SMS, Messenger or Instagram for an enquiry. 💗 No design idea yet? <a href="portfolio.html?view=customer" target="_blank" rel="noopener" style="color:var(--wine);font-weight:700;text-decoration:underline">Explore our Nail Portfolio ♡</a> and upload a photo or screenshot of the design you like.</div><div id="inspoPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div></div>
+      </div>
+      <div class="booking-online" style="margin-top:16px"><strong style="color:var(--wine)">💗 Custom pricing & payment</strong><p style="margin:8px 0 0;color:var(--muted);line-height:1.7">No payment is required with this initial request. Gel will review your inspiration, previous nail work and appointment details, then send your total price and required deposit if your request can be accommodated. A 1-hour payment window starts only after payment instructions are issued.</p></div>
+      <div class="studio-info">
+        <strong style="color:var(--wine)">📍 Studio Information</strong><br>
+        Don Primitivo, Holy Spirit, Quezon City<br>
+        <strong>Landmark:</strong> Ginto Store<br>
+        <strong>Business hours:</strong> 8:00 AM – 4:00 PM<br>
+        <strong>Appointments:</strong> By appointment only<br>
+        <strong>Parking:</strong> No parking area
+      </div>
+      <div class="policy-box">
+        <h3>♡ Booking, Safety & Salon Policies</h3>
+        <ul>
+          <li><strong>Safety first:</strong> For everyone's safety, Gel may decline or reschedule an appointment if you have open wounds, cuts, swelling, infection, significant finger/nail injuries, or if you are feeling unwell.</li>
+          <li><strong>Price disclaimer:</strong> Final pricing is confirmed after Gel reviews your nail condition, design complexity, inspiration photos and whether existing enhancements need removal. Prices may vary based on these factors.</li>
+          <li><strong>Removal policy:</strong> Additional removal charges may apply, especially for work done by another nail technician. Removal of previous Naileditby_gel work may also incur a fee depending on the product and condition. Gel will confirm any removal fee before you agree to proceed.</li>
+          <li><strong>Custom deposit:</strong> If your request is accepted, Gel will provide the total price, required deposit and payment instructions after reviewing your request. The deposit is non-refundable once paid, subject to applicable law and any specific agreement.</li>
+          <li><strong>Payment deadline:</strong> A 1-hour payment window begins when Gel sends the payment instructions. If payment details are not submitted before the deadline, the request may expire and the time slot will be released. Submitting payment proof does not confirm the appointment; Gel must verify the payment.</li>
+          <li><strong>Late policy:</strong> 20 minutes late = ₱100 late fee. 1 hour late = appointment automatically voided/cancelled and the deposit is forfeited, unless you have informed Gel and Gel has confirmed a revised arrangement.</li>
+          <li><strong>Last-minute cancellation / no-show:</strong> The required deposit is non-refundable.</li>
+          <li><strong>No companions:</strong> No companion is allowed unless previously discussed with Gel.</li>
+          <li><strong>3-day warranty:</strong> Eligible service issues are covered for 3 days. Please contact Gel as soon as possible if there is a problem.</li>
+          <li><strong>Parking:</strong> There is no parking area at the studio.</li>
+        </ul>
+      </div>
+      <label class="policy-check"><input id="policyAgree" type="checkbox" required><span>I have read and agree to the Booking, Safety & Salon Policies above.</span></label>
+      <div class="booking-online">
+        <strong style="color:var(--wine)">♡ Online availability</strong>
+        <div id="availabilityMsg" class="availability">Choose a date to see available appointment times.</div>
+      </div>
+      <p class="booking-note">♡ This is a request, not a confirmed appointment. Please wait for Gel to review your details and send your custom price and deposit instructions. Design changes may change the price, and Gel will confirm any adjustment with you first.</p>
+      <button id="onlineBookBtn" class="online-btn" type="submit">♡ Request Appointment Online</button>
+      <div id="bookingMessage" class="availability" aria-live="polite"></div>
+      <div class="channel-grid">
+        <button class="channel-btn" type="button" data-channel="sms">📱 SMS</button>
+        <button class="channel-btn primary" type="button" data-channel="messenger">💌 Messenger</button>
+        <button class="channel-btn" type="button" data-channel="instagram">📸 Instagram</button>
+      </div>
+      <p class="channel-help">SMS, Messenger, and Instagram are for design and price enquiries only. Sending a message through these options does NOT submit an appointment request or reserve a time. To request an appointment, complete the form and tap “Request Appointment Online.”</p>
+    </form>
+      <!-- Keep the private booking status outside bookingForm so its payment form is not nested inside another form. -->
+      <div id="bookingStatusCard" class="booking-online" style="display:none;margin-bottom:18px">
+        <strong style="color:var(--wine);font-size:18px">💌 Your Booking Status</strong>
+        <div id="bookingStatusContent" style="margin-top:10px;color:var(--muted)">Checking your booking…</div>
+      </div>
+
+  </div>
+</div>
+</section>
+</main>
+<nav class="site-app-nav" aria-label="App navigation">
+<a href="/app"><span>⌂</span>Home</a>
+<a href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+<a class="active" href="/book"><span>＋</span>Book</a>
+<a href="/booking-status.html"><span>◷</span>Status</a>
+<a href="/promotions"><span>✧</span>Promo</a>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+window.NAILEDIT_CONFIG = {
+  SUPABASE_URL: 'https://tjudndgyyilrunwgyshk.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_Ly4XpP2RUZaYv5gx_pTqPQ_1Aa-t-IP'
+};
+</script>
+<script>
+
+(function(){
+  const slots=['08:00','10:00','12:00','14:00','16:00','18:00','20:00','21:00'];
+  const dateEl=document.getElementById('bdate'); const timeEl=document.getElementById('btime');
+  const avail=document.getElementById('availabilityMsg'); const form=document.getElementById('bookingForm');
+  const msg=document.getElementById('bookingMessage');
+  const today=new Date(); const localToday=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  dateEl.min=localToday;
+  let confirmed=[];
+  function esc(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function renderSlots(){
+    // Normalize Supabase TIME values (for example "12:00:00") to the same HH:MM format as the slot list.
+    const booked=new Set(confirmed
+      .filter(x=>x.appointment_date===dateEl.value)
+      .map(x=>String(x.appointment_time||'').trim().slice(0,5)));
+    timeEl.innerHTML='<option value="">Choose an available time</option>'+slots.map(t=>`<option value="${t}" ${booked.has(t)?'disabled':''}>${t}${booked.has(t)?' — 🔒 BOOKED':''}</option>`).join('');
+    const free=slots.filter(t=>!booked.has(t));
+    avail.innerHTML='<div style="font-weight:700;margin-bottom:7px">Appointment availability</div>'+slots.map(t=>booked.has(t)
+      ? `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#fce7ef;color:#9d174d;font-weight:800">${t} — 🔒 BOOKED</span>`
+      : `<span style="display:inline-block;margin:3px 5px 3px 0;padding:6px 10px;border-radius:999px;background:#e8f7ee;color:#166534;font-weight:600">${t} — Available</span>`
+    ).join('') + (free.length ? '<div style="margin-top:7px">Booked times cannot be selected. Choose any available time from the list.</div>' : '<div style="margin-top:7px"><strong>Fully booked for this date.</strong> Please choose another date.</div>');
+    timeEl.disabled=!free.length;
+  }
+  let availabilityRequestId=0;
+  async function loadAvailability(options){
+    const quiet=!!(options&&options.quiet);
+    const requestedDate=dateEl.value;
+    const requestId=++availabilityRequestId;
+    if(!requestedDate){
+      timeEl.innerHTML='<option value="">Choose a date first</option>';
+      timeEl.disabled=true;
+      avail.textContent='Choose a date to see available appointment times.';
+      return;
+    }
+    const selectedTime=timeEl.value;
+    if(!quiet){avail.textContent='Checking availability…';timeEl.disabled=true;}
+    if(!window.NAILEDIT_CONFIG||!window.supabase){
+      avail.textContent='Online calendar is being connected. Please try again soon.';
+      timeEl.value='';
+      timeEl.disabled=true;
+      return;
+    }
+    try{
+      const cfg=window.NAILEDIT_CONFIG;
+      const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+      const {data,error}=await sb.rpc('get_public_booking_availability',{p_date:requestedDate});
+      if(requestId!==availabilityRequestId||dateEl.value!==requestedDate)return;
+      if(error){
+        avail.textContent='Could not check availability right now. Please try again.';
+        timeEl.value='';
+        timeEl.disabled=true;
+        return;
+      }
+      confirmed=(data||[]).map(x=>({appointment_date:requestedDate,appointment_time:x.appointment_time}));
+      renderSlots();
+      if(selectedTime&&Array.from(timeEl.options).some(o=>o.value===selectedTime&&!o.disabled)){
+        timeEl.value=selectedTime;
+      }else if(selectedTime){
+        timeEl.value='';
+      }
+    }catch(error){
+      if(requestId===availabilityRequestId&&dateEl.value===requestedDate){
+        console.error('Availability check error:',error);
+        avail.textContent='Could not check availability right now. Please try again.';
+        timeEl.value='';
+        timeEl.disabled=true;
+      }
+    }
+  }
+  function statusLabel(st){return ({pending:'🟡 Deposit Pending / Pending Review',confirmed:'🟢 Confirmed',rejected:'🔴 Rejected',cancelled:'⚫ Cancelled',completed:'🟣 Completed'}[st]||st);}
+  function calendarPad(n){return String(n).padStart(2,'0');}
+  function calendarStamp(date,time){return date.replace(/-/g,'')+'T'+time.replace(':','')+'00';}
+  function calendarEscape(v){return String(v||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
+  function calendarData(r){
+    const date=r.appointment_date, time=String(r.appointment_time||'').slice(0,5);
+    const start=calendarStamp(date,time);
+    const parts=time.split(':'); const endDate=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,Number(date.slice(8,10)),Number(parts[0]),Number(parts[1])+60);
+    const end=dateFromLocal(endDate);
+    const title='💅 Naileditby_gel — '+String(r.service||'Nail Appointment');
+    const details='Confirmed nail appointment for '+String(r.name||'client')+'.\nService: '+String(r.service||'Nail appointment')+'\nNail length: '+String(r.nail_length||'As booked')+'\nPlease arrive on time. Appointment is by appointment only.';
+    const location='Don Primitivo, Holy Spirit, Quezon City — near Ginto Store';
+    const uid=(r.access_token||crypto.randomUUID())+'@naileditbygel';
+    const ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Naileditby_gel//Booking//EN\r\nCALSCALE:GREGORIAN\r\nBEGIN:VEVENT\r\nUID:'+uid+'\r\nDTSTAMP:'+calendarStamp(date,time)+'Z\r\nDTSTART;TZID=Asia/Manila:'+start+'\r\nDTEND;TZID=Asia/Manila:'+calendarStamp(end.date,end.time)+'\r\nSUMMARY:'+calendarEscape(title)+'\r\nLOCATION:'+calendarEscape(location)+'\r\nDESCRIPTION:'+calendarEscape(details)+'\r\nEND:VEVENT\r\nEND:VCALENDAR';
+    const google='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+start+'/'+calendarStamp(end.date,end.time)+'&details='+encodeURIComponent(details)+'&location='+encodeURIComponent(location)+'&ctz=Asia%2FManila';
+    return {ics,google};
+  }
+  function dateFromLocal(d){return {date:d.getFullYear()+'-'+calendarPad(d.getMonth()+1)+'-'+calendarPad(d.getDate()),time:calendarPad(d.getHours())+':'+calendarPad(d.getMinutes())};}
+  function downloadCalendar(r){
+    const cal=calendarData(r); const blob=new Blob([cal.ics],{type:'text/calendar;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Naileditby_gel-'+r.appointment_date+'-'+String(r.appointment_time||'').slice(0,5).replace(':','')+'.ics'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  }
+  function addCalendarHtml(r){
+    if(r.status!=='confirmed') return '';
+    const cal=calendarData(r);
+    return '<div style="margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line)"><div style="font-weight:800;color:var(--deep);font-size:16px">📅 Save your appointment</div><div style="margin-top:5px;font-size:12px;color:var(--muted);line-height:1.5">Add your confirmed appointment to your phone calendar so you can get your own calendar reminders. 💗</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><button type="button" data-add-calendar="ics" style="border:0;border-radius:999px;padding:10px 14px;background:#8c3b5b;color:#fff;font-weight:800;cursor:pointer">📥 Add to Phone Calendar</button><a href="'+cal.google+'" target="_blank" rel="noopener" style="display:inline-block;border:1px solid #e7cbd5;border-radius:999px;padding:9px 14px;color:#8c3b5b;font-weight:800;text-decoration:none;background:#fff7fa">🗓️ Google Calendar</a></div></div>';
+  }
+  function bookingStatusHtml(r){
+    const date=r.appointment_date,time=String(r.appointment_time||'').slice(0,5);
+    const msgText=r.customer_message||({pending:'Your booking request is waiting for Gel to review it.',confirmed:'Your appointment is confirmed! 💅✨',rejected:'Your booking request was rejected. Please read the message below.',cancelled:'Your appointment was cancelled. Please read the message below.'}[r.status]||'');
+    let html='<div style="padding:14px;border-radius:16px;background:#fff7fa;border:1px solid var(--line)"><div style="font-weight:800;color:var(--deep);font-size:17px">'+statusLabel(r.status)+'</div><div style="margin-top:7px"><strong>'+esc(r.name)+'</strong> • '+esc(date)+' • '+esc(time)+'</div><div style="margin-top:4px">'+esc(r.service)+'</div>';
+    if(r.total_design_price!=null)html+='<div style="margin-top:12px"><strong>Total price:</strong> ₱'+Number(r.total_design_price).toFixed(2)+'<br><strong>Required deposit:</strong> ₱'+Number(r.deposit_amount||0).toFixed(2)+'<br><strong>Remaining balance:</strong> ₱'+(Number(r.total_design_price)-Number(r.deposit_amount||0)).toFixed(2)+'</div>';
+    html+='<div style="margin-top:12px;line-height:1.7">'+esc(msgText)+'</div>'+(r.status_reason?'<div style="margin-top:10px"><strong>Reason:</strong> '+esc(r.status_reason)+'</div>':'');
+    if(r.status==='pending'&&r.deposit_amount!=null&&r.payment_deadline&&!r.payment_submitted_at&&new Date(r.payment_deadline)>new Date()){
+      html+='<div style="margin-top:14px;padding:13px;border-radius:12px;background:#fff4f8;border:1px solid var(--line)"><strong>💗 Payment instructions are ready</strong><p style="margin-bottom:0;line-height:1.6">Please open your private booking-status page to choose GCash or bank transfer, scan the payment QR code, and submit your payment reference and receipt. Your appointment is not confirmed until Gel verifies your payment.</p></div>';
+    }else if(r.status==='pending'&&r.payment_submitted_at){html+='<div style="margin-top:14px;padding:12px;border-radius:12px;background:#fff4f8"><strong>🩷 Payment details submitted</strong><br>Gel will verify your payment manually. Your time slot remains reserved while it is being reviewed.</div>';}
+        html+=addCalendarHtml(r)+'<div style="margin-top:10px;font-size:12px;color:var(--muted)">Last updated: '+new Date(r.updated_at||r.created_at).toLocaleString()+' · This page refreshes automatically.</div></div>';
+    return html;
+  }
+  async function showBookingStatus(token){
+    const card=document.getElementById('bookingStatusCard'),out=document.getElementById('bookingStatusContent');if(!card||!token)return;
+    card.style.display='block';out.textContent='Checking your booking…';setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),60);
+    const cfg=window.NAILEDIT_CONFIG||{};
+    if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){out.textContent='Booking status is temporarily unavailable. Please try again later.';return;}
+    const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+    const result=await sb.rpc('get_booking_status',{p_token:token});
+    if(result.error||!result.data||!result.data.length){out.innerHTML='<span style="color:#b33">We could not find that booking status link. Please make sure you are using the private link from your booking confirmation.</span>';return;}
+    const booking=result.data[0];const paymentJustSubmitted=sessionStorage.getItem('naileditPaymentSubmitted:'+token)==='1'&&Boolean(booking.payment_submitted_at);if(paymentJustSubmitted){sessionStorage.removeItem('naileditPaymentSubmitted:'+token);}out.innerHTML=(paymentJustSubmitted?'<div role="status" style="margin-bottom:12px;padding:13px 15px;border-radius:12px;background:#edf9f0;border:1px solid #b8dfc2;color:#245c35;font-weight:700">💗 Payment details submitted successfully! Gel will verify your payment. Your appointment is not confirmed yet. Please keep this private status page for updates.</div>':'')+bookingStatusHtml(booking);
+    const calBtn=out.querySelector('[data-add-calendar="ics"]');if(calBtn)calBtn.addEventListener('click',function(){downloadCalendar(booking);});
+    const method=document.getElementById('customerPaymentMethod'),qrArea=document.getElementById('customerQrArea'),qrImage=document.getElementById('customerQrImage'),qrHelp=document.getElementById('customerQrHelp');
+    if(method){method.addEventListener('change',function(){const chosen=method.value;if(!chosen){qrArea.style.display='none';return;}qrArea.style.display='block';const cfgNow=window.NAILEDIT_CONFIG||{};const url=chosen==='GCash'?cfgNow.GCASH_QR_IMAGE_URL:cfgNow.BANK_QR_IMAGE_URL;const gcashDetails=document.getElementById('customerGcashDetails');if(gcashDetails)gcashDetails.style.display=chosen==='GCash'?'block':'none';if(url){qrImage.src=url;qrImage.style.display='block';qrHelp.textContent='Scan this QR code using your selected payment app.';}else{qrImage.removeAttribute('src');qrImage.style.display='none';qrHelp.textContent=chosen==='GCash'?'You may use the GCash account details below if you cannot scan a QR code.':'Bank transfer is QR-code only. Please do not pay until the bank QR image is available.';}});}
+  }
+  // One delegated payment handler survives status-card rerenders and prevents
+  // the browser from submitting the payment form as a normal page navigation.
+  if(!window.__naileditPaymentSubmitHandler){
+    window.__naileditPaymentSubmitHandler=true;
+    document.addEventListener('submit',async function(ev){
+      const paymentForm=ev.target;
+      if(!paymentForm||paymentForm.id!=='paymentSubmitForm')return;
+      ev.preventDefault();ev.stopPropagation();
+      const payBtn=document.getElementById('submitPaymentBtn'),payMsg=document.getElementById('paymentSubmitMsg');
+      const methodEl=document.getElementById('customerPaymentMethod'),referenceEl=document.getElementById('customerPaymentReference'),proofEl=document.getElementById('customerPaymentProof');
+      const tokenMatch=location.hash.match(/^#booking-status=([^&]+)/);
+      const token=tokenMatch?decodeURIComponent(tokenMatch[1]):'';
+      const payMethod=methodEl&&methodEl.value,reference=referenceEl?referenceEl.value.trim():'',file=proofEl&&proofEl.files?proofEl.files[0]:null;
+      const cfg=window.NAILEDIT_CONFIG||{};
+      if(!token){if(payMsg)payMsg.textContent='Your private booking link is missing. Please reopen the saved booking-status link.';return;}
+      if(!payMethod||reference.length<3){if(payMsg)payMsg.textContent='Choose a payment method and enter the payment reference.';return;}
+      if(file&&file.size>5*1024*1024){if(payMsg)payMsg.textContent='Payment proof must be 5MB or smaller.';return;}
+      if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){if(payMsg)payMsg.textContent='Payment submission is temporarily unavailable. Please try again.';return;}
+      const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+      if(payBtn){payBtn.disabled=true;payBtn.textContent='Submitting…';}
+      if(payMsg)payMsg.textContent='Submitting your payment details…';
+      try{
+        const status=await sb.rpc('get_booking_status',{p_token:token});
+        if(status.error||!status.data||!status.data.length)throw new Error('We could not verify this private booking link. Please reopen your saved status link.');
+        const booking=status.data[0];
+        if(booking.payment_submitted_at){if(payMsg)payMsg.textContent='Payment details have already been submitted. Gel will verify the payment; please do not submit another booking.';await showBookingStatus(token);return;}
+        let proofPath=null;
+        if(file){
+          const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+          proofPath=booking.id+'/'+crypto.randomUUID()+'.'+ext;
+          const upload=await sb.storage.from('booking-payment-proof').upload(proofPath,file,{contentType:file.type,upsert:false});
+          if(upload.error)throw new Error('Could not upload proof: '+upload.error.message);
+        }
+        const submitted=await sb.rpc('submit_booking_payment_details',{p_token:token,p_method:payMethod,p_reference:reference,p_proof_path:proofPath});
+        if(submitted.error)throw new Error(submitted.error.message);
+        sessionStorage.setItem('naileditPaymentSubmitted:'+token,'1');
+        if(payMsg)payMsg.textContent='Payment details submitted successfully! Refreshing your booking status…';
+        await showBookingStatus(token);
+        const statusCard=document.getElementById('bookingStatusCard');
+        if(statusCard)statusCard.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(err){
+        console.error('Payment submission failed:',err);
+        if(payMsg)payMsg.textContent=err&&err.message?err.message:'Payment submission failed. Please try again.';
+        if(payBtn){payBtn.disabled=false;payBtn.textContent='♡ Submit payment details';}
+      }
+    },true);
+  }
+
+  const hashMatch=location.hash.match(/^#booking-status=([^&]+)/); if(hashMatch){try{showBookingStatus(decodeURIComponent(hashMatch[1]));}catch(e){showBookingStatus(hashMatch[1]);}}
+  window.addEventListener('hashchange',function(){const m=location.hash.match(/^#booking-status=([^&]+)/);if(m)showBookingStatus(decodeURIComponent(m[1]));});
+  setInterval(function(){if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#paymentSubmitForm'))return;const m=location.hash.match(/^#booking-status=([^&]+)/);if(m)showBookingStatus(decodeURIComponent(m[1]));},30000);
+  const inspoInput=document.getElementById('binspo'), inspoPreview=document.getElementById('inspoPreview');
+  inspoInput.addEventListener('change',function(){
+    const files=Array.from(inspoInput.files||[]);
+    if(files.length>3){alert('Please choose up to 3 inspo photos. 💗');inspoInput.value='';inspoPreview.innerHTML='';return;}
+    if(files.some(f=>f.size>5*1024*1024)){alert('Each inspo photo must be 5MB or smaller. 💗');inspoInput.value='';inspoPreview.innerHTML='';return;}
+    inspoPreview.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:82px;height:82px;object-fit:cover;border-radius:12px;border:1px solid var(--line)';img.onload=()=>URL.revokeObjectURL(img.src);inspoPreview.appendChild(img);});
+  });
+  dateEl.addEventListener('change',loadAvailability);
+  // Load the selected date's availability on first page load, without periodic auto-refresh.
+  if(dateEl.value)loadAvailability();
+  // Availability is checked when the customer changes the date; no automatic refresh while choosing a time.
+  form.addEventListener('submit',async function(e){
+    e.preventDefault(); msg.textContent='';
+    const cfg=window.NAILEDIT_CONFIG||{}; if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){msg.textContent='Online booking is being connected. Please try again soon.';return;}
+    const btn=document.getElementById('onlineBookBtn'); const name=document.getElementById('bname').value.trim(); const phone=document.getElementById('bphone').value.trim(); const customerEmail=document.getElementById('bemail').value.trim(); const customerAddress=document.getElementById('baddress').value.trim(); const date=dateEl.value; const time=timeEl.value;
+    if(!name||!phone||!customerEmail||!customerAddress||!date||!time){msg.innerHTML='<span style="color:#b33">Please complete your name, mobile number, email, address, date, and available time. 💗</span>';return;}
+    if(!inspoInput.files||inspoInput.files.length<2){msg.innerHTML='<span style="color:#b33">Please attach at least 2 photos for an online appointment request: one nail design inspiration photo and one photo of your natural/bare nails. You can explore our Nail Portfolio for design ideas. 💗</span>';inspoInput.focus();return;}
+    btn.disabled=true; btn.textContent='Sending request… ♡';
+    const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+    if(!document.getElementById('policyAgree').checked){msg.innerHTML='<span style="color:#b33">Please read and agree to the booking policies before submitting. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
+    const accessToken=crypto.randomUUID(); const bookingId=crypto.randomUUID(); const selectedInspo=Array.from(inspoInput.files||[]);
+    let inspoFiles=[];
+    for(let i=0;i<selectedInspo.length;i++){const f=selectedInspo[i]; const ext=(f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg'); const path=bookingId+'/'+crypto.randomUUID()+'.'+ext; const up=await sb.storage.from('booking-inspo').upload(path,f,{contentType:f.type,upsert:false}); if(up.error){console.error('Inspo upload error:',up.error);msg.innerHTML='<span style="color:#b33">One of the inspo photos could not be uploaded. Please try again. 💗</span>';btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;} inspoFiles.push({path,name:f.name,type:f.type});}
+    const previousWork=document.getElementById('bprevious').value;
+    const customerNotes='Previous nail work: '+previousWork+(document.getElementById('bnote').value.trim()?'\nDesign notes: '+document.getElementById('bnote').value.trim():'');
+    const payload={id:bookingId,access_token:accessToken,name,phone,customer_email:customerEmail,customer_address:customerAddress,appointment_date:date,appointment_time:time+':00',service:document.getElementById('bservice').value,nail_length:document.getElementById('blength').value,notes:customerNotes,inspo_files:inspoFiles,status:'pending',customer_message:'Hi! 💗 Your booking request has been received. Gel will review your design and details, then update your private booking status with the next steps. No payment is due until Gel sends your custom price and payment instructions. 💅✨'};
+    const {error}=await sb.from('bookings').insert(payload);
+    if(error){console.error('Booking insert error:',error);const slotTaken=/slot is no longer available|duplicate key|booked/i.test(String(error.message||''));msg.innerHTML='<span style="color:#b33">'+(slotTaken?'Oh no, this time was just taken by another booking. Please choose a different available time and submit again. 💗':'Sorry, your booking request could not be sent. Please try again. 💗')+'</span>';if(slotTaken){await loadAvailability();}btn.disabled=false;btn.textContent='♡ Request Appointment Online';return;}
+    // The public RLS policy allows INSERT for pending bookings but does not allow
+    // anon users to SELECT the newly-created pending row. We already generated
+    // the private access token client-side, so do not chain .select() after insert.
+    // Fire-and-forget owner notification from the TEST booking flow. Booking remains saved even if email delivery fails.
+    try {
+      fetch('https://tjudndgyyilrunwgyshk.supabase.co/functions/v1/notify-owner-new-booking', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':cfg.SUPABASE_ANON_KEY},
+        body:JSON.stringify({booking_id:bookingId})
+      }).then(async response=>{
+        if(!response.ok) console.warn('Owner notification did not send:',response.status,await response.text());
+        else console.info('Owner notification request accepted.');
+      }).catch(error=>console.warn('Owner notification request failed:',error));
+    } catch(notificationError) { console.warn('Owner notification request failed:',notificationError); }
+    const token=accessToken; try{localStorage.setItem('nailedit_customer_booking_token',token);const saved=JSON.parse(localStorage.getItem('nailedit_customer_booking_tokens')||'[]');if(!saved.includes(token))saved.push(token);localStorage.setItem('nailedit_customer_booking_tokens',JSON.stringify(saved.slice(-30)));}catch(storageError){console.warn('Could not remember customer booking on this device:',storageError);} const statusPage=new URL('booking-status.html',location.href); statusPage.searchParams.set('token',token); const statusUrl=statusPage.href;
+    msg.innerHTML='<div id="bookingSuccessOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingSuccessTitle" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(72,28,49,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)"><div style="position:relative;box-sizing:border-box;width:min(100%,470px);max-height:90vh;overflow:auto;padding:30px 24px 24px;border:1px solid #f2d5e2;border-radius:26px;background:linear-gradient(155deg,#fffafd 0%,#fff0f6 58%,#fff9f2 100%);box-shadow:0 22px 70px rgba(77,27,51,.28);text-align:center"><div aria-hidden="true" style="width:62px;height:62px;margin:0 auto 15px;display:grid;place-items:center;border-radius:50%;background:#f8dce9;color:#a33c6d;font-size:30px;box-shadow:0 0 0 7px rgba(248,220,233,.42)">♡</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a36d83;font-weight:800;margin-bottom:8px">NAILEDITBY_GEL · BOOKING</div><h2 id="bookingSuccessTitle" style="margin:0 0 12px;color:#6f2944;font-family:inherit;font-size:clamp(23px,5vw,30px);line-height:1.2">Thank You for Trusting Naileditby_gel! ♡</h2><p style="margin:0 0 13px;color:#7e4c61;font-size:16px;font-weight:700">Your booking request has been received, beautiful! 💗</p><p style="margin:0 0 13px;color:#8a6874;line-height:1.7">Gel will carefully review your appointment details, nail inspiration and design so she can confirm your custom price and next steps.</p><div style="margin:0 0 17px;padding:14px;border:1px solid #f0d4e0;border-radius:16px;background:rgba(255,255,255,.78);color:#6f2944;line-height:1.65;text-align:left"><strong>♡ Current status: Pending Review</strong><br>Your appointment is <strong>not confirmed yet</strong>. Please wait for Gel to review and approve your request. <strong>No deposit is due until Gel sends your custom price and payment instructions.</strong></div><a id="bookingSuccessStatusLink" href="'+statusUrl+'" style="display:block;box-sizing:border-box;margin:0 0 10px;padding:14px 16px;border-radius:14px;background:linear-gradient(100deg,#d94d91,#b94f79);color:#fff;text-decoration:none;font-weight:800;box-shadow:0 7px 18px rgba(185,79,121,.2)">♡ Check My Booking Status</a><button type="button" id="copyMyBookingStatusLink" style="display:block;width:100%;box-sizing:border-box;margin:0 0 10px;padding:12px 16px;border:1px solid #e9c3d3;border-radius:14px;background:#fff;color:#6f2944;font-weight:700;cursor:pointer">♡ Copy Private Status Link</button><a href="/app" id="bookingSuccessHome" style="display:block;box-sizing:border-box;padding:12px 16px;border:1px solid #efd6e1;border-radius:14px;color:#8a5269;text-decoration:none;font-weight:700;background:rgba(255,255,255,.55)">Back to Home</a><p style="margin:15px 0 0;color:#a17e8d;font-size:11px;line-height:1.5">Keep your private status link safe. Anyone with the link may be able to view your booking status.<br>With love, Naileditby_gel ♡</p></div></div>';
+    const copyStatusBtn=document.getElementById('copyMyBookingStatusLink');if(copyStatusBtn)copyStatusBtn.addEventListener('click',async function(){try{await navigator.clipboard.writeText(statusUrl);copyStatusBtn.textContent='✓ Private link copied!';}catch(e){window.prompt('Copy your private booking status link:',statusUrl);}});
+    const successStatusLink=document.getElementById('bookingSuccessStatusLink');if(successStatusLink)successStatusLink.addEventListener('click',function(){const overlay=document.getElementById('bookingSuccessOverlay');if(overlay)overlay.remove();});
+    const successHome=document.getElementById('bookingSuccessHome');if(successHome)successHome.addEventListener('click',function(){const overlay=document.getElementById('bookingSuccessOverlay');if(overlay)overlay.remove();});
+    history.replaceState(null,'', '#booking-status='+encodeURIComponent(token));
+    showBookingStatus(token);
+    form.reset(); inspoPreview.innerHTML=''; dateEl.min=localToday; timeEl.innerHTML='<option value="">Choose a date first</option>'; timeEl.disabled=true; avail.textContent='Choose a date to see available appointment times.';
+    btn.disabled=false; btn.textContent='♡ Request Appointment Online';
+  });
+  document.querySelectorAll('[data-channel]').forEach(function(btn){btn.addEventListener('click',async function(){
+    if(!form.reportValidity()){
+      const firstInvalid=form.querySelector(':invalid');
+      if(firstInvalid){firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});firstInvalid.focus();}
+      return;
+    }
+    const value=id=>{const el=document.getElementById(id);return el&&el.value.trim()?el.value.trim():'Not provided';};
+    const params=new URLSearchParams(window.location.search);
+    const portfolioDesign=params.get('design');
+    const designNote=value('bnote');
+    const designDetails=designNote!=='Not provided'?designNote:(portfolioDesign?'Selected portfolio design: '+portfolioDesign:'Please describe your preferred design when replying to Gel.');
+    const message=`Hi Gel! ♡ I’m enquiring about a nail design and price.
+
+Name: ${value('bname')}
+Mobile: ${value('bphone')}
+Email: ${value('bemail')}
+Address/Barangay: ${value('baddress')}
+Preferred date (not booked): ${value('bdate')}
+Preferred time (not booked): ${value('btime')}
+Service: ${value('bservice')}
+Design/Inspo details: ${designDetails}
+Nail length: ${value('blength')}
+Previous nail work: ${value('bprevious')}
+
+This is an enquiry only, not an appointment request or confirmation. I understand I must submit the website booking form separately to request an appointment.`;
+    const channel=btn.dataset.channel;
+    if(channel==='sms'){
+      const ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+      const separator=ios?'&':'?';
+      window.location.href='sms:+639553697737'+separator+'body='+encodeURIComponent(message);
+      return;
+    }
+    const target=channel==='messenger'
+      ?'https://facebook.com/angel.joy.enderes.2025'
+      :'https://www.instagram.com/naileditby_gel/';
+    try {
+      await navigator.clipboard.writeText(message);
+      window.open(target,'_blank','noopener');
+      alert('Your enquiry details have been copied. Open the chat and paste the message before sending. This is an enquiry only, not an appointment request.');
+    } catch(error) {
+      window.open(target,'_blank','noopener');
+      window.prompt('Copy your enquiry message, then paste it into the chat:',message);
+    }
+  });});
+  loadAvailability();
+})();
+
+</script>
+<script>
+
+/* Portfolio-to-booking handoff: show selected design and preserve it in booking notes */
+(function(){
+  let selected='', photo='';
+  try {
+    const params=new URLSearchParams(window.location.search);
+    selected=(params.get('design')||sessionStorage.getItem('nailedit_selected_portfolio_look')||'').trim().slice(0,100);
+    photo=(params.get('designImage')||'').trim();
+    if(selected) sessionStorage.setItem('nailedit_selected_portfolio_look',selected);
+    if(photo) sessionStorage.setItem('nailedit_selected_portfolio_image',photo);
+    if(!photo) photo=sessionStorage.getItem('nailedit_selected_portfolio_image')||'';
+  } catch(e) {}
+  if(!selected) return;
+  function apply(){
+    const section=document.getElementById('booking'), form=document.getElementById('bookingForm'), notes=document.getElementById('bnote');
+    if(!section||!form||!notes) return false;
+    let banner=document.getElementById('selectedPortfolioLook');
+    if(!banner){
+      banner=document.createElement('div'); banner.id='selectedPortfolioLook'; banner.setAttribute('role','status');
+      banner.style.cssText='display:block!important;visibility:visible!important;opacity:1!important;margin:0 0 18px;padding:18px;border:2px solid #e7a6bd;border-radius:18px;background:linear-gradient(135deg,#fff0f6,#fffafc);color:#7d2847;line-height:1.6;box-shadow:0 8px 22px rgba(125,40,71,.10)';
+      const heading=document.createElement('strong'); heading.textContent='♡ YOUR SELECTED PORTFOLIO LOOK'; heading.style.cssText='display:block;font-size:15px';
+      const title=document.createElement('div'); title.id='selectedPortfolioLookTitle'; title.style.cssText='font-size:18px;font-weight:700;margin-top:5px'; title.textContent=selected;
+      banner.append(heading,title);
+      if(photo && /^https:\/\//i.test(photo)){
+        const img=document.createElement('img'); img.src=photo; img.alt='Selected nail inspiration: '+selected; img.style.cssText='display:block;width:100%;max-width:190px;max-height:190px;object-fit:cover;border-radius:12px;margin-top:10px;border:1px solid #eed5df'; img.onerror=()=>img.remove(); banner.append(img);
+      }
+      const description=document.createElement('p'); description.textContent='You chose this design from Gel’s portfolio! It has also been added to your booking notes. Gel will review the details and confirm the final price with you. 💗'; description.style.cssText='margin:8px 0 0;font-size:13px'; banner.append(description);
+      const clear=document.createElement('button'); clear.type='button'; clear.textContent='Remove selected look'; clear.style.cssText='margin-top:10px;padding:8px 12px;border:1px solid #e7a6bd;border-radius:999px;background:#fff;color:#7d2847;font:600 12px inherit';
+      clear.addEventListener('click',()=>{const marker='Selected portfolio look: '+selected;notes.value=notes.value.split('\n').filter(line=>line.trim()!==marker).join('\n').trim();notes.dispatchEvent(new Event('input',{bubbles:true}));banner.remove();try{sessionStorage.removeItem('nailedit_selected_portfolio_look');sessionStorage.removeItem('nailedit_selected_portfolio_image')}catch(e){}});
+      banner.append(clear);
+    } else {
+      const title=banner.querySelector('#selectedPortfolioLookTitle'); if(title) title.textContent=selected;
+    }
+    const wrap=form.parentElement||section; if(banner.parentElement!==wrap) wrap.insertBefore(banner,form);
+    const marker='Selected portfolio look: '+selected;
+    if(!notes.value.includes(marker)) notes.value=notes.value.trim()?marker+'\n'+notes.value.trim():marker;
+    notes.dispatchEvent(new Event('input',{bubbles:true}));
+    // Portfolio links carry #booking, but some mobile browsers can retain the previous scroll position.
+    // Explicitly scroll to the booking section after the selected-look banner and notes are inserted.
+    if (window.location.hash === '#booking') {
+      section.style.scrollMarginTop = '18px';
+      setTimeout(() => section.scrollIntoView({behavior:'smooth', block:'start'}), 120);
+    }
+    return true;
+  }
+  let tries=0; function run(){if(apply())return;if(++tries<80)setTimeout(run,250);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+})();
+</script>
+<script src="/app-shell.js"></script>
+</body></html>
