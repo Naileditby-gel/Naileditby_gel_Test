@@ -24,3 +24,6 @@
   .app-install-banner p{flex:1 1 100%}
   .app-install-banner button{padding:9px 15px}
 }
+
+/* Ensure the dismiss control can hide the banner despite the page's grid layout override. */
+#appInstallBanner[hidden]{display:none!important;}
