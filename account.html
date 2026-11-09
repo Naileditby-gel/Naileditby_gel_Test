@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff0f6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Naileditby_gel">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+<script>(function(){const q=new URLSearchParams(location.search);const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;if(q.get("source")==="app"||standalone)document.documentElement.classList.add("app-context")})();</script>
+<link rel="stylesheet" href="/app-nav.css?v=customer-account-20261109-1">
+<title>My Account • Naileditby_gel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<style>
+:root{--deep:#6f2944;--wine:#8c3b5b;--pink:#d94d91;--ink:#513c44;--muted:#8a6874;--line:#efd6e1;--soft:#fff6fa}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fff8fb,#fff 58%,#fff7f1);font-family:Arial,sans-serif;color:var(--ink);padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+.account-header{padding:20px max(18px,calc((100% - 900px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fffafc;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--deep);text-decoration:none;font-weight:800}.brand-mark{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#f7dfe9;color:var(--wine);font-family:Georgia,serif;font-size:20px}
+main{width:min(100% - 28px,760px);margin:30px auto 90px}.intro{text-align:center;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:2px;color:#a36d83;font-weight:800}.intro h1{font-family:Georgia,serif;color:var(--deep);font-size:clamp(28px,6vw,40px);margin:8px 0}.intro p{color:var(--muted);line-height:1.65}
+.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,28px);box-shadow:0 12px 32px rgba(111,41,68,.06);margin-bottom:18px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button,.secondary{background:#fff;color:var(--wine);border:1px solid var(--line)}button,.primary{border:0;border-radius:12px;padding:12px 16px;background:var(--wine);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.tabs button{flex:1}.tabs button.active{background:#f8e5ed;border-color:#e8bfd0;color:var(--deep)}
+label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weight:700}input{width:100%;padding:13px;border:1px solid var(--line);border-radius:11px;background:#fff;font:inherit;color:var(--ink)}input:focus{outline:2px solid #f2c7d8;border-color:#d98ca9}
+.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.form-actions button{flex:1}.muted{color:var(--muted);font-size:13px;line-height:1.6}.message{margin-top:13px;padding:12px;border-radius:12px;background:#fff6fa;color:var(--deep);line-height:1.6;font-size:14px}.hidden{display:none!important}
+.account-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.booking{padding:15px 0;border-top:1px solid var(--line)}.booking:first-child{border-top:0}.booking-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.badge{display:inline-block;padding:6px 10px;border-radius:99px;background:#fff0cb;color:#855c00;font-size:11px;font-weight:800;text-transform:capitalize}.badge.confirmed{background:#e3f4eb;color:#276749}.badge.completed{background:#eee6f7;color:#67468a}.badge.rejected,.badge.cancelled,.badge.expired{background:#f5e8ed;color:#765f68}.booking-meta{color:var(--muted);font-size:13px;line-height:1.6;margin:7px 0 10px}.booking a{font-size:13px}.account-nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}.account-nav a{color:var(--wine);font-size:13px;font-weight:700}
+.site-app-nav{display:none!important}html.app-context .site-app-nav{position:fixed;z-index:1000;right:0;bottom:0;left:0;display:flex!important;justify-content:center;gap:0;padding:10px 8px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #f0dfe3;background:rgba(255,250,249,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}html.app-context .site-app-nav a{display:flex;width:min(20%,150px);flex-direction:column;align-items:center;gap:3px;color:#9b858c;text-decoration:none;font:10px Arial,sans-serif}html.app-context .site-app-nav a span{font-size:20px;line-height:1.2}html.app-context .site-app-nav a.active{color:#b86f83}html.app-context body{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+</style>
+</head>
+<body>
+<header class="account-header"><a class="brand" href="/app"><span class="brand-mark">N</span><span>Naileditby_gel<br><small style="font-size:9px;letter-spacing:1.5px;font-weight:500">YOUR NAIL STUDIO</small></span></a><a id="backLink" href="/" style="color:var(--wine);font-size:13px;font-weight:700;text-decoration:none">Back</a></header>
+<main>
+<section class="intro"><div class="eyebrow">YOUR APPOINTMENTS, TOGETHER</div><h1>My Account ♡</h1><p>Sign in to keep your Naileditby_gel bookings together. You can still book as a guest anytime.</p></section>
+<section id="authPanel" class="panel">
+<div class="tabs"><button type="button" id="signInTab" class="active">Sign in</button><button type="button" id="signUpTab" class="secondary">Create account</button></div>
+<form id="authForm">
+<label for="email">Email address</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+<label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters">
+<div class="form-actions"><button id="authSubmit" type="submit">Sign in</button></div>
+</form>
+<div id="resetWrap" class="hidden"><form id="resetForm"><label for="newPassword">New password</label><input id="newPassword" type="password" minlength="8" required autocomplete="new-password"><div class="form-actions"><button type="submit">Update password</button></div></form></div>
+<div class="form-actions" id="forgotWrap"><button type="button" id="forgotButton" class="secondary">Forgot password?</button></div>
+<div id="authMessage" class="message hidden" role="status" aria-live="polite"></div>
+<p class="muted" style="margin:16px 0 0">Your password is securely managed by Supabase. Naileditby_gel never sees or stores it.</p>
+</section>
+<section id="dashboard" class="panel hidden">
+<div class="account-top"><div><div class="eyebrow">WELCOME BACK</div><h2 id="welcomeName" style="margin:5px 0;color:var(--deep)">Your bookings</h2><div id="accountEmail" class="muted"></div></div><button type="button" id="signOut" class="secondary">Sign out</button></div>
+<div id="linkMessage" class="message">Checking for bookings linked to your verified email…</div>
+<div id="bookingList" style="margin-top:14px"></div>
+<p class="muted" style="margin:14px 0 0">Guest bookings made with this verified email can appear here automatically. Your private booking status links continue to work as before.</p>
+</section>
+<div class="account-nav"><a id="homeLink" href="/">Back to main website</a><a href="/book">Book an appointment</a></div>
+</main>
+<nav class="site-app-nav" aria-label="App navigation">
+<a href="/app"><span>⌂</span>Home</a><a href="/portfolio.html?view=customer&source=app"><span>♡</span>Portfolio</a><a href="/book"><span>＋</span>Book</a><a href="/booking-status.html?source=app"><span>◷</span>Status</a><a href="/promotions"><span>✧</span>Promo</a>
+</nav>
+<script>
+(function(){
+ const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
+ const inApp=document.documentElement.classList.contains('app-context');
+ $('backLink').href=inApp?'/app':'/';$('backLink').textContent=inApp?'Back to app':'Back to website';
+ $('homeLink').href=inApp?'/app':'/';$('homeLink').textContent=inApp?'Back to app home':'Back to main website';
+ const cfg=window.NAILEDIT_CONFIG||{};
+ if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('authMessage').textContent='Account service is temporarily unavailable. Please refresh and try again.';$('authMessage').classList.remove('hidden');return;}
+ const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+ let mode='signin',busy=false;
+ function message(id,text){$(id).textContent=text;$(id).classList.remove('hidden');}
+ function clearMessage(id){$(id).textContent='';$(id).classList.add('hidden');}
+ function setMode(next){mode=next;$('signInTab').classList.toggle('active',mode==='signin');$('signUpTab').classList.toggle('active',mode==='signup');$('signInTab').classList.toggle('secondary',mode!=='signin');$('signUpTab').classList.toggle('secondary',mode!=='signup');$('authSubmit').textContent=mode==='signin'?'Sign in':'Create account';$('password').autocomplete=mode==='signin'?'current-password':'new-password';clearMessage('authMessage');}
+ $('signInTab').addEventListener('click',()=>setMode('signin'));$('signUpTab').addEventListener('click',()=>setMode('signup'));
+ function safe(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+ function date(v){if(!v)return 'Date not set';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
+ function time(v){if(!v)return '';const [h,m]=String(v).slice(0,5).split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
+ function peso(v){return v==null?'To be confirmed':'₱'+Number(v).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+ function label(s){return ({pending:'Pending review / payment',confirmed:'Confirmed',completed:'Completed',rejected:'Rejected',cancelled:'Cancelled',expired:'Expired'}[String(s||'').toLowerCase()]||String(s||'Pending'));}
+ function renderBookings(rows){
+  if(!rows||!rows.length){$('bookingList').innerHTML='<div class="message">No bookings are linked to this account yet. If you booked with a different email address, keep using your private status link or contact Gel for help.</div>';return;}
+  const ordered=[...rows].sort((a,b)=>String(b.appointment_date||'').localeCompare(String(a.appointment_date||''))||String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  $('bookingList').innerHTML=ordered.map(b=>{
+   const s=String(b.status||'pending').toLowerCase(),url=new URL('/booking-status.html',location.origin);url.searchParams.set('token',b.access_token);if(inApp)url.searchParams.set('source','app');
+   return '<article class="booking"><div class="booking-head"><strong style="color:var(--deep)">'+safe(date(b.appointment_date))+'</strong><span class="badge '+safe(s)+'">'+safe(label(s))+'</span></div><div class="booking-meta">'+safe(b.service||'Nail appointment')+' · '+safe(time(b.appointment_time))+'<br>Total: '+safe(peso(b.total_design_price))+' · Deposit: '+safe(peso(b.deposit_amount))+'</div><a class="primary" href="'+safe(url.href)+'">View booking status ♡</a></article>';
+  }).join('');
+ }
+ async function loadDashboard(session){
+  $('authPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('accountEmail').textContent=session.user.email||'';$('welcomeName').textContent='Your bookings ♡';
+  message('linkMessage','Checking your verified email and linking your existing bookings…');
+  const linked=await sb.rpc('link_my_bookings_by_email');
+  if(linked.error){message('linkMessage',linked.error.message||'We could not link your bookings yet. Please verify your email and try again.');}
+  else{message('linkMessage',Number(linked.data||0)>0?'Your bookings have been linked to this account. 💗':'Your account is ready. Checking your booking history…');}
+  const result=await sb.rpc('get_my_customer_bookings');
+  if(result.error){message('linkMessage','Your account is signed in, but booking history could not be loaded. Please try again.');return;}
+  renderBookings(result.data||[]);
+ }
+ $('authForm').addEventListener('submit',async ev=>{
+  ev.preventDefault();if(busy)return;busy=true;$('authSubmit').disabled=true;clearMessage('authMessage');
+  const email=$('email').value.trim(),password=$('password').value;
+  try{
+   if(mode==='signup'){
+    const redirect=new URL('/account.html'+(inApp?'?source=app':''),location.origin).href;
+    const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:redirect}});
+    if(error)throw error;
+    if(data.session){await loadDashboard(data.session);}
+    else{message('authMessage','Your account request is ready! Please check your email and confirm your address. Then return here and sign in. 💗');}
+   }else{
+    const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await loadDashboard(data.session);
+   }
+  }catch(err){message('authMessage',err.message||'We could not complete that request. Please try again.');}
+  finally{busy=false;$('authSubmit').disabled=false;}
+ });
+ $('forgotButton').addEventListener('click',async()=>{
+  const email=$('email').value.trim();if(!email){message('authMessage','Enter your email address first, then tap Forgot password.');return;}
+  const redirect=new URL('/account.html?mode=reset'+(inApp?'&source=app':''),location.origin).href;
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirect});
+  message('authMessage',error?error.message:'If an account exists for that email, a password-reset link will arrive shortly. Please check your inbox. 💗');
+ });
+ $('resetForm').addEventListener('submit',async ev=>{
+  ev.preventDefault();const password=$('newPassword').value;const {error}=await sb.auth.updateUser({password});
+  if(error){message('authMessage',error.message);return;}
+  message('authMessage','Your password has been updated. You can now sign in with your new password. 💗');await sb.auth.signOut();$('resetWrap').classList.add('hidden');$('authForm').classList.remove('hidden');
+ });
+ $('signOut').addEventListener('click',async()=>{await sb.auth.signOut();$('dashboard').classList.add('hidden');$('authPanel').classList.remove('hidden');setMode('signin');});
+ sb.auth.onAuthStateChange((event)=>{
+  if(event==='PASSWORD_RECOVERY'){$('authForm').classList.add('hidden');$('forgotWrap').classList.add('hidden');$('resetWrap').classList.remove('hidden');message('authMessage','Choose a new password for your account.');}
+ });
+ if(params.get('mode')==='reset'){$('authForm').classList.add('hidden');$('forgotWrap').classList.add('hidden');$('resetWrap').classList.remove('hidden');}
+ sb.auth.getSession().then(({data})=>{if(params.get('mode')==='reset')return;if(data.session)loadDashboard(data.session);});
+})();
+</script>
+<script src="/app-shell.js" defer></script>
+</body></html>
