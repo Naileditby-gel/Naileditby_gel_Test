@@ -28,7 +28,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
 </style>
 </head>
 <body>
-<header class="account-header"><a class="brand" href="/app"><span class="brand-mark">N</span><span>Naileditby_gel<br><small style="font-size:9px;letter-spacing:1.5px;font-weight:500">YOUR NAIL STUDIO</small></span></a><a id="backLink" href="/" style="color:var(--wine);font-size:13px;font-weight:700;text-decoration:none">Back</a></header>
+<header class="account-header"><a class="brand" id="brandLink" href="/"><span class="brand-mark">N</span><span>Naileditby_gel<br><small style="font-size:9px;letter-spacing:1.5px;font-weight:500">YOUR NAIL STUDIO</small></span></a><a id="backLink" href="/" style="color:var(--wine);font-size:13px;font-weight:700;text-decoration:none">Back</a></header>
 <main>
 <section class="intro"><div class="eyebrow">YOUR APPOINTMENTS, TOGETHER</div><h1>My Account ♡</h1><p>Sign in to keep your Naileditby_gel bookings together. You can still book as a guest anytime.</p></section>
 <section id="authPanel" class="panel">
@@ -58,7 +58,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
 (function(){
  const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
  const inApp=document.documentElement.classList.contains('app-context');
- $('backLink').href=inApp?'/app':'/';$('backLink').textContent=inApp?'Back to app':'Back to website';
+ $('brandLink').href=inApp?'/app':'/';$('backLink').href=inApp?'/app':'/';$('backLink').textContent=inApp?'Back to app':'Back to website';
  $('homeLink').href=inApp?'/app':'/';$('homeLink').textContent=inApp?'Back to app home':'Back to main website';
  const cfg=window.NAILEDIT_CONFIG||{};
  if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('authMessage').textContent='Account service is temporarily unavailable. Please refresh and try again.';$('authMessage').classList.remove('hidden');return;}
