@@ -30,7 +30,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <div class="brand">Naileditby_gel ♡</div>
 <section class="card">
 <h1>My Booking Status 💗</h1>
-<p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p><p style="margin-top:12px"><a href="/account.html" style="color:var(--wine);font-weight:800;text-decoration:none">♡ Create an account or sign in to keep your bookings together</a></p>
+<p>Check your appointment status, payment deadline, and the latest message from Gel—all in one place.</p><p style="margin-top:12px"><a id="customerAccountLink" href="/account.html" style="color:var(--wine);font-weight:800;text-decoration:none">♡ Create an account or sign in to keep your bookings together</a></p>
 <div id="message" role="status" aria-live="polite">Loading your private booking details…</div>
 <div id="emptyState" class="hidden" style="margin-top:14px;padding:18px;border-radius:14px;background:#fff6fa;border:1px solid #f4e4eb;line-height:1.65;text-align:center">
 <strong style="color:var(--deep);font-size:18px">💗 No Appointment Status</strong>
@@ -200,6 +200,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 })();
 </script>
 <script>(function(){const appContext=document.documentElement.classList.contains("app-context");const link=document.getElementById("statusHomeLink");if(link){link.href=appContext?"/app":"/";link.textContent=appContext?"Back to app home":"Back to main website";}})();</script>
+<script>(function(){const link=document.getElementById("customerAccountLink");if(link&&document.documentElement.classList.contains("app-context"))link.href="/account.html?source=app";})();</script>
 <nav class="site-app-nav" aria-label="App navigation">
 <a href="/app"><span>⌂</span>Home</a>
 <a href="/portfolio.html?view=customer&source=app"><span>♡</span>Portfolio</a>
