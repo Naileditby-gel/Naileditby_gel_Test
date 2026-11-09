@@ -119,9 +119,8 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
   message('authMessage','Your password has been updated. You can now sign in with your new password. 💗');await sb.auth.signOut();$('resetWrap').classList.add('hidden');$('authForm').classList.remove('hidden');
  });
  $('signOut').addEventListener('click',async()=>{await sb.auth.signOut();$('dashboard').classList.add('hidden');$('authPanel').classList.remove('hidden');setMode('signin');});
- sb.auth.onAuthStateChange(async(event,session)=>{
+ sb.auth.onAuthStateChange((event)=>{
   if(event==='PASSWORD_RECOVERY'){$('authForm').classList.add('hidden');$('forgotWrap').classList.add('hidden');$('resetWrap').classList.remove('hidden');message('authMessage','Choose a new password for your account.');}
-  else if(session&&['SIGNED_IN','INITIAL_SESSION','TOKEN_REFRESHED'].includes(event)&&!$('dashboard').classList.contains('hidden')===false){await loadDashboard(session);}
  });
  if(params.get('mode')==='reset'){$('authForm').classList.add('hidden');$('forgotWrap').classList.add('hidden');$('resetWrap').classList.remove('hidden');}
  sb.auth.getSession().then(({data})=>{if(params.get('mode')==='reset')return;if(data.session)loadDashboard(data.session);});
