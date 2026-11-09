@@ -9,7 +9,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
 <script>document.documentElement.classList.add("app-context");</script>
-<link rel="stylesheet" href="/app-nav.css?v=5103263">
+<link rel="stylesheet" href="/app-nav.css?v=book-nav-20261109-1">
 <title>Book an Appointment • Naileditby_gel</title>
 <style>
 
@@ -143,6 +143,20 @@ body{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
 #booking .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
 .site-app-nav a.book-active{color:#b86f83}
 @media(max-width:520px){.booking-app-header{height:60px}.booking-app-header .header-note{font-size:10px}#booking{padding-top:22px}}
+</style>
+<style id="booking-app-nav-fallback">
+/* Booking-page safety net: keep the app tab bar visible even if a stale shared
+   navigation stylesheet is served by the browser or service-worker cache. */
+html.app-context .site-app-nav{
+  position:fixed!important;z-index:1000!important;right:0!important;bottom:0!important;left:0!important;
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  justify-content:center!important;gap:0!important;
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom))!important;
+  border-top:1px solid #f0dfe3!important;background:rgba(255,250,249,.97)!important;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+html.app-context .site-app-nav a{display:flex!important;visibility:visible!important;opacity:1!important}
+html.app-context body{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
 </style>
 </head>
 <body>
