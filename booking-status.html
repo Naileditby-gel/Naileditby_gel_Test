@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fff0f6"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Naileditby_gel"><link rel="manifest" href="/manifest.json"><link rel="icon" href="/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/app-nav.css">
+<meta name="theme-color" content="#fff0f6"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Naileditby_gel"><link rel="manifest" href="/manifest.json"><link rel="icon" href="/app-icon.svg" type="image/svg+xml"><script>(function(){const q=new URLSearchParams(location.search);const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;if(q.get("source")==="app"||standalone)document.documentElement.classList.add("app-context")})();</script><link rel="stylesheet" href="/app-nav.css?v=status-context-20261109-1">
 <title>My Booking • Naileditby_gel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -45,7 +45,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
 <div id="historyList"></div>
 </section>
 <p class="muted" style="text-align:center">🔒 Keep your private booking link to yourself. Anyone with this link may be able to view the booking status. This page refreshes automatically while open.</p>
-<p style="text-align:center"><a class="button secondary" href="/app">Back to app home</a></p>
+<p style="text-align:center"><a class="button secondary" id="statusHomeLink" href="/">Back to main website</a></p>
 </main>
 <script>
 (function(){
@@ -199,9 +199,10 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#fff0f6;color:var(
  load();timer=setInterval(load,30000);
 })();
 </script>
+<script>(function(){const appContext=document.documentElement.classList.contains("app-context");const link=document.getElementById("statusHomeLink");if(link){link.href=appContext?"/app":"/";link.textContent=appContext?"Back to app home":"Back to main website";}})();</script>
 <nav class="site-app-nav" aria-label="App navigation">
 <a href="/app"><span>⌂</span>Home</a>
-<a href="/portfolio.html?view=customer"><span>♡</span>Portfolio</a>
+<a href="/portfolio.html?view=customer&source=app"><span>♡</span>Portfolio</a>
 <a href="/book"><span>＋</span>Book</a>
 <a class="active" href="/booking-status.html"><span>◷</span>Status</a>
 <a href="/promotions"><span>✧</span>Promo</a>
