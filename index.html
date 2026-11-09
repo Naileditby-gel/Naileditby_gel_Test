@@ -129,6 +129,36 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
  .section-title{font-size:36px}
 }
 </style>
+
+<style>
+/* Customer account entry and accessible mobile navigation */
+.account-link{font-weight:800;color:var(--wine)}
+.mobile-menu-toggle{
+  display:none;align-items:center;justify-content:center;gap:8px;
+  padding:10px 14px;border:1px solid var(--line);border-radius:999px;
+  background:#fff;color:var(--wine);font:700 14px "DM Sans",sans-serif;
+  cursor:pointer;box-shadow:0 5px 16px rgba(111,41,68,.08)
+}
+.mobile-menu-toggle:focus-visible,.links a:focus-visible{
+  outline:3px solid var(--gold);outline-offset:3px
+}
+@media(max-width:800px){
+  .navin{position:relative;gap:12px}
+  .mobile-menu-toggle{display:inline-flex;flex:0 0 auto}
+  .links{
+    display:none;position:absolute;top:calc(100% + 8px);left:12px;right:12px;
+    z-index:30;flex-direction:column;align-items:stretch;gap:0;
+    padding:10px 14px;background:rgba(255,250,252,.98);
+    border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 16px 38px rgba(111,41,68,.16)
+  }
+  .links.is-open{display:flex}
+  .links a{display:block;padding:12px 8px;border-bottom:1px solid rgba(239,215,224,.8)}
+  .links a:last-child{border-bottom:0}
+  .links .btn{margin-top:9px;text-align:center}
+}
+</style>
+
 </head>
 <body><div class="luxury-strip">♡ NAILEDITBY_GEL • PRETTY NAILS • SELF CARE • CONFIDENCE ♡</div>
 <div class="app-install-banner" id="appInstallBanner" role="region" aria-label="Install the Naileditby_gel app">
@@ -140,8 +170,11 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
 <nav class="nav">
   <div class="navin">
     <div class="logo">naileditby<span>_gel</span> ♡</div>
-    <div class="links">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button"
+      aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Open navigation menu">☰ Menu</button>
+    <div class="links" id="primaryNavLinks">
       <a href="#services">Services</a><a href="#promo">Promo</a><a href="#gallery">Gallery</a><a href="portfolio.html?view=customer">Nail Portfolio</a><a href="#booking">Book</a><a href="#faq">FAQ</a><a href="https://www.instagram.com/naileditby_gel/" target="_blank" rel="noopener">Instagram</a>
+      <a class="account-link" href="account.html">My Account ♡</a>
       <a class="btn" href="tel:09553697737">Book Now</a>
     </div>
   </div>
@@ -576,7 +609,7 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
       }).catch(error=>console.warn('Owner notification request failed:',error));
     } catch(notificationError) { console.warn('Owner notification request failed:',notificationError); }
     const token=accessToken; const statusPage=new URL('booking-status.html',location.href); statusPage.searchParams.set('token',token); const statusUrl=statusPage.href;
-    msg.innerHTML='<div id="bookingSuccessOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingSuccessTitle" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(72,28,49,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)"><div style="position:relative;box-sizing:border-box;width:min(100%,470px);max-height:90vh;overflow:auto;padding:30px 24px 24px;border:1px solid #f2d5e2;border-radius:26px;background:linear-gradient(155deg,#fffafd 0%,#fff0f6 58%,#fff9f2 100%);box-shadow:0 22px 70px rgba(77,27,51,.28);text-align:center"><div aria-hidden="true" style="width:62px;height:62px;margin:0 auto 15px;display:grid;place-items:center;border-radius:50%;background:#f8dce9;color:#a33c6d;font-size:30px;box-shadow:0 0 0 7px rgba(248,220,233,.42)">♡</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a36d83;font-weight:800;margin-bottom:8px">NAILEDITBY_GEL · BOOKING</div><h2 id="bookingSuccessTitle" style="margin:0 0 12px;color:#6f2944;font-family:inherit;font-size:clamp(23px,5vw,30px);line-height:1.2">Thank You for Trusting Naileditby_gel! ♡</h2><p style="margin:0 0 13px;color:#7e4c61;font-size:16px;font-weight:700">Your booking request has been received, beautiful! 💗</p><p style="margin:0 0 13px;color:#8a6874;line-height:1.7">Gel will carefully review your appointment details, nail inspiration and design so she can confirm your custom price and next steps.</p><div style="margin:0 0 17px;padding:14px;border:1px solid #f0d4e0;border-radius:16px;background:rgba(255,255,255,.78);color:#6f2944;line-height:1.65;text-align:left"><strong>♡ Current status: Pending Review</strong><br>Your appointment is <strong>not confirmed yet</strong>. Please wait for Gel to review and approve your request. <strong>No deposit is due until Gel sends your custom price and payment instructions.</strong></div><a id="bookingSuccessStatusLink" href="'+statusUrl+'" style="display:block;box-sizing:border-box;margin:0 0 10px;padding:14px 16px;border-radius:14px;background:linear-gradient(100deg,#d94d91,#b94f79);color:#fff;text-decoration:none;font-weight:800;box-shadow:0 7px 18px rgba(185,79,121,.2)">♡ Check My Booking Status</a><button type="button" id="copyMyBookingStatusLink" style="display:block;width:100%;box-sizing:border-box;margin:0 0 10px;padding:12px 16px;border:1px solid #e9c3d3;border-radius:14px;background:#fff;color:#6f2944;font-weight:700;cursor:pointer">♡ Copy Private Status Link</button><a href="index.html" id="bookingSuccessHome" style="display:block;box-sizing:border-box;padding:12px 16px;border:1px solid #efd6e1;border-radius:14px;color:#8a5269;text-decoration:none;font-weight:700;background:rgba(255,255,255,.55)">Back to Home</a><p style="margin:15px 0 0;color:#a17e8d;font-size:11px;line-height:1.5">Keep your private status link safe. Anyone with the link may be able to view your booking status.<br>With love, Naileditby_gel ♡</p></div></div>';
+    msg.innerHTML='<div id="bookingSuccessOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingSuccessTitle" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(72,28,49,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)"><div style="position:relative;box-sizing:border-box;width:min(100%,470px);max-height:90vh;overflow:auto;padding:30px 24px 24px;border:1px solid #f2d5e2;border-radius:26px;background:linear-gradient(155deg,#fffafd 0%,#fff0f6 58%,#fff9f2 100%);box-shadow:0 22px 70px rgba(77,27,51,.28);text-align:center"><div aria-hidden="true" style="width:62px;height:62px;margin:0 auto 15px;display:grid;place-items:center;border-radius:50%;background:#f8dce9;color:#a33c6d;font-size:30px;box-shadow:0 0 0 7px rgba(248,220,233,.42)">♡</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a36d83;font-weight:800;margin-bottom:8px">NAILEDITBY_GEL · BOOKING</div><h2 id="bookingSuccessTitle" style="margin:0 0 12px;color:#6f2944;font-family:inherit;font-size:clamp(23px,5vw,30px);line-height:1.2">Thank You for Trusting Naileditby_gel! ♡</h2><p style="margin:0 0 13px;color:#7e4c61;font-size:16px;font-weight:700">Your booking request has been received, beautiful! 💗</p><p style="margin:0 0 13px;color:#8a6874;line-height:1.7">Gel will carefully review your appointment details, nail inspiration and design so she can confirm your custom price and next steps.</p><div style="margin:0 0 17px;padding:14px;border:1px solid #f0d4e0;border-radius:16px;background:rgba(255,255,255,.78);color:#6f2944;line-height:1.65;text-align:left"><strong>♡ Current status: Pending Review</strong><br>Your appointment is <strong>not confirmed yet</strong>. Please wait for Gel to review and approve your request. <strong>No deposit is due until Gel sends your custom price and payment instructions.</strong></div><a id="bookingSuccessStatusLink" href="'+statusUrl+'" style="display:block;box-sizing:border-box;margin:0 0 10px;padding:14px 16px;border-radius:14px;background:linear-gradient(100deg,#d94d91,#b94f79);color:#fff;text-decoration:none;font-weight:800;box-shadow:0 7px 18px rgba(185,79,121,.2)">♡ Check My Booking Status</a><button type="button" id="copyMyBookingStatusLink" style="display:block;width:100%;box-sizing:border-box;margin:0 0 10px;padding:12px 16px;border:1px solid #e9c3d3;border-radius:14px;background:#fff;color:#6f2944;font-weight:700;cursor:pointer">♡ Copy Private Status Link</button><div style="margin:4px 0 10px;padding:13px 14px;border:1px solid #f0d4e0;border-radius:15px;background:rgba(255,255,255,.72);color:#6f2944;line-height:1.6;text-align:center"><strong>Want to keep all your appointments in one place?</strong><br><span style="font-size:13px;color:#8a6874">Create a free account to keep your booking history together.</span></div><a href="account.html" id="bookingSuccessCreateAccount" style="display:block;box-sizing:border-box;margin:0 0 10px;padding:13px 16px;border:1px solid #e9c3d3;border-radius:14px;background:#fff;color:#6f2944;text-decoration:none;font-weight:800">♡ Create your free account</a><a href="index.html" id="bookingSuccessHome" style="display:block;box-sizing:border-box;padding:12px 16px;border:1px solid #efd6e1;border-radius:14px;color:#8a5269;text-decoration:none;font-weight:700;background:rgba(255,255,255,.55)">Back to Home</a><p style="margin:15px 0 0;color:#a17e8d;font-size:11px;line-height:1.5">Keep your private status link safe. Anyone with the link may be able to view your booking status.<br>With love, Naileditby_gel ♡</p></div></div>';
     const copyStatusBtn=document.getElementById('copyMyBookingStatusLink');if(copyStatusBtn)copyStatusBtn.addEventListener('click',async function(){try{await navigator.clipboard.writeText(statusUrl);copyStatusBtn.textContent='✓ Private link copied!';}catch(e){window.prompt('Copy your private booking status link:',statusUrl);}});
     const successStatusLink=document.getElementById('bookingSuccessStatusLink');if(successStatusLink)successStatusLink.addEventListener('click',function(){const overlay=document.getElementById('bookingSuccessOverlay');if(overlay)overlay.remove();});
     const successHome=document.getElementById('bookingSuccessHome');if(successHome)successHome.addEventListener('click',function(){const overlay=document.getElementById('bookingSuccessOverlay');if(overlay)overlay.remove();});
@@ -734,5 +767,35 @@ body{background:linear-gradient(180deg,#fffafb 0%,#fff7f9 100%);color:var(--ink)
   }
 })();
 </script>
+
+<script>
+(function(){
+  const toggle=document.getElementById('mobileMenuToggle');
+  const menu=document.getElementById('primaryNavLinks');
+  if(!toggle||!menu)return;
+  function setMenuOpen(open){
+    menu.classList.toggle('is-open',open);
+    toggle.setAttribute('aria-expanded',String(open));
+    toggle.setAttribute('aria-label',open?'Close navigation menu':'Open navigation menu');
+    toggle.textContent=open?'× Close':'☰ Menu';
+  }
+  toggle.addEventListener('click',function(){
+    setMenuOpen(toggle.getAttribute('aria-expanded')!=='true');
+  });
+  menu.querySelectorAll('a').forEach(function(link){
+    link.addEventListener('click',function(){setMenuOpen(false);});
+  });
+  document.addEventListener('click',function(event){
+    if(!menu.contains(event.target)&&!toggle.contains(event.target))setMenuOpen(false);
+  });
+  document.addEventListener('keydown',function(event){
+    if(event.key==='Escape')setMenuOpen(false);
+  });
+  window.addEventListener('resize',function(){
+    if(window.innerWidth>800)setMenuOpen(false);
+  });
+})();
+</script>
+
 </body>
 </html>
