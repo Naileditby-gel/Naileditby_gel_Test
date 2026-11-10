@@ -63,7 +63,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
  $('homeLink').textContent=inApp?'Back to app home':'Back to main website';
  // Keep this as a native anchor. Let the browser perform the navigation so
  // clicks, keyboard activation, and open-in-new-tab all use the same target.
- $('bookAppointmentLink').href=inApp?'/book.html':'/index.html#booking';
+ $('bookAppointmentLink').href='/book.html#booking';
  const cfg=window.NAILEDIT_CONFIG||{};
  if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('authMessage').textContent='Account service is temporarily unavailable. Please refresh and try again.';$('authMessage').classList.remove('hidden');return;}
  const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
