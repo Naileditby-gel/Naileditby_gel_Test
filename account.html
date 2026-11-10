@@ -60,6 +60,13 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
  const inApp=document.documentElement.classList.contains('app-context');
  $('brandLink').href=inApp?'/app':'/';$('backLink').href=inApp?'/app':'/';$('backLink').textContent=inApp?'Back to app':'Back to website';
  $('homeLink').href=inApp?'/app':'/';$('homeLink').textContent=inApp?'Back to app home':'Back to main website';$('bookAppointmentLink').href=inApp?'/book.html':new URL('/index.html#booking',location.origin).href;
+ const bookingLink=$('bookAppointmentLink');
+ bookingLink.setAttribute('role','link');
+ bookingLink.addEventListener('click',function(event){
+  event.preventDefault();
+  const destination=inApp?new URL('/book.html',location.origin).href:new URL('/index.html#booking',location.origin).href;
+  window.location.assign(destination);
+ });
  const cfg=window.NAILEDIT_CONFIG||{};
  if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('authMessage').textContent='Account service is temporarily unavailable. Please refresh and try again.';$('authMessage').classList.remove('hidden');return;}
  const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
