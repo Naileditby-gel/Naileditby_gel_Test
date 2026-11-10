@@ -59,8 +59,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
  const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
  const inApp=document.documentElement.classList.contains('app-context');
  $('brandLink').href=inApp?'/app':'/';$('backLink').href=inApp?'/app':'/';$('backLink').textContent=inApp?'Back to app':'Back to website';
- $('homeLink').href=inApp?'/app':'/';
- $('homeLink').textContent=inApp?'Back to app home':'Back to main website';
+ $('homeLink').href=inApp?'/app':'/';$('homeLink').textContent=inApp?'Back to app home':'Back to main website';
  // Keep this as a native anchor. Let the browser perform the navigation so
  // clicks, keyboard activation, and open-in-new-tab all use the same target.
  // The destination is defined in the HTML anchor so it remains usable even if page scripts fail.
@@ -86,6 +85,13 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
   }).join('');
  }
  async function loadDashboard(session){
+  // Never show customer booking data until Supabase confirms the email.
+  // The database RPC independently enforces this check before linking records.
+  if(!session||!session.user||!session.user.email_confirmed_at){
+   $('dashboard').classList.add('hidden');$('authPanel').classList.remove('hidden');
+   message('authMessage','Please verify your email address using the confirmation link we sent you. Once verified, sign in to view your bookings. 💗');
+   return;
+  }
   $('authPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('accountEmail').textContent=session.user.email||'';$('welcomeName').textContent='Your bookings ♡';
   message('linkMessage','Checking your verified email and linking your existing bookings…');
   const linked=await sb.rpc('link_my_bookings_by_email');
