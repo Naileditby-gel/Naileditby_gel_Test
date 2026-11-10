@@ -49,7 +49,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
 <div id="bookingList" style="margin-top:14px"></div>
 <p class="muted" style="margin:14px 0 0">Guest bookings made with this verified email can appear here automatically. Your private booking status links continue to work as before.</p>
 </section>
-<div class="account-nav"><a id="homeLink" href="/">Back to main website</a><a id="bookAppointmentLink" href="/#booking">Book an appointment</a></div>
+<div class="account-nav"><a id="homeLink" href="/">Back to main website</a><a id="bookAppointmentLink" href="/book.html#booking" target="_top">Book an appointment</a></div>
 </main>
 <nav class="site-app-nav" aria-label="App navigation">
 <a href="/app"><span>⌂</span>Home</a><a href="/portfolio.html?view=customer&source=app"><span>♡</span>Portfolio</a><a href="/book.html"><span>＋</span>Book</a><a href="/booking-status.html?source=app"><span>◷</span>Status</a><a href="/promotions?source=app"><span>✧</span>Promo</a>
@@ -63,7 +63,7 @@ label{display:block;margin:12px 0 6px;color:var(--deep);font-size:13px;font-weig
  $('homeLink').textContent=inApp?'Back to app home':'Back to main website';
  // Keep this as a native anchor. Let the browser perform the navigation so
  // clicks, keyboard activation, and open-in-new-tab all use the same target.
- $('bookAppointmentLink').href='/book.html#booking';
+ // The destination is defined in the HTML anchor so it remains usable even if page scripts fail.
  const cfg=window.NAILEDIT_CONFIG||{};
  if(!window.supabase||!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY){$('authMessage').textContent='Account service is temporarily unavailable. Please refresh and try again.';$('authMessage').classList.remove('hidden');return;}
  const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
