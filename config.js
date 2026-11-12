@@ -76,23 +76,27 @@ window.NAILEDIT_CONFIG = {
         rateBody += '</div>';
         addSectionBefore(oldPromo || gallerySection, 'dynamic-rates', 'Service Rates', 'Pretty nails, clear pricing', rateBody);
       }
+      var now = Date.now();
+      // Load promotional nail services independently; they must not depend on the promo poster heading existing.
+      var signatureGrid = document.querySelector('#services .cards');
+      var activeServices = !promoServices.error && (promoServices.data || []).filter(function (s) {
+        return (!s.starts_at || new Date(s.starts_at).getTime() <= now) && (!s.ends_at || new Date(s.ends_at).getTime() >= now);
+      }).slice(0, 3);
+      if (signatureGrid && activeServices && activeServices.length) {
+        signatureGrid.innerHTML = activeServices.map(function (s) {
+          return '<article class="card"><h3>' + esc(s.category) + '</h3><div class="price">' + esc(s.price != null ? peso(s.price) : 'Price confirmed after design review') + '</div><p>' + esc(s.description || '') + '</p></article>';
+        }).join('');
+      } else if (signatureGrid && promoServices.error) {
+        console.warn('Promotional nail services could not be loaded:', promoServices.error);
+      } else if (signatureGrid) {
+        signatureGrid.innerHTML = '<article class="card"><h3>New Offers Coming Soon</h3><div class="price">Stay tuned</div><p>Featured Nail Services will appear here when published.</p></article>';
+      }
+
+      // Promotion poster display is separate from the signature-services section.
       if (oldPromo) {
-        var now = Date.now();
         var current = !promos.error && (promos.data || []).filter(function (p) {
           return (!p.starts_at || new Date(p.starts_at).getTime() <= now) && (!p.ends_at || new Date(p.ends_at).getTime() >= now);
         });
-        // Promotional Nail Services come from their own manager, independently of poster uploads and regular rates.
-        var signatureGrid = document.querySelector('#services .cards');
-        var activeServices = !promoServices.error && (promoServices.data || []).filter(function (s) {
-          return (!s.starts_at || new Date(s.starts_at).getTime() <= now) && (!s.ends_at || new Date(s.ends_at).getTime() >= now);
-        }).slice(0, 3);
-        if (signatureGrid && activeServices && activeServices.length) {
-          signatureGrid.innerHTML = activeServices.map(function (s) {
-            return '<article class="card"><h3>' + esc(s.category) + '</h3><div class="price">' + esc(s.price != null ? peso(s.price) : 'Price confirmed after design review') + '</div><p>' + esc(s.description || '') + '</p></article>';
-          }).join('');
-        } else if (signatureGrid) {
-          signatureGrid.innerHTML = '<article class="card"><h3>New Offers Coming Soon</h3><div class="price">Stay tuned</div><p>Featured Nail Services will appear here when published.</p></article>';
-        }
         if (current && current.length) {
           oldPromo.innerHTML = '<div class="wrap"><div class="center"><div class="kicker">Special offers</div><h2 class="section-title">Current Promotions ♡</h2><div class="goldline"></div><p class="sub">Explore our latest nail offers and special treats.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px">' +
             current.map(function (p) {
@@ -104,8 +108,8 @@ window.NAILEDIT_CONFIG = {
         }
       }
     } catch (e) {
-      // Keep the original page and booking flow intact if content loading fails.
-      console.warn('Public content sync skipped:', e);
+      // Keep the booking flow intact if optional public-content loading fails.
+      console.error('Public content sync failed:', e);
     }
   }
   function reorderHomepageSections() {
